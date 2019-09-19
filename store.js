@@ -1,11 +1,14 @@
 import { createStore, applyMiddleware } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
+import { createLogger } from 'redux-logger'
+
+const logger = createLogger({
+  diff: true,
+});
 
 const exampleInitialState = {
-  // lastUpdate: 0,
-  // light: false,
   count: 0,
-  movies: [{id: 1, name: 'サンプル'},{id:2, name: 'サンプル2'}]
+  movies: []
 }
 
 export const actionTypes = {
@@ -16,10 +19,17 @@ export const actionTypes = {
 export const reducer = (state = exampleInitialState, action) => {
   switch (action.type) {
     case actionTypes.ADD:
-      return [...state.movies, {
-        id: state.movies.length + 1,
-        name: action.name
-      }]
+      return {
+        ...state,
+        movies: [
+          ...state.movies,
+          {
+            id: state.movies.length + 1,
+            name: action.name
+          }
+        ]
+      }
+
     default:
       return state
   }
@@ -35,6 +45,6 @@ export function initializeStore (initialState = exampleInitialState) {
   return createStore(
     reducer,
     initialState,
-    composeWithDevTools(applyMiddleware())
+    composeWithDevTools(applyMiddleware(logger))
   )
 }

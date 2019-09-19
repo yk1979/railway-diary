@@ -8,7 +8,6 @@ function App () {
 
   return (
     <div>
-      Hello World
       <AddMovie/>
       {movies.name}
       <MovieList
