@@ -2,23 +2,31 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import MovieItem from './movieitem';
 
-const MovieList = () => {
+const MovieList = ({filter}) => {
   const moviesSelector = state => state.movies;
   const movies = useSelector(moviesSelector);
 
+  const setFilter = (movies, filter) => {
+    switch(filter) {
+      case 'all':
+        return movies;
+      case 'favorite':
+        return movies.filter(movie => movie.favorite)
+    }
+  }
+  const filteredMovies = setFilter(movies, filter)
+
   return (
-    <div>
-      <ul>
-        {movies.map(movie => (
-          <MovieItem
-            movie={movie}
-            key={movie.id}
-            favorite={movie.favorite}
-            watched={movie.watched}
-          />
-        ))}
-      </ul>
-    </div>
+    <ul>
+      {filteredMovies.map(movie => (
+        <MovieItem
+          movie={movie}
+          key={movie.id}
+          favorite={movie.favorite}
+          watched={movie.watched}
+        />
+      ))}
+    </ul>
   )
 }
 

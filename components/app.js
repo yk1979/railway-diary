@@ -1,23 +1,22 @@
 import AddMovie from './addMovie';
 import MovieList from './movieList';
+import Link from 'next/link'
+import {Inner, Wrapper, Title} from '../styles/common'
 import styled from 'styled-components';
 
-const Inner = styled.div`
-  width: 960px;
-  margin: 0 auto;
-`
-
-const Wrapper = styled.div`
-  padding: 40px;
-`
-
-const Title = styled.h1`
-  padding: 12px;
-  background-color: #8AA6A6;
-  color: #FFFFFF;
-  font-size: 2.4rem;
-  font-weight: bold;
-  line-height: 1.6;
+const FavLink = styled.a`
+  display: inline-block;
+  height: 30px;
+  margin-bottom: 12px;
+  padding: 0 12px;
+  background-color: #ddd;
+  border-radius: 6px;
+  color: #333;
+  font-size: 1.8rem;
+  line-height: 30px;
+  &:hover {
+    text-decoration: none;
+  }
 `
 
 const App = () => {
@@ -26,8 +25,11 @@ const App = () => {
       <Title><Inner>Movie Stocker</Inner></Title>
       <Inner>
         <Wrapper>
+          <Link href="favorite"><FavLink>favorite</FavLink></Link>
           <AddMovie/>
-          <MovieList/>
+          <MovieList
+            filter="all"
+          />
         </Wrapper>
       </Inner>
     </>
