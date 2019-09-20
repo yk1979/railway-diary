@@ -13,7 +13,8 @@ const exampleInitialState = {
 
 export const actionTypes = {
   ADD: 'ADD',
-  FAVORITE: 'FAVORITE'
+  FAVORITE: 'FAVORITE',
+  WATCHED: 'WATCHED'
 }
 
 // REDUCERS
@@ -27,7 +28,8 @@ export const reducer = (state = exampleInitialState, action) => {
           {
             id: state.movies.length + 1,
             name: action.name,
-            favorite: false
+            favorite: false,
+            watched: false
           }
         ]
       };
@@ -39,6 +41,17 @@ export const reducer = (state = exampleInitialState, action) => {
           (state.movies).map(movie =>
           (movie.id === action.id)
             ? {...movie, favorite: !movie.favorite}
+            : movie
+          )
+      };
+
+    case actionTypes.WATCHED:
+      return {
+        ...state,
+        movies:
+          (state.movies).map(movie =>
+          (movie.id === action.id)
+            ? {...movie, watched: !movie.watched}
             : movie
           )
       };
@@ -55,6 +68,10 @@ export const addMovie = (name) => {
 
 export const toggleFavorite = (id) => {
   return {type: actionTypes.FAVORITE, id: id}
+}
+
+export const toggleWatched = (id) => {
+  return {type: actionTypes.WATCHED, id: id}
 }
 
 export function initializeStore (initialState = exampleInitialState) {

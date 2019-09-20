@@ -14,6 +14,7 @@ const MovieList = () => {
             movie={movie}
             key={movie.id}
             favorite={movie.favorite}
+            watched={movie.watched}
           />
         ))}
       </ul>
