@@ -36,10 +36,14 @@ const AddMovie = () => {
       <TextInput
         type="text"
         onChange={e => changeText(e.target.value)}
+        value={text}
       />
       <Button
         type="button"
-        onClick={() => dispatch(addMovie(text))}
+        onClick={() => {
+          if (text !== '') {dispatch(addMovie(text))}
+          changeText('')
+        }}
       >Search
       </Button>
     </form>
