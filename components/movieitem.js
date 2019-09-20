@@ -17,6 +17,9 @@ const Button = styled.button`
   border: 1px solid #B8D3D9;
   border-radius: 4px;
   cursor: pointer;
+  &:focus {
+    outline: none;
+  }
 `
 
 const MovieItem = (props) => {
@@ -25,17 +28,17 @@ const MovieItem = (props) => {
   return (
     <ListItem>
       {props.movie.name}
-      <Button onClick={() => dispatch(toggleWatched(props.movie.id))}>
-        <MdCheck
-          size={16}
-          color="#8AA6A6"
-        />
+      <Button
+        css={(props.movie.watched) ? `background-color:#F2C1AE;`: null}
+        onClick={() => dispatch(toggleWatched(props.movie.id))}
+      >
+        <MdCheck size={16} color="#8AA6A6"/>
       </Button>
-      <Button onClick={() => dispatch(toggleFavorite(props.movie.id))}>
-        <MdFavoriteBorder
-          size={16}
-          color="#8AA6A6"
-        />
+      <Button
+        css={(props.movie.favorite) ? `background-color:#F2C1AE;`: null}
+        onClick={() => dispatch(toggleFavorite(props.movie.id))}
+      >
+        <MdFavoriteBorder size={16} color="#8AA6A6"/>
       </Button>
     </ListItem>
   )

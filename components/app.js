@@ -14,9 +14,9 @@ const Wrapper = styled.div`
 const Title = styled.h1`
   padding: 12px;
   background-color: #8AA6A6;
-  color: #DCEEF2;
+  color: #FFFFFF;
   font-size: 2.4rem;
-  font-weight: normal;
+  font-weight: bold;
   line-height: 1.6;
 `
 
