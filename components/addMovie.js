@@ -7,17 +7,16 @@ const AddMovie = () => {
   const [text, changeText] = useState('')
 
   return (
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        dispatch(addMovie(text))
-      }}
-    >
+    <form>
       <input
         type="text"
         onChange={e => changeText(e.target.value)}
       />
-      <button type="submit">追加</button>
+      <button
+        type="button"
+        onClick={() => dispatch(addMovie(text))}
+      >追加
+      </button>
     </form>
   )
 }

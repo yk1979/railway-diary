@@ -1,9 +1,18 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { toggleFavorite } from '../store'
 
-export const MovieItem = ({movie}) => (
-  <li>
-    {movie.name}
-    <button>watched</button>
-    <button>favorite</button>
-  </li>
-)
+const MovieItem = (props) => {
+  const dispatch = useDispatch();
+
+  return (
+    <li>
+      {props.movie.name}
+      <button>watched</button>
+      <button onClick={() => dispatch(toggleFavorite(props.movie.id))}>favorite</button>
+    </li>
+  )
+
+}
+
+export default MovieItem;

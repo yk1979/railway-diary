@@ -1,21 +1,11 @@
-import { useSelector } from 'react-redux'
 import AddMovie from './addMovie';
 import MovieList from './movieList';
 
-function App () {
-  const moviesSelector = state => state.movies;
-  const movies = useSelector(moviesSelector);
-
-  return (
-    <div>
-      <AddMovie/>
-      {movies.name}
-      <MovieList
-        movies={movies}
-      >
-      </MovieList>
-    </div>
-  )
-}
+const App = () => (
+  <div>
+    <AddMovie/>
+    <MovieList/>
+  </div>
+)
 
 export default App;
