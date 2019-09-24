@@ -1,8 +1,9 @@
 import React from 'react'
+import Header from '../components/header';
 import AddMovie from '../components/addMovie';
 import MovieList from '../components/movieList';
 import Link from 'next/link'
-import {Inner, Wrapper, Title} from '../styles/common'
+import {Inner, Wrapper} from '../styles/common'
 import styled from 'styled-components';
 
 const PageLink = styled.a`
@@ -25,7 +26,7 @@ const PageLink = styled.a`
 
 const Index = () => (
   <>
-    <Title><Inner>Movie Stocker</Inner></Title>
+    <Header/>
     <Inner>
       <Wrapper>
         <Link href="favorite"><PageLink>favorite</PageLink></Link>

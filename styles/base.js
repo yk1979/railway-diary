@@ -18,13 +18,10 @@ const GlobalStyle = createGlobalStyle`
 
     &:link,
     &:visited {
+      color: inherit;
       text-decoration: none;
     }
 
-    &:hover {
-      opacity: .9;
-      text-decoration: underline;
-    }
   }
   h1,h2,h3,h4,h5, h6 {
     margin: 0;
