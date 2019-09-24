@@ -12,6 +12,8 @@ const MovieList = ({filter}) => {
         return movies;
       case 'favorite':
         return movies.filter(movie => movie.favorite)
+      case 'watched':
+        return movies.filter(movie => movie.watched)
     }
   }
   const filteredMovies = setFilter(movies, filter)
