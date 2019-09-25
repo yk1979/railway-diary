@@ -1,19 +1,19 @@
-import React from 'react'
+import React from 'react';
 import Header from '../components/header';
 import MovieList from '../components/movieList';
-import {Inner, Wrapper} from '../styles/common'
+import { Inner, Wrapper } from '../styles/common';
 
-const Watched = () => (
+const Favorite = () => (
   <>
-    <Header/>
+    <Header />
     <Inner>
       <Wrapper>
         <MovieList
-          filter="watched"
+          filter="favorite"
         />
       </Wrapper>
     </Inner>
   </>
-)
+);
 
-export default Watched;
+export default Favorite;

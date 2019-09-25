@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
+import Link from 'next/link';
+import styled from 'styled-components';
 import Header from '../components/header';
 import AddMovie from '../components/addMovie';
 import MovieList from '../components/movieList';
-import Link from 'next/link'
-import {Inner, Wrapper} from '../styles/common'
-import styled from 'styled-components';
+import { Inner, Wrapper } from '../styles/common';
 
 const PageLink = styled.a`
   display: inline-block;
@@ -22,21 +22,22 @@ const PageLink = styled.a`
   & + & {
     margin-left: 8px;
   }
-`
+`;
 
 const Index = () => (
   <>
-    <Header/>
+    <Header />
     <Inner>
       <Wrapper>
         <Link href="favorite"><PageLink>favorite</PageLink></Link>
         <Link href="watched"><PageLink>watched</PageLink></Link>
-        <AddMovie/>
+        <AddMovie />
         <MovieList
           filter="all"
         />
       </Wrapper>
     </Inner>
   </>
-)
+);
+
 export default Index;

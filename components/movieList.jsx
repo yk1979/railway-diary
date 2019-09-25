@@ -2,21 +2,24 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import MovieItem from './movieitem';
 
-const MovieList = ({filter}) => {
-  const moviesSelector = state => state.movies;
+const MovieList = ({ filter }) => {
+  const moviesSelector = (state) => state.movies;
   const movies = useSelector(moviesSelector);
 
   const setFilter = (movies, filter) => {
-    switch(filter) {
+    switch (filter) {
       case 'all':
         return movies;
       case 'favorite':
-        return movies.filter(movie => movie.favorite)
+        return movies.filter((movie) => movie.favorite);
       case 'watched':
-        return movies.filter(movie => movie.watched)
+        return movies.filter((movie) => movie.watched);
+      default:
+        return movies;
     }
-  }
-  const filteredMovies = setFilter(movies, filter)
+  };
+
+  const filteredMovies = setFilter(movies, filter);
 
   return (
     <ul>
@@ -29,7 +32,7 @@ const MovieList = ({filter}) => {
         />
       ))}
     </ul>
-  )
-}
+  );
+};
 
 export default MovieList;

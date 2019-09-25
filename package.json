@@ -7,7 +7,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-react": "^7.14.3",
     "next": "latest",
+    "next-eslint": "^0.0.4",
     "now": "^16.2.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
@@ -21,6 +24,9 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "babel-plugin-styled-components": "^1.10.6"
+    "babel-plugin-styled-components": "^1.10.6",
+    "eslint": "^6.4.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3"
   }
 }
