@@ -1,8 +1,8 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { MdCheck, MdFavoriteBorder } from 'react-icons/md';
-import { toggleFavorite, toggleWatched } from '../store';
+import React from "react";
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
+import { MdCheck, MdFavoriteBorder } from "react-icons/md";
+import { toggleFavorite, toggleWatched } from "../store";
 
 const ListItem = styled.li`
   margin-top: 8px;
@@ -13,8 +13,8 @@ const ListItem = styled.li`
 const Button = styled.button`
   margin-left: 8px;
   padding: 2px 4px;
-  background-color: #DCEEF2;
-  border: 1px solid #B8D3D9;
+  background-color: #dceef2;
+  border: 1px solid #b8d3d9;
   border-radius: 4px;
   cursor: pointer;
   &:focus {
@@ -22,20 +22,20 @@ const Button = styled.button`
   }
 `;
 
-const MovieItem = (props) => {
+const MovieItem = props => {
   const dispatch = useDispatch();
 
   return (
     <ListItem>
-      { props.movie.name }
+      {props.movie.name}
       <Button
-        css={(props.movie.watched) ? 'background-color:#F2C1AE;' : null}
+        css={props.movie.watched ? "background-color:#F2C1AE;" : null}
         onClick={() => dispatch(toggleWatched(props.movie.id))}
       >
-        <MdCheck size={16} color="#8AA6A6"/>
+        <MdCheck size={16} color="#8AA6A6" />
       </Button>
       <Button
-        css={(props.movie.favorite) ? 'background-color:#F2C1AE;' : null}
+        css={props.movie.favorite ? "background-color:#F2C1AE;" : null}
         onClick={() => dispatch(toggleFavorite(props.movie.id))}
       >
         <MdFavoriteBorder size={16} color="#8AA6A6" />

@@ -1,10 +1,10 @@
-import React from 'react';
-import Link from 'next/link';
-import styled from 'styled-components';
-import Header from '../components/header';
-import AddMovie from '../components/addMovie';
-import MovieList from '../components/movieList';
-import { Inner, Wrapper } from '../styles/common';
+import React from "react";
+import Link from "next/link";
+import styled from "styled-components";
+import Header from "../components/header";
+import AddMovie from "../components/addMovie";
+import MovieList from "../components/movieList";
+import { Inner, Wrapper } from "../styles/common";
 
 const PageLink = styled.a`
   display: inline-block;
@@ -29,12 +29,14 @@ const Index = () => (
     <Header />
     <Inner>
       <Wrapper>
-        <Link href="favorite"><PageLink>favorite</PageLink></Link>
-        <Link href="watched"><PageLink>watched</PageLink></Link>
+        <Link href="favorite">
+          <PageLink>favorite</PageLink>
+        </Link>
+        <Link href="watched">
+          <PageLink>watched</PageLink>
+        </Link>
         <AddMovie />
-        <MovieList
-          filter="all"
-        />
+        <MovieList filter="all" />
       </Wrapper>
     </Inner>
   </>

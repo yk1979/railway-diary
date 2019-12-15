@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
-import { addMovie } from '../store';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { addMovie } from "../store";
 
 const TextInput = styled.input`
   width: 630px;
@@ -18,7 +18,7 @@ const Button = styled.button`
   height: 40px;
   margin-left: 4px;
   padding: 0 16px;
-  background-color: #BF8069;
+  background-color: #bf8069;
   border-radius: 6px;
   border: none;
   color: #fff;
@@ -29,20 +29,22 @@ const Button = styled.button`
 
 const AddMovie = () => {
   const dispatch = useDispatch();
-  const [text, changeText] = useState('');
+  const [text, changeText] = useState("");
 
   return (
     <form>
       <TextInput
         type="text"
-        onChange={(e) => changeText(e.target.value)}
+        onChange={e => changeText(e.target.value)}
         value={text}
       />
       <Button
         type="button"
         onClick={() => {
-          if (text !== '') { dispatch(addMovie(text)); }
-          changeText('');
+          if (text !== "") {
+            dispatch(addMovie(text));
+          }
+          changeText("");
         }}
       >
         Search
