@@ -1,11 +1,13 @@
 {
   "editor.formatOnSave": true,
-  "editor.tabSize": 2,
-  "editor.renderWhitespace": "all",
-  "eslint.autoFixOnSave": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "eslint.validate": [
-    { "language": "typescript", "autoFix": true },
-    { "language": "typescriptreact", "autoFix": true }
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
   ],
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
 }
