@@ -22,6 +22,9 @@
     "redux-logger": "^3.0.6",
     "styled-components": "^4.3.2",
     "styled-reset": "^4.0.1",
+    "stylelint-config-recommended": "^3.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.9.0",
     "typescript": "^3.7.3"
   },
   "license": "ISC",
@@ -33,6 +36,8 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.2",
     "stylelint": "^12.0.0",
-    "stylelint-config-standard": "^19.0.0"
+    "stylelint-config-rational-order": "^0.1.2",
+    "stylelint-config-standard": "^19.0.0",
+    "stylelint-order": "^3.1.1"
   }
 }

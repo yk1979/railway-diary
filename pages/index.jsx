@@ -11,14 +11,16 @@ const PageLink = styled.a`
   height: 30px;
   margin-bottom: 12px;
   padding: 0 12px;
-  background-color: #ddd;
-  border-radius: 6px;
   color: #333;
   font-size: 1.8rem;
   line-height: 30px;
+  background-color: #ddd;
+  border-radius: 6px;
+
   &:hover {
     text-decoration: none;
   }
+
   & + & {
     margin-left: 8px;
   }
