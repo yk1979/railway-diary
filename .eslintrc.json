@@ -12,6 +12,6 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier"],
-  "rules": { "prettier/prettier": "error" }
+  "plugins": ["react", "prettier", "simple-import-sort"],
+  "rules": { "prettier/prettier": "error", "import/order": "off"}
 }
