@@ -10,9 +10,12 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "cSpell.words": ["stylelint", "devtools", "antialiased"],
+  "cSpell.words": ["stylelint", "devtools", "antialiased", "readonly"],
   "[json]": {
       "editor.formatOnSave": true,
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+  },
   }
 }

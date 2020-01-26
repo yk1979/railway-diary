@@ -8,10 +8,19 @@
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
   },
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier", "simple-import-sort"],
-  "rules": { "prettier/prettier": "error", "import/order": "off"}
+  "plugins": ["typescript", "react", "prettier", "simple-import-sort"],
+  "rules": {
+    "prettier/prettier": "error",
+    "import/order": "error",
+    "typescript/rule-name": "error",
+    "react/jsx-filename-extension": [
+      "error",
+      { "extensions": [".jsx", ".tsx"] }
+    ]
+  }
 }

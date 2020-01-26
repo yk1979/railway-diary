@@ -5,11 +5,11 @@ import { Inner } from "../styles/common";
 
 const StyledHeader = styled.header`
   padding: 12px;
-  background-color: #8aa6a6;
-  color: #ffffff;
-  font-size: 2.4rem;
+  color: "#fff";
   font-weight: bold;
+  font-size: 2.4rem;
   line-height: 1.6;
+  background-color: #8aa6a6;
 `;
 
 const Header = () => (
