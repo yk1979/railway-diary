@@ -15,12 +15,13 @@
   },
   "plugins": ["typescript", "react", "prettier", "simple-import-sort"],
   "rules": {
-    "prettier/prettier": "error",
     "import/order": "error",
-    "typescript/rule-name": "error",
+    "import/no-unresolved": "off",
+    "prettier/prettier": "error",
     "react/jsx-filename-extension": [
       "error",
       { "extensions": [".jsx", ".tsx"] }
-    ]
+    ],
+    "typescript/rule-name": "error"
   }
 }

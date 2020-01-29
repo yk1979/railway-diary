@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import Header from "../components/header";
-import AddMovie from "../components/addMovie";
+import Header from "../components/Header";
+import AddMovie from "../components/AddMovie";
 import MovieList from "../components/movieList";
 import { Inner, Wrapper } from "../styles/common";
 
