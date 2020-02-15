@@ -1,5 +1,8 @@
 {
-  "presets": ["next/babel"],
+  "presets": [
+    "next/babel",
+    "@zeit/typescript/babel"
+  ],
   "plugins": [
     ["styled-components", {
       "ssr": true
