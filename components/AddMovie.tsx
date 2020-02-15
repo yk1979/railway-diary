@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
-import { addMovie } from "../store";
 
 const TextInput = styled.input`
   width: 630px;
@@ -28,27 +26,10 @@ const Button = styled.button`
 `;
 
 const AddMovie = () => {
-  const dispatch = useDispatch();
-  const [text, changeText] = useState("");
-
   return (
     <form>
-      <TextInput
-        type="text"
-        onChange={e => changeText(e.target.value)}
-        value={text}
-      />
-      <Button
-        type="button"
-        onClick={() => {
-          if (text !== "") {
-            dispatch(addMovie(text));
-          }
-          changeText("");
-        }}
-      >
-        Search
-      </Button>
+      <TextInput type="text" />
+      <Button type="button">Search</Button>
     </form>
   );
 };

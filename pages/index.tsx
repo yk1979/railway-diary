@@ -3,7 +3,6 @@ import Link from "next/link";
 import styled from "styled-components";
 import Header from "../components/Header";
 import AddMovie from "../components/AddMovie";
-import MovieList from "../components/movieList";
 import { Inner, Wrapper } from "../styles/common";
 
 const PageLink = styled.a`
@@ -38,7 +37,6 @@ const Index = () => (
           <PageLink>watched</PageLink>
         </Link>
         <AddMovie />
-        <MovieList filter="all" />
       </Wrapper>
     </Inner>
   </>
