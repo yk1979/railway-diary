@@ -1,9 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import { Inner } from "../../styles/common";
 
-const StyledHeader = styled.header`
+const Root = styled.header`
   padding: 12px;
   color: "#fff";
   font-weight: bold;
@@ -12,14 +11,24 @@ const StyledHeader = styled.header`
   background-color: #8aa6a6;
 `;
 
+const Inner = styled.div`
+  width: 580px;
+  margin: 0 auto;
+`;
+
+const StyledLink = styled.a`
+  color: #fff;
+  cursor: pointer;
+`;
+
 const Header = () => (
-  <StyledHeader>
+  <Root>
     <Inner>
-      <h1>
-        <Link href="/">Movie Stocker</Link>
-      </h1>
+      <Link href="/">
+        <StyledLink>Movie Stocker</StyledLink>
+      </Link>
     </Inner>
-  </StyledHeader>
+  </Root>
 );
 
 export default Header;

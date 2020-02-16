@@ -25,13 +25,11 @@ const Button = styled.button`
   border-radius: 6px;
 `;
 
-const AddMovie = () => {
-  return (
-    <form>
-      <TextInput type="text" />
-      <Button type="button">Search</Button>
-    </form>
-  );
-};
+const AddMovie = () => (
+  <form>
+    <TextInput type="text" />
+    <Button type="button">Search</Button>
+  </form>
+);
 
 export default AddMovie;
