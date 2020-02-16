@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import { Inner } from "../styles/common";
+import { Inner } from "../../styles/common";
 
 const StyledHeader = styled.header`
   padding: 12px;

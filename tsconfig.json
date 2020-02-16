@@ -12,17 +12,18 @@
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
     "skipLibCheck": true,
     "noEmit": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "allowJs": true
   },
   "include": [
-    "pages/**/*",
-    "components/**/*"
+    "src/pages/**/*",
+    "src/components/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.test.ts"
   ]
 }

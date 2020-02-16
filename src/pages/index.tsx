@@ -3,7 +3,7 @@ import Link from "next/link";
 import styled from "styled-components";
 import Header from "../components/Header";
 import AddMovie from "../components/AddMovie";
-import { Inner, Wrapper } from "../styles/common";
+import { Inner, Wrapper } from "../../styles/common";
 
 const PageLink = styled.a`
   display: inline-block;
