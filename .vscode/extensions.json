@@ -2,7 +2,7 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "thibaudcolas.stylelint",
+    "stylelint.vscode-stylelint",
     "streetsidesoftware.code-spell-checker",
     "editorconfig.editorconfig"
   ]
