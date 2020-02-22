@@ -3,8 +3,9 @@ import styled from "styled-components";
 import Header from "./Header";
 
 const Container = styled.div`
-  max-width: 580px;
+  max-width: 960px;
   margin: 0 auto;
+  padding: 32px 16px 0;
 `;
 
 interface Props {

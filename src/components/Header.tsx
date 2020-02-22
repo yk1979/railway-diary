@@ -4,15 +4,15 @@ import styled from "styled-components";
 import Color from "../constants/Color";
 
 const Root = styled.header`
-  padding: 12px;
+  padding: 8px;
   font-weight: bold;
-  font-size: 1.6rem;
-  line-height: 1.6;
+  font-size: 2.4rem;
+  text-align: center;
   background-color: ${Color.Background.Navy};
 `;
 
 const Inner = styled.div`
-  width: 580px;
+  max-width: 960px;
   margin: 0 auto;
 `;
 
@@ -25,7 +25,7 @@ const Header = () => (
   <Root>
     <Inner>
       <Link href="/">
-        <StyledLink>Movie Stocker</StyledLink>
+        <StyledLink>てつどうダイアリー</StyledLink>
       </Link>
     </Inner>
   </Root>

@@ -6,10 +6,21 @@ import reset from "styled-reset";
 const GlobalStyle = createGlobalStyle`
   ${reset}
 
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 62.5%;
+  }
+
   body {
     margin: 0;
-    font-size: 62.5%;
+    font-size: 1.6rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
+    line-height: 1.5;
     word-wrap: break-word;
 
     /* stylelint-disable-next-line */
