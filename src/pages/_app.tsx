@@ -6,6 +6,11 @@ import reset from "styled-reset";
 const GlobalStyle = createGlobalStyle`
   ${reset}
 
+  @font-face {
+    font-family: "corporate-logo";
+    src: url("/font/corp_round_v1.ttf");
+  }
+
   *,
   *::before,
   *::after {
