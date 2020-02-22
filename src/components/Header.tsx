@@ -1,14 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
+import Color from "../constants/Color";
 
 const Root = styled.header`
   padding: 12px;
-  color: "#fff";
   font-weight: bold;
-  font-size: 2.4rem;
+  font-size: 1.6rem;
   line-height: 1.6;
-  background-color: #8aa6a6;
+  background-color: ${Color.Background.Navy};
 `;
 
 const Inner = styled.div`
@@ -17,7 +17,7 @@ const Inner = styled.div`
 `;
 
 const StyledLink = styled.a`
-  color: #fff;
+  color: ${Color.Text.White};
   cursor: pointer;
 `;
 

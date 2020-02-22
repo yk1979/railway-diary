@@ -1,17 +1,15 @@
+import React from "react";
+import App from "next/app";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
 
-  /* base.css */
-
-  html {
-    font-size: 62.5%;
-  }
-
   body {
     margin: 0;
+    font-size: 62.5%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
     word-wrap: break-word;
 
     /* stylelint-disable-next-line */
@@ -44,4 +42,14 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-export default GlobalStyle;
+export default class MyApp extends App {
+  render() {
+    const { Component, pageProps } = this.props;
+    return (
+      <>
+        <GlobalStyle />
+        <Component {...pageProps} />
+      </>
+    );
+  }
+}
