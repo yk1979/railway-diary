@@ -1,7 +1,6 @@
 import React from "react";
-import Document, { Head, Html, Main, DocumentContext } from "next/document";
+import Document, { DocumentContext } from "next/document";
 import { ServerStyleSheet } from "styled-components";
-import Layout from "../components/Layout";
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -31,14 +30,15 @@ export default class MyDocument extends Document {
     }
   }
 
-  render() {
-    return (
-      <Html lang="ja">
-        <Head />
-        <body>
-          <Main />
-        </body>
-      </Html>
-    );
-  }
+  // TODO コメントアウト外すとhooksがうまく動かなくなる理由を調べる
+  // render() {
+  //   return (
+  //     <Html lang="ja">
+  //       <Head />
+  //       <body>
+  //         <Main />
+  //       </body>
+  //     </Html>
+  //   );
+  // }
 }
