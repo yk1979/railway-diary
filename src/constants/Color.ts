@@ -1,4 +1,7 @@
 const Color = {
+  Primary: {
+    Blue: "#0092ca"
+  },
   Background: {
     Default: "#fff",
     Navy: "#272343"
@@ -6,9 +9,6 @@ const Color = {
   Text: {
     Default: "#333",
     White: "#fff"
-  },
-  Button: {
-    Default: "#0092ca"
   },
   Border: {
     Default: "#333"

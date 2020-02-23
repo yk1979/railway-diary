@@ -18,10 +18,12 @@ const GlobalStyle = createGlobalStyle`
   }
 
   html {
+    height: 100%;
     font-size: 62.5%;
   }
 
   body {
+    height: 100%;
     margin: 0;
     font-size: 1.6rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
@@ -31,6 +33,10 @@ const GlobalStyle = createGlobalStyle`
     /* stylelint-disable-next-line */
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
+
+    > div {
+      height: 100%;
+    }
   }
 
   a {
@@ -38,7 +44,6 @@ const GlobalStyle = createGlobalStyle`
 
     &:link,
     &:visited {
-      color: inherit;
       text-decoration: none;
     }
   }

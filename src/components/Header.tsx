@@ -20,7 +20,6 @@ const Inner = styled.div`
 
 const StyledLink = styled.a`
   color: ${Color.Text.White};
-  cursor: pointer;
 `;
 
 const Header = () => (

@@ -21,7 +21,7 @@ const Button = styled.button`
   font-weight: bold;
   font-size: 1.8rem;
   line-height: 40px;
-  background-color: ${Color.Button.Default};
+  background-color: ${Color.Primary.Blue};
   border: none;
   border-radius: 6px;
 `;
