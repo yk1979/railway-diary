@@ -11,7 +11,7 @@ const Color = {
     White: "#fff"
   },
   Border: {
-    Default: "#333"
+    Default: "#bbb"
   }
 };
 

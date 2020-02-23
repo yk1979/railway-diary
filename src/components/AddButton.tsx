@@ -20,7 +20,7 @@ type Props = {
 };
 
 const AddButton = ({ className }: Props) => (
-  <Root href="/" className={className}>
+  <Root href="/edit" className={className}>
     <MdModeEdit />
   </Root>
 );

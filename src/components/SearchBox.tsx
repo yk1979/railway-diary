@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Color from "../constants/Color";
+import Button from "./Button";
 
 const TextInput = styled.input`
   width: 100%;
@@ -12,24 +13,14 @@ const TextInput = styled.input`
   appearance: none;
 `;
 
-const Button = styled.button`
-  width: 100%;
-  height: 40px;
+const SearchButton = styled(Button.Primary)`
   margin-top: 8px;
-  padding: 0 16px;
-  color: ${Color.Text.White};
-  font-weight: bold;
-  font-size: 1.8rem;
-  line-height: 40px;
-  background-color: ${Color.Primary.Blue};
-  border: none;
-  border-radius: 6px;
 `;
 
 const AddMovie = () => (
   <form>
     <TextInput type="text" placeholder="駅名や路線名で検索できます" />
-    <Button type="button">検索</Button>
+    <SearchButton text="検索" />
   </form>
 );
 

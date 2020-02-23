@@ -1,6 +1,7 @@
 import React from "react";
 import Document, { Head, Html, Main, DocumentContext } from "next/document";
 import { ServerStyleSheet } from "styled-components";
+import Layout from "../components/Layout";
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
