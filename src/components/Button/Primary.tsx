@@ -21,10 +21,12 @@ type PrimaryProps = {
 
 type Props = PrimaryProps & {
   className?: string;
+  // TODO 本当にこれでいいのかなあ
+  onClick?: () => void;
 };
 
-const Primary = ({ text, className }: Props) => (
-  <Button type="button" className={className}>
+const Primary = ({ text, className, onClick }: Props) => (
+  <Button type="button" className={className} onClick={onClick}>
     {text}
   </Button>
 );
