@@ -1,7 +1,9 @@
 import Primary from "./Primary";
+import Back from "./Back";
 
 const Button = {
-  Primary
+  Primary,
+  Back
 };
 
 export default Button;
