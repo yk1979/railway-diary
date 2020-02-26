@@ -16,16 +16,15 @@ const Button = styled.button`
 
 type PrimaryProps = {
   text: string;
+  buttonAction?: any;
 };
 
 type Props = PrimaryProps & {
   className?: string;
-  // TODO 本当にこれでいいのかなあ
-  onClick?: () => void;
 };
 
-const Primary = ({ text, className, onClick }: Props) => (
-  <Button type="button" className={className} onClick={onClick}>
+const Primary = ({ text, className, buttonAction }: Props) => (
+  <Button type="button" className={className} onClick={buttonAction}>
     {text}
   </Button>
 );

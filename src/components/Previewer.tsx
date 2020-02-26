@@ -13,14 +13,15 @@ const BackButton = styled(Button.Back)`
 type PreviewerProps = {
   isVisible: boolean;
   text: string;
+  buttonAction: any;
 };
 
-const Previewer = ({ text }: PreviewerProps) => {
+const Previewer = ({ text, buttonAction }: PreviewerProps) => {
   return (
     <>
       <div>{text}</div>
       <SubmitButton text="投稿する" />
-      <BackButton text="戻る" href="/" />
+      <BackButton text="戻る" buttonAction={buttonAction} />
     </>
   );
 };

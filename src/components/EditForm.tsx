@@ -37,11 +37,15 @@ const EditForm = ({ className }: Props) => {
           />
           <StyledButton
             text="確認画面に進む"
-            onClick={() => toggleEditorVisibility(false)}
+            buttonAction={() => toggleEditorVisibility(false)}
           />
         </>
       ) : (
-        <Previewer isVisible={!showEditor} text={value} />
+        <Previewer
+          isVisible={!showEditor}
+          text={value}
+          buttonAction={toggleEditorVisibility}
+        />
       )}
     </form>
   );

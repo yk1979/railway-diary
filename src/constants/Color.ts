@@ -1,4 +1,7 @@
 const Color = {
+  Primary: {
+    Blue: "#0092ca"
+  },
   Button: {
     Primary: "#0092ca",
     Gray: "#bbb"

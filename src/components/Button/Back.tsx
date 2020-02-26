@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Color from "../../constants/Color";
 
 // TODO theme provider使えそう
-const Button = styled.a`
+const Button = styled.button`
   display: block;
   height: 40px;
   padding: 0 16px;
@@ -18,16 +18,16 @@ const Button = styled.a`
 `;
 
 type BackProps = {
-  href: string;
   text: string;
+  buttonAction?: any;
 };
 
 type Props = BackProps & {
   className?: string;
 };
 
-const Back = ({ href, text, className }: Props) => (
-  <Button className={className} href={href}>
+const Back = ({ text, className, buttonAction }: Props) => (
+  <Button className={className} onClick={buttonAction}>
     {text}
   </Button>
 );
