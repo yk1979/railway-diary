@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Color from "../constants/Color";
-import Button from "./Button";
+import Button, { buttonTheme } from "./Button";
 import Previewer from "./Previewer";
 
 // TODO マークダウンエディタに変更する
-const Editor = styled.textarea<{ isVisible: boolean }>`
-  display: ${({ isVisible }) => (isVisible ? "block" : "none")};
+const Editor = styled.textarea`
   width: 100%;
   min-height: 480px;
   padding: 8px;
@@ -14,8 +13,16 @@ const Editor = styled.textarea<{ isVisible: boolean }>`
   border: 1px solid ${Color.Border.Default};
 `;
 
-const StyledButton = styled(Button)`
+const ToPreviewButton = styled(Button)`
   margin-top: 24px;
+`;
+
+const SubmitButton = styled(Button)`
+  margin-top: 24px;
+`;
+
+const BackButton = styled(Button)`
+  margin-top: 16px;
 `;
 
 type Props = {
@@ -24,28 +31,28 @@ type Props = {
 
 const EditForm = ({ className }: Props) => {
   const [value, changeText] = useState("");
-  const [showEditor, toggleEditorVisibility] = useState(true);
+  const [isEditing, setIsEditing] = useState(true);
 
   return (
     <form className={className}>
-      {showEditor ? (
+      {isEditing ? (
         <>
-          <Editor
-            value={value}
-            onChange={e => changeText(e.target.value)}
-            isVisible={showEditor}
-          />
-          <StyledButton
+          <Editor value={value} onChange={e => changeText(e.target.value)} />
+          <ToPreviewButton
             text="確認画面に進む"
-            buttonAction={() => toggleEditorVisibility(false)}
+            buttonAction={() => setIsEditing(false)}
           />
         </>
       ) : (
-        <Previewer
-          isVisible={!showEditor}
-          text={value}
-          buttonAction={toggleEditorVisibility}
-        />
+        <>
+          <div>{value}</div>
+          <SubmitButton text="投稿する" />
+          <BackButton
+            text="戻る"
+            buttonAction={() => setIsEditing(true)}
+            theme={buttonTheme.back}
+          />
+        </>
       )}
     </form>
   );
