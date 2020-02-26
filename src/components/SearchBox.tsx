@@ -13,7 +13,7 @@ const TextInput = styled.input`
   appearance: none;
 `;
 
-const SearchButton = styled(Button.Primary)`
+const SearchButton = styled(Button)`
   margin-top: 8px;
 `;
 

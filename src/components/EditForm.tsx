@@ -14,7 +14,7 @@ const Editor = styled.textarea<{ isVisible: boolean }>`
   border: 1px solid ${Color.Border.Default};
 `;
 
-const StyledButton = styled(Button.Primary)`
+const StyledButton = styled(Button)`
   margin-top: 24px;
 `;
 

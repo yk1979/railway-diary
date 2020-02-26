@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import Button from "./Button";
+import Button, { buttonTheme } from "./Button";
 
-const SubmitButton = styled(Button.Primary)`
+const SubmitButton = styled(Button)`
   margin-top: 24px;
 `;
 
-const BackButton = styled(Button.Back)`
+const BackButton = styled(Button)`
   margin-top: 16px;
 `;
 
@@ -21,7 +21,11 @@ const Previewer = ({ text, buttonAction }: PreviewerProps) => {
     <>
       <div>{text}</div>
       <SubmitButton text="投稿する" />
-      <BackButton text="戻る" buttonAction={buttonAction} />
+      <BackButton
+        text="戻る"
+        buttonAction={buttonAction}
+        theme={buttonTheme.back}
+      />
     </>
   );
 };
