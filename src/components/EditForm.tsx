@@ -34,7 +34,7 @@ const EditForm = ({ className }: Props) => {
   const [isEditing, setIsEditing] = useState(true);
 
   return (
-    <form className={className}>
+    <form action="/mypage" className={className}>
       {isEditing ? (
         <>
           <Editor value={value} onChange={e => changeText(e.target.value)} />
