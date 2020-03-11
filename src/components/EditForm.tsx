@@ -30,14 +30,14 @@ type Props = {
 };
 
 const EditForm = ({ className }: Props) => {
-  const [value, changeText] = useState("");
+  const [text, setText] = useState("");
   const [isEditing, setIsEditing] = useState(true);
 
   return (
     <form action="/mypage" className={className}>
       {isEditing ? (
         <>
-          <Editor value={value} onChange={e => changeText(e.target.value)} />
+          <Editor value={text} onChange={e => setText(e.target.value)} />
           <ToPreviewButton
             text="確認画面に進む"
             buttonAction={() => setIsEditing(false)}
@@ -45,7 +45,7 @@ const EditForm = ({ className }: Props) => {
         </>
       ) : (
         <>
-          <div>{value}</div>
+          <div>{text}</div>
           <SubmitButton text="投稿する" />
           <BackButton
             text="戻る"
