@@ -1,8 +1,9 @@
-import React from "react";
 import { NextPage } from "next";
+import React from "react";
 import styled from "styled-components";
-import Layout from "../components/Layout";
+
 import EditForm from "../components/EditForm";
+import Layout from "../components/Layout";
 
 const StyledEditForm = styled(EditForm)`
   margin-top: 24px;

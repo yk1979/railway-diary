@@ -1,9 +1,10 @@
-import React from "react";
 import { NextPage } from "next";
+import React from "react";
 import styled from "styled-components";
-import SearchBox from "../components/SearchBox";
-import Layout from "../components/Layout";
+
 import AddButton from "../components/AddButton";
+import Layout from "../components/Layout";
+import SearchBox from "../components/SearchBox";
 // import NavButton from "../components/NavButton";
 
 const StyledLayout = styled(Layout)`

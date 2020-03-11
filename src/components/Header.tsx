@@ -1,6 +1,7 @@
-import React from "react";
 import Link from "next/link";
+import React from "react";
 import styled from "styled-components";
+
 import Color from "../constants/Color";
 
 const Root = styled.header`

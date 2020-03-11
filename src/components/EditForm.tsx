@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+
 import Color from "../constants/Color";
 import Button, { buttonTheme } from "./Button";
-import Previewer from "./Previewer";
+// import Previewer from "./Previewer";
 
 // TODO マークダウンエディタに変更する
 const Editor = styled.textarea`

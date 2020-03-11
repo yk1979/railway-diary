@@ -15,7 +15,7 @@
   },
   "plugins": ["@typescript-eslint", "react", "prettier", "simple-import-sort"],
   "rules": {
-    "import/order": "error",
+    "import/order": "off",
     "import/no-unresolved": "off",
     "@typescript-eslint/no-unused-vars": "error",
     "prettier/prettier": "error",
@@ -23,6 +23,7 @@
       "error",
       { "extensions": [".jsx", ".tsx"] }
     ],
-    "react/jsx-props-no-spreading": "off"
+    "react/jsx-props-no-spreading": "off",
+    "simple-import-sort/sort": "error"
   }
 }

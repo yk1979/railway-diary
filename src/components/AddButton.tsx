@@ -1,6 +1,7 @@
 import React from "react";
-import styled from "styled-components";
 import { MdModeEdit } from "react-icons/md";
+import styled from "styled-components";
+
 import Color from "../constants/Color";
 
 const Root = styled.a`
