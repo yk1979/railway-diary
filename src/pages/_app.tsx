@@ -1,7 +1,12 @@
-import React from "react";
 import App from "next/app";
+import React from "react";
+import { Provider } from "react-redux";
+import { createStore } from "redux";
+import { composeWithDevTools } from "redux-devtools-extension";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
+
+import rootReducer from "../store/diary/reducers";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -63,14 +68,17 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+// TODO any修正
+const store = createStore(rootReducer as any, composeWithDevTools());
+
 export default class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props;
     return (
-      <>
+      <Provider store={store}>
         <GlobalStyle />
         <Component {...pageProps} />
-      </>
+      </Provider>
     );
   }
 }
