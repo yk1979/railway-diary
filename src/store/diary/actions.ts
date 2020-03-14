@@ -8,7 +8,7 @@ export const addDiary = (text: string): DiaryActionTypes => ({
   text
 });
 
-export const deleteDiary = (text: string): DiaryActionTypes => ({
+export const deleteDiary = (id: number): DiaryActionTypes => ({
   type: DELETE_DIARY,
-  text
+  id
 });

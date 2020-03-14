@@ -1,4 +1,3 @@
-import { NextPage } from "next";
 import React from "react";
 import styled from "styled-components";
 
@@ -17,7 +16,7 @@ const StyledAddButton = styled(AddButton)`
   bottom: 20px;
 `;
 
-const Index: NextPage = () => (
+const Index = () => (
   <StyledLayout>
     {/* <NavButton link="/favorite" text="favorite" />
     <NavButton link="/watched" text="watched" /> */}

@@ -1,4 +1,3 @@
-import { NextPage } from "next";
 import React from "react";
 import styled from "styled-components";
 
@@ -9,7 +8,7 @@ const StyledEditForm = styled(EditForm)`
   margin-top: 24px;
 `;
 
-const Edit: NextPage = () => {
+const Edit = () => {
   return (
     <Layout>
       <h1>日記を書く</h1>

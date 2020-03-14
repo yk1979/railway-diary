@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
 import Color from "../constants/Color";
+import { addDiary } from "../store/diary/actions";
 import Button, { buttonTheme } from "./Button";
-// import Previewer from "./Previewer";
 
 // TODO マークダウンエディタに変更する
 const Editor = styled.textarea`
@@ -33,6 +34,7 @@ type Props = {
 const EditForm = ({ className }: Props) => {
   const [text, setText] = useState("");
   const [isEditing, setIsEditing] = useState(true);
+  const dispatch = useDispatch();
 
   return (
     <form action="/mypage" className={className}>
@@ -47,7 +49,14 @@ const EditForm = ({ className }: Props) => {
       ) : (
         <>
           <div>{text}</div>
-          <SubmitButton text="投稿する" />
+          <SubmitButton
+            text="投稿する"
+            buttonAction={(e: Event) => {
+              e.preventDefault();
+              dispatch(addDiary(text));
+              // window.location.href = "/mypage";
+            }}
+          />
           <BackButton
             text="戻る"
             buttonAction={() => setIsEditing(true)}

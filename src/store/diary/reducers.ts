@@ -2,9 +2,7 @@ import { Reducer } from "react";
 
 import { ADD_DIARY, DELETE_DIARY, DiaryActionTypes, DiaryState } from "./types";
 
-const initialState = {
-  diaries: []
-};
+const initialState: DiaryState = [];
 
 const diaryReducer: Reducer<DiaryState, DiaryActionTypes> = (
   state = initialState,
@@ -12,21 +10,18 @@ const diaryReducer: Reducer<DiaryState, DiaryActionTypes> = (
 ): DiaryState => {
   switch (action.type) {
     case ADD_DIARY:
-      return {
+      return [
         ...state,
-        diaries: [
-          ...state.diaries,
-          {
-            text: action.text
-          }
-        ]
-      };
+        {
+          // TODO 暫定処理なのであとでどうにかする
+          id: new Date().getTime(),
+          text: action.text,
+          isEditing: false
+        }
+      ];
     case DELETE_DIARY: {
-      const target = state.diaries.indexOf({ text: action.text });
-      return {
-        ...state,
-        diaries: state.diaries.splice(target, 1)
-      };
+      const target = state.find(item => item.id === action.id);
+      return target ? state.splice(state.indexOf(target), 1) : state;
     }
     default:
       return state;

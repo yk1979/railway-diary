@@ -2,11 +2,10 @@
  * state types
  */
 export type DiaryState = {
-  diaries: {
-    text: string;
-  }[];
-};
-
+  id: number;
+  text: string;
+  isEditing: boolean;
+}[];
 /**
  * action types
  */
@@ -20,7 +19,7 @@ interface AddDiaryAction {
 
 interface DeleteDiaryAction {
   type: typeof DELETE_DIARY;
-  text: string;
+  id: number;
 }
 
 export type DiaryActionTypes = AddDiaryAction | DeleteDiaryAction;
