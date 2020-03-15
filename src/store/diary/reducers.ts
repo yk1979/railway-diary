@@ -1,6 +1,12 @@
 import { Reducer } from "react";
 
-import { ADD_DIARY, DELETE_DIARY, DiaryActionTypes, DiaryState } from "./types";
+import {
+  ADD_DIARY,
+  DELETE_DIARY,
+  DiaryActionTypes,
+  DiaryState,
+  TOGGLE_EDITING
+} from "./types";
 
 const initialState: DiaryState = { diaries: [] };
 
@@ -18,17 +24,20 @@ const diaryReducer: Reducer<DiaryState, DiaryActionTypes> = (
             // TODO 暫定処理なのであとでどうにかする
             id: new Date().getTime(),
             text: action.text,
-            isEditing: false
+            isEditing: true
           }
         ]
       };
-    case DELETE_DIARY: {
+    case TOGGLE_EDITING: {
       const target = diaries.find(item => item.id === action.id);
       if (!target) return state;
-      return {
-        diaries: diaries.splice(diaries.indexOf(target), 1)
-      };
+      target.isEditing = !target.isEditing;
+      return state;
     }
+    case DELETE_DIARY:
+      return {
+        diaries: diaries.filter(item => item.id !== action.id)
+      };
     default:
       return state;
   }
