@@ -6,7 +6,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
-import rootReducer from "../store/diary/reducers";
+import rootReducer from "../store";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -69,7 +69,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 // TODO any修正
-const store = createStore(rootReducer as any, composeWithDevTools());
+const store = createStore(rootReducer, composeWithDevTools());
 
 export default class MyApp extends App {
   render() {

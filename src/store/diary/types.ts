@@ -1,14 +1,10 @@
 /**
  * state types
  */
-export type Diary = {
+export type DiaryState = {
   id: number;
   text: string;
   isEditing: boolean;
-};
-
-export type DiaryState = {
-  diaries: Diary[];
 };
 
 /**

@@ -8,39 +8,31 @@ import {
   TOGGLE_EDITING
 } from "./types";
 
-const initialState: DiaryState = { diaries: [] };
+const initialState: DiaryState[] = [];
 
-const diaryReducer: Reducer<DiaryState, DiaryActionTypes> = (
-  state = initialState,
-  action
-): DiaryState => {
-  const { diaries } = state;
+const diaries = (state = initialState, action: DiaryActionTypes) => {
   switch (action.type) {
     case ADD_DIARY:
-      return {
-        diaries: [
-          ...diaries,
-          {
-            // TODO 暫定処理なのであとでどうにかする
-            id: new Date().getTime(),
-            text: action.text,
-            isEditing: true
-          }
-        ]
-      };
+      return [
+        ...state,
+        {
+          // TODO 暫定処理なのであとでどうにかする
+          id: new Date().getTime(),
+          text: action.text,
+          isEditing: true
+        }
+      ];
     case TOGGLE_EDITING: {
-      const target = diaries.find(item => item.id === action.id);
+      const target = state.find(item => item.id === action.id);
       if (!target) return state;
       target.isEditing = !target.isEditing;
       return state;
     }
     case DELETE_DIARY:
-      return {
-        diaries: diaries.filter(item => item.id !== action.id)
-      };
+      return state.filter(item => item.id !== action.id);
     default:
       return state;
   }
 };
 
-export default diaryReducer;
+export default diaries;

@@ -1,9 +1,13 @@
 import { combineReducers } from "redux";
 
-import diaryReducer from "./diary/reducers";
+import diaries from "./diary/reducers";
+import drafts from "./draft/reducers";
 
 const rootReducer = combineReducers({
-  diaryReducer
+  diaries,
+  drafts
 });
+
+export type RootState = ReturnType<typeof rootReducer>;
 
 export default rootReducer;
