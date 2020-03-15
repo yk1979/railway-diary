@@ -1,11 +1,16 @@
 /**
  * state types
  */
-export type DiaryState = {
+export type Diary = {
   id: number;
   text: string;
   isEditing: boolean;
-}[];
+};
+
+export type DiaryState = {
+  diaries: Diary[];
+};
+
 /**
  * action types
  */

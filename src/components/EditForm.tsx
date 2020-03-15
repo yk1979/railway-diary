@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
@@ -32,12 +33,13 @@ type Props = {
 };
 
 const EditForm = ({ className }: Props) => {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [isEditing, setIsEditing] = useState(true);
-  const dispatch = useDispatch();
 
   return (
-    <form action="/mypage" className={className}>
+    <form className={className}>
       {isEditing ? (
         <>
           <Editor value={text} onChange={e => setText(e.target.value)} />
@@ -54,7 +56,7 @@ const EditForm = ({ className }: Props) => {
             buttonAction={(e: Event) => {
               e.preventDefault();
               dispatch(addDiary(text));
-              // window.location.href = "/mypage";
+              router.push("/mypage");
             }}
           />
           <BackButton
