@@ -9,6 +9,8 @@
   "plugins": ["stylelint-order", "stylelint-config-rational-order/plugin"],
   "rules": {
     "order/properties-order": [],
-    "plugin/rational-order": [true]
+    "plugin/rational-order": [true],
+    "property-no-vendor-prefix": null,
+    "value-no-vendor-prefix": null
   }
 }

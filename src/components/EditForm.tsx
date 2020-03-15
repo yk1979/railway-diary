@@ -19,6 +19,7 @@ const Title = styled.input`
 
 // TODO マークダウンエディタに変更する
 const Editor = styled.textarea`
+  display: block;
   width: 100%;
   min-height: 480px;
   margin-top: 16px;
@@ -53,7 +54,9 @@ const EditForm = ({ className, diary }: Props) => {
         if (!diary) {
           dispatch(createDraft(title, body));
         }
-        router.push("/preview");
+        if (body.length > 0) {
+          router.push("/preview");
+        }
       }}
       className={className}
     >

@@ -28,9 +28,9 @@ export const Base = styled.button`
 
 type ButtonBaseProps = {
   text: string;
+  theme: { [key: string]: string };
   // TODO any修正
   onClick?: any;
-  theme: { [key: string]: string };
 };
 
 type Props = ButtonBaseProps & {
