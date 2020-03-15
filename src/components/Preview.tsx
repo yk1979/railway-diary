@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import { toggleEditing } from "../store/diary/actions";
-import { Diary, DiaryState } from "../store/diary/types";
+import { addDiary } from "../store/diary/actions";
+import { Diary } from "../store/diary/types";
 import Button, { buttonTheme } from "./Button";
 
 const SubmitButton = styled(Button)`
@@ -15,30 +15,41 @@ const BackButton = styled(Button)`
   margin-top: 16px;
 `;
 
-const Preview = () => {
-  const diary = useSelector<DiaryState, Diary | undefined>(state =>
-    state.diaries.find(d => d.isEditing === true)
-  );
+export type PreviewProps = {
+  diary?: Diary;
+};
+
+const Preview = ({ diary }: PreviewProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
   return (
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        if (diary) {
-          dispatch(toggleEditing(diary.id));
-          router.push("/mypage");
-        }
-      }}
-    >
-      <div>{diary ? diary.text : ""}</div>
-      <SubmitButton text="投稿する" />
-      <BackButton
-        text="戻る"
-        // buttonAction={() => setIsEditing(true)}
-        theme={buttonTheme.back}
-      />
+    <form>
+      {diary ? (
+        <>
+          <div>{diary.text}</div>
+          <SubmitButton
+            text="投稿する"
+            onClick={(e: Event) => {
+              e.preventDefault();
+              if (diary) {
+                dispatch(addDiary(diary));
+                router.push("/mypage");
+              }
+            }}
+          />
+          <BackButton
+            text="戻る"
+            onClick={(e: Event) => {
+              e.preventDefault();
+              router.push("/edit");
+            }}
+            theme={buttonTheme.back}
+          />
+        </>
+      ) : (
+        <div>編集中の日記はありません</div>
+      )}
     </form>
   );
 };

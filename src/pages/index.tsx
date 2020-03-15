@@ -15,11 +15,11 @@ const StyledAddButton = styled(AddButton)`
   bottom: 20px;
 `;
 
-const Index = () => (
+const IndexPage = () => (
   <StyledLayout>
     <SearchBox />
     <StyledAddButton />
   </StyledLayout>
 );
 
-export default Index;
+export default IndexPage;

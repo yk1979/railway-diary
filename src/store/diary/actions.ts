@@ -1,21 +1,22 @@
 import {
   ADD_DIARY,
+  CREATE_DRAFT,
   DELETE_DIARY,
-  DiaryActionTypes,
-  TOGGLE_EDITING
+  Diary,
+  DiaryActionTypes
 } from "./types";
 
 /**
  * action creators
  */
-export const addDiary = (text: string): DiaryActionTypes => ({
-  type: ADD_DIARY,
+export const createDraft = (text: string): DiaryActionTypes => ({
+  type: CREATE_DRAFT,
   text
 });
 
-export const toggleEditing = (id: number): DiaryActionTypes => ({
-  type: TOGGLE_EDITING,
-  id
+export const addDiary = (diary: Diary) => ({
+  type: ADD_DIARY,
+  diary
 });
 
 export const deleteDiary = (id: number): DiaryActionTypes => ({

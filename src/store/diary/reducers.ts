@@ -1,31 +1,30 @@
-import { Reducer } from "react";
-
 import {
   ADD_DIARY,
+  CREATE_DRAFT,
   DELETE_DIARY,
-  DiaryActionTypes,
-  DiaryState,
-  TOGGLE_EDITING
+  Diary,
+  DiaryActionTypes
 } from "./types";
 
-const initialState: DiaryState[] = [];
+const initialState: Diary[] = [];
 
 const diaries = (state = initialState, action: DiaryActionTypes) => {
   switch (action.type) {
-    case ADD_DIARY:
+    case CREATE_DRAFT:
       return [
         ...state,
         {
-          // TODO 暫定処理なのであとでどうにかする
+          // TODO 下書き状態の時は仮IDでも良さそう
           id: new Date().getTime(),
           text: action.text,
+          draft: true,
           isEditing: true
         }
       ];
-    case TOGGLE_EDITING: {
-      const target = state.find(item => item.id === action.id);
-      if (!target) return state;
-      target.isEditing = !target.isEditing;
+    case ADD_DIARY: {
+      const { diary } = action;
+      diary.draft = false;
+      diary.isEditing = false;
       return state;
     }
     case DELETE_DIARY:

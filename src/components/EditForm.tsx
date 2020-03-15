@@ -4,7 +4,8 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
 import Color from "../constants/Color";
-import { addDiary } from "../store/diary/actions";
+import { createDraft } from "../store/diary/actions";
+import { Diary } from "../store/diary/types";
 import Button from "./Button";
 
 // TODO マークダウンエディタに変更する
@@ -20,15 +21,16 @@ const ToPreviewButton = styled(Button)`
   margin-top: 24px;
 `;
 
-type Props = {
+type EditFormProps = {
+  diary?: Diary;
+};
+
+type Props = EditFormProps & {
   className?: string;
 };
 
-const EditForm = ({ className }: Props) => {
-  // const diary = useSelector<DiaryState, Diary | undefined>(state =>
-  //   state.diaries.find(d => d.isEditing === true)
-  // );
-  const [text, setText] = useState("");
+const EditForm = ({ className, diary }: Props) => {
+  const [text, setText] = useState(diary ? diary.text : "");
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -37,7 +39,9 @@ const EditForm = ({ className }: Props) => {
     <form
       onSubmit={e => {
         e.preventDefault();
-        dispatch(addDiary(text));
+        if (!diary) {
+          dispatch(createDraft(text));
+        }
         router.push("/preview");
       }}
       className={className}

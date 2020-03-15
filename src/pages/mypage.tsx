@@ -2,10 +2,11 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import Layout from "../components/Layout";
-import { Diary, DiaryState } from "../store/diary/types";
+import { RootState } from "../store";
+import { Diary } from "../store/diary/types";
 
 const MyPage = () => {
-  const diaries = useSelector<DiaryState, Diary[]>(state => state.diaries);
+  const diaries = useSelector<RootState, Diary[]>(state => state.diaries);
   return (
     <Layout>
       {diaries.map(d => (

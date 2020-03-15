@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import { MdModeEdit } from "react-icons/md";
 import styled from "styled-components";
@@ -21,9 +22,11 @@ type Props = {
 };
 
 const AddButton = ({ className }: Props) => (
-  <Root href="/edit" className={className}>
-    <MdModeEdit />
-  </Root>
+  <Link href="/edit">
+    <Root className={className}>
+      <MdModeEdit />
+    </Root>
+  </Link>
 );
 
 export default AddButton;

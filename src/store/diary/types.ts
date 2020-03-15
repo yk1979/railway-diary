@@ -1,27 +1,34 @@
 /**
  * state types
  */
-export type DiaryState = {
+export type Diary = {
   id: number;
   text: string;
+  draft: boolean;
   isEditing: boolean;
 };
 
 /**
  * action types
  */
+export const CREATE_DRAFT = "CREATE_DRAFT";
 export const ADD_DIARY = "ADD_DIARY";
 export const TOGGLE_EDITING = "TOGGLE_EDITING";
 export const DELETE_DIARY = "DELETE_DIARY";
 
-interface AddDiaryAction {
-  type: typeof ADD_DIARY;
+interface CreateDraftAction {
+  type: typeof CREATE_DRAFT;
   text: string;
 }
 
-interface ToggleEditingAction {
+interface AddDiaryAction {
+  type: typeof ADD_DIARY;
+  diary: Diary;
+}
+
+interface SetEditingAction {
   type: typeof TOGGLE_EDITING;
-  id: number;
+  diary: Diary;
 }
 
 interface DeleteDiaryAction {
@@ -30,6 +37,7 @@ interface DeleteDiaryAction {
 }
 
 export type DiaryActionTypes =
+  | CreateDraftAction
   | AddDiaryAction
-  | ToggleEditingAction
+  | SetEditingAction
   | DeleteDiaryAction;
