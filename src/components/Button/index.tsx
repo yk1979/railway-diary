@@ -27,7 +27,7 @@ export const Base = styled.button`
 type ButtonBaseProps = {
   text: string;
   // TODO any修正
-  buttonAction?: any;
+  onClick?: any;
   theme: { [key: string]: string };
 };
 
@@ -35,17 +35,17 @@ type Props = ButtonBaseProps & {
   className?: string;
 };
 
-const ButtonBase = ({
+const Button = ({
   text,
-  buttonAction,
+  onClick,
   theme = buttonTheme.primary,
   className
 }: Props) => (
   <ThemeProvider theme={theme}>
-    <Base className={className} onClick={buttonAction} theme={theme}>
+    <Base className={className} onClick={onClick} theme={theme}>
       {text}
     </Base>
   </ThemeProvider>
 );
 
-export default ButtonBase;
+export default Button;

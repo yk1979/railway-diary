@@ -17,7 +17,8 @@
   "rules": {
     "import/order": "off",
     "import/no-unresolved": "off",
-    "@typescript-eslint/no-unused-vars": "error",
+    "no-unused-vars": "off",
+    "@typescript/no-unused-vars": "warn",
     "prettier/prettier": "error",
     "react/jsx-filename-extension": [
       "error",
