@@ -63,7 +63,7 @@ const EditForm = ({ className, diary }: Props) => {
         onChange={e => setTitle(e.target.value)}
       />
       <Editor value={body} onChange={e => setBody(e.target.value)} />
-      <ToPreviewButton text="確認画面に進む" />
+      <ToPreviewButton text="かくにんにすすむ" />
     </form>
   );
 };

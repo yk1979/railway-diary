@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
+import Heading from "../components/Heading";
 import Layout from "../components/Layout";
 import { RootState } from "../store";
 import { Diary } from "../store/diary/types";
@@ -9,6 +10,7 @@ const MyPage = () => {
   const diaries = useSelector<RootState, Diary[]>(state => state.diaries);
   return (
     <Layout>
+      <Heading.Text1 text="てつどうの記録" />
       {diaries.map(d => (
         <div key={d.id}>
           {d.title}

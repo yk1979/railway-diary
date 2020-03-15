@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../components/EditForm";
+import Heading from "../components/Heading";
 import Layout from "../components/Layout";
 import { RootState } from "../store";
 
@@ -17,7 +18,7 @@ const EditPage = () => {
 
   return (
     <Layout>
-      <h1>日記を書く</h1>
+      <Heading.Text1 text="てつどうを記録する" as="h2" />
       <StyledEditForm diary={diary} />
     </Layout>
   );

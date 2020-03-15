@@ -41,7 +41,7 @@ const Preview = ({ diary }: PreviewProps) => {
           <Title>{diary.title}</Title>
           <Body>{diary.body}</Body>
           <SubmitButton
-            text="投稿する"
+            text="きろくする"
             onClick={(e: Event) => {
               e.preventDefault();
               if (diary) {
@@ -51,7 +51,7 @@ const Preview = ({ diary }: PreviewProps) => {
             }}
           />
           <BackButton
-            text="戻る"
+            text="もどる"
             onClick={(e: Event) => {
               e.preventDefault();
               router.push("/edit");

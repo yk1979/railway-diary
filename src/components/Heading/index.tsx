@@ -5,7 +5,8 @@ const Heading = {
 };
 
 export type HeadingProps = {
-  as?: React.ReactElement;
+  // TODO any修正
+  as?: any;
   text: string;
 };
 

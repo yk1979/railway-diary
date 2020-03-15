@@ -2,6 +2,7 @@ import React from "react";
 import styled, { ThemeProvider } from "styled-components";
 
 import Color from "../../constants/Color";
+import Font from "../../constants/Font";
 
 export const buttonTheme = {
   primary: {
@@ -18,6 +19,7 @@ export const Base = styled.button`
   color: ${Color.Text.White};
   font-weight: bold;
   font-size: 1.8rem;
+  font-family: ${Font.Family.Primary};
   line-height: 40px;
   background: ${({ theme }) => theme.background};
   border: none;
