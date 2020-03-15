@@ -16,7 +16,8 @@ const diaries = (state = initialState, action: DiaryActionTypes) => {
         {
           // TODO 下書き状態の時は仮IDでも良さそう
           id: new Date().getTime(),
-          text: action.text,
+          title: action.title,
+          body: action.body,
           draft: true,
           isEditing: true
         }

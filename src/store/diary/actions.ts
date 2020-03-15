@@ -9,9 +9,10 @@ import {
 /**
  * action creators
  */
-export const createDraft = (text: string): DiaryActionTypes => ({
+export const createDraft = (title: string, body: string): DiaryActionTypes => ({
   type: CREATE_DRAFT,
-  text
+  title,
+  body
 });
 
 export const addDiary = (diary: Diary) => ({

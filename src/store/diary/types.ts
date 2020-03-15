@@ -3,7 +3,8 @@
  */
 export type Diary = {
   id: number;
-  text: string;
+  title: string;
+  body: string;
   draft: boolean;
   isEditing: boolean;
 };
@@ -18,7 +19,8 @@ export const DELETE_DIARY = "DELETE_DIARY";
 
 interface CreateDraftAction {
   type: typeof CREATE_DRAFT;
-  text: string;
+  title: string;
+  body: string;
 }
 
 interface AddDiaryAction {

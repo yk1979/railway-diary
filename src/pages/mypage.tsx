@@ -11,8 +11,8 @@ const MyPage = () => {
     <Layout>
       {diaries.map(d => (
         <div key={d.id}>
-          {d.id}
-          <p>{d.text}</p>
+          {d.title}
+          <p>{d.body}</p>
         </div>
       ))}
     </Layout>

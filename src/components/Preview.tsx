@@ -3,9 +3,20 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
+import Color from "../constants/Color";
 import { addDiary } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 import Button, { buttonTheme } from "./Button";
+
+const Title = styled.div`
+  font-size: 2rem;
+`;
+
+const Body = styled.div`
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid ${Color.Border.Default};
+`;
 
 const SubmitButton = styled(Button)`
   margin-top: 24px;
@@ -27,7 +38,8 @@ const Preview = ({ diary }: PreviewProps) => {
     <form>
       {diary ? (
         <>
-          <div>{diary.text}</div>
+          <Title>{diary.title}</Title>
+          <Body>{diary.body}</Body>
           <SubmitButton
             text="投稿する"
             onClick={(e: Event) => {

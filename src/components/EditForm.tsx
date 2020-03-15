@@ -8,10 +8,20 @@ import { createDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 import Button from "./Button";
 
+const Title = styled.input`
+  width: 100%;
+  padding: 8px;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  border: 1px solid ${Color.Border.Default};
+  appearance: none;
+`;
+
 // TODO マークダウンエディタに変更する
 const Editor = styled.textarea`
   width: 100%;
   min-height: 480px;
+  margin-top: 16px;
   padding: 8px;
   font-size: 1.6rem;
   border: 1px solid ${Color.Border.Default};
@@ -30,7 +40,8 @@ type Props = EditFormProps & {
 };
 
 const EditForm = ({ className, diary }: Props) => {
-  const [text, setText] = useState(diary ? diary.text : "");
+  const [title, setTitle] = useState(diary ? diary.title : "");
+  const [body, setBody] = useState(diary ? diary.body : "");
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -40,13 +51,18 @@ const EditForm = ({ className, diary }: Props) => {
       onSubmit={e => {
         e.preventDefault();
         if (!diary) {
-          dispatch(createDraft(text));
+          dispatch(createDraft(title, body));
         }
         router.push("/preview");
       }}
       className={className}
     >
-      <Editor value={text} onChange={e => setText(e.target.value)} />
+      <Title
+        placeholder="日記タイトル"
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+      />
+      <Editor value={body} onChange={e => setBody(e.target.value)} />
       <ToPreviewButton text="確認画面に進む" />
     </form>
   );
