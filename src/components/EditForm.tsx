@@ -8,6 +8,11 @@ import { createDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 import Button from "./Button";
 
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
+
 const Title = styled.input`
   width: 100%;
   padding: 8px;
@@ -20,8 +25,8 @@ const Title = styled.input`
 // TODO マークダウンエディタに変更する
 const Editor = styled.textarea`
   display: block;
+  flex-grow: 1;
   width: 100%;
-  min-height: 480px;
   margin-top: 16px;
   padding: 8px;
   font-size: 1.6rem;
@@ -48,7 +53,7 @@ const EditForm = ({ className, diary }: Props) => {
   const router = useRouter();
 
   return (
-    <form
+    <StyledForm
       onSubmit={e => {
         e.preventDefault();
         if (!diary) {
@@ -67,7 +72,7 @@ const EditForm = ({ className, diary }: Props) => {
       />
       <Editor value={body} onChange={e => setBody(e.target.value)} />
       <ToPreviewButton text="かくにんにすすむ" />
-    </form>
+    </StyledForm>
   );
 };
 

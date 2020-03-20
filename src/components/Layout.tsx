@@ -18,11 +18,12 @@ const Container = styled.div`
 `;
 
 type Props = {
+  className?: string;
   children: React.ReactNode;
 };
 
-const Layout = ({ children }: Props) => (
-  <StyledMain>
+const Layout = ({ children, className }: Props) => (
+  <StyledMain className={className}>
     <Header />
     <Container>{children}</Container>
   </StyledMain>
