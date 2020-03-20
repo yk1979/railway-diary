@@ -1,11 +1,10 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import styled from "styled-components";
 
+import firebase from "../../firebase";
 import DiaryItem from "../components/DiaryItem";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { RootState } from "../store";
 import { Diary } from "../store/diary/types";
 
 const DiaryList = styled.div`
@@ -16,8 +15,11 @@ const DiaryList = styled.div`
   margin-top: 24px;
 `;
 
-const MyPage = () => {
-  const diaries = useSelector<RootState, Diary[]>(state => state.diaries);
+type MyPageProps = {
+  diaries: Diary[];
+};
+
+const MyPage = ({ diaries }: MyPageProps) => {
   return (
     <Layout>
       <Heading.Text1 text="てつどうの記録" />
@@ -28,6 +30,20 @@ const MyPage = () => {
       </DiaryList>
     </Layout>
   );
+};
+
+MyPage.getInitialProps = async () => {
+  const firestore = firebase.firestore();
+
+  const diariesCollection = await firestore.collection("diaries").get();
+  const diaries: Diary[] = [];
+  diariesCollection.forEach(doc => {
+    diaries.push(doc.data() as Diary);
+  });
+
+  return {
+    diaries
+  };
 };
 
 export default MyPage;

@@ -68,7 +68,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-// TODO any修正
 const store = createStore(rootReducer, composeWithDevTools());
 
 export default class MyApp extends App {
