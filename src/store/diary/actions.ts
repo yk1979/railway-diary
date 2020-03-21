@@ -1,7 +1,6 @@
 import {
   CREATE_DRAFT,
   DELETE_DIARY,
-  Diary,
   DiaryActionTypes,
   TOGGLE_EDITING
 } from "./types";

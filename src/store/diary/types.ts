@@ -5,7 +5,6 @@ export type Diary = {
   id: number;
   title: string;
   body: string;
-  draft: boolean;
   isEditing: boolean;
 };
 

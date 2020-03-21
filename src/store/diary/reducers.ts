@@ -1,3 +1,4 @@
+import firebase from "../../../firebase";
 import {
   CREATE_DRAFT,
   DELETE_DIARY,
@@ -6,19 +7,27 @@ import {
   TOGGLE_EDITING
 } from "./types";
 
-const initialState: Diary[] = [];
+const firestore = firebase.firestore();
+const initialDiaries: Diary[] = [];
 
-const diaries = (state = initialState, action: DiaryActionTypes) => {
+firestore
+  .collection("diaries")
+  .get()
+  .then(snapshots =>
+    snapshots.forEach(doc => {
+      initialDiaries.push(doc.data() as Diary);
+    })
+  );
+
+const diaries = (state = initialDiaries, action: DiaryActionTypes) => {
   switch (action.type) {
     case CREATE_DRAFT:
       return [
         ...state,
         {
-          // TODO 下書き状態の時は仮IDでも良さそう
           id: new Date().getTime(),
           title: action.title || "タイトルなし",
           body: action.body,
-          draft: true,
           isEditing: true
         }
       ];

@@ -6,9 +6,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
-import firebase from "../../firebase";
-import rootReducer, { State } from "../store";
-import { Diary } from "../store/diary/types";
+import rootReducer from "../store";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -77,35 +75,15 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-type MyAppProps = AppProps & {
-  initialState: State;
-};
+const store = createStore(rootReducer, composeWithDevTools());
 
-const MyApp = ({ Component, pageProps, initialState }: MyAppProps) => {
-  const store = createStore(rootReducer, initialState, composeWithDevTools());
-
+const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <Provider store={store}>
       <GlobalStyle />
       <Component {...pageProps} />
     </Provider>
   );
-};
-
-MyApp.getInitialProps = async () => {
-  const firestore = firebase.firestore();
-  const collections = await firestore.collection("diaries").get();
-  const diaries: Diary[] = [];
-
-  collections.forEach(doc => {
-    diaries.push(doc.data() as Diary);
-  });
-
-  return {
-    initialState: {
-      diaries
-    }
-  };
 };
 
 export default MyApp;
