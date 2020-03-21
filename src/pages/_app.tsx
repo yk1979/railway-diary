@@ -1,4 +1,4 @@
-import App from "next/app";
+import { AppProps } from "next/app";
 import React from "react";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
@@ -6,7 +6,9 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
-import rootReducer from "../store";
+import firebase from "../../firebase";
+import rootReducer, { State } from "../store";
+import { Diary } from "../store/diary/types";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -75,16 +77,35 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const store = createStore(rootReducer, composeWithDevTools());
+type MyAppProps = AppProps & {
+  initialState: State;
+};
 
-export default class MyApp extends App {
-  render() {
-    const { Component, pageProps } = this.props;
-    return (
-      <Provider store={store}>
-        <GlobalStyle />
-        <Component {...pageProps} />
-      </Provider>
-    );
-  }
-}
+const MyApp = ({ Component, pageProps, initialState }: MyAppProps) => {
+  const store = createStore(rootReducer, initialState, composeWithDevTools());
+
+  return (
+    <Provider store={store}>
+      <GlobalStyle />
+      <Component {...pageProps} />
+    </Provider>
+  );
+};
+
+MyApp.getInitialProps = async () => {
+  const firestore = firebase.firestore();
+  const collections = await firestore.collection("diaries").get();
+  const diaries: Diary[] = [];
+
+  collections.forEach(doc => {
+    diaries.push(doc.data() as Diary);
+  });
+
+  return {
+    initialState: {
+      diaries
+    }
+  };
+};
+
+export default MyApp;

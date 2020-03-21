@@ -23,14 +23,9 @@ interface CreateDraftAction {
   body: string;
 }
 
-interface AddDiaryAction {
-  type: typeof ADD_DIARY;
-  diary: Diary;
-}
-
-interface SetEditingAction {
+interface ToggleEditingAction {
   type: typeof TOGGLE_EDITING;
-  diary: Diary;
+  id: number;
 }
 
 interface DeleteDiaryAction {
@@ -40,6 +35,5 @@ interface DeleteDiaryAction {
 
 export type DiaryActionTypes =
   | CreateDraftAction
-  | AddDiaryAction
-  | SetEditingAction
+  | ToggleEditingAction
   | DeleteDiaryAction;
