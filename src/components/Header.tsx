@@ -30,6 +30,8 @@ const MyPageLink = styled(MdAccountCircle)`
   position: absolute;
   top: 50%;
   right: 0;
+  width: 32px;
+  height: 32px;
   transform: translate(0, -50%);
 `;
 

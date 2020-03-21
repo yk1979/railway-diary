@@ -20,8 +20,12 @@ const SearchButton = styled(Button)`
 
 const AddMovie = () => (
   <form>
-    <TextInput type="text" placeholder="駅名や路線名で検索できます" />
-    <SearchButton text="検索" />
+    <TextInput
+      type="text"
+      placeholder="駅名や路線名で検索できます"
+      aria-label="駅名や路線名で検索できます"
+    />
+    <SearchButton text="けんさく" aria-label="検索" />
   </form>
 );
 
