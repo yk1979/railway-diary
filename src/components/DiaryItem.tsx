@@ -68,7 +68,7 @@ const DiaryItem = ({ diary }: DiaryItemType) => {
           onClick={e => {
             e.preventDefault();
             dispatch(toggleEditing(diary.id));
-            // router.push("/edit");
+            router.push("/edit");
           }}
         >
           <MdModeEdit />
