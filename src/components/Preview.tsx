@@ -1,10 +1,9 @@
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
+import firebase from "../../firebase";
 import Color from "../constants/Color";
-import { addDiary } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 import Button, { buttonTheme } from "./Button";
 
@@ -32,7 +31,7 @@ export type PreviewProps = {
 
 const Preview = ({ diary }: PreviewProps) => {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const firestore = firebase.firestore();
 
   return (
     <form>
@@ -45,7 +44,13 @@ const Preview = ({ diary }: PreviewProps) => {
             onClick={(e: Event) => {
               e.preventDefault();
               if (diary) {
-                dispatch(addDiary(diary));
+                firestore.collection("diaries").add({
+                  id: diary.id,
+                  title: diary.title,
+                  body: diary.body,
+                  draft: diary.draft,
+                  isEditing: diary.isEditing
+                });
                 router.push("/mypage");
               }
             }}
