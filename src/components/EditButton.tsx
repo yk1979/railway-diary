@@ -21,7 +21,7 @@ type Props = {
   className?: string;
 };
 
-const AddButton = ({ className }: Props) => (
+const EditButton = ({ className }: Props) => (
   <Link href="/edit">
     <Root className={className}>
       <MdModeEdit />
@@ -29,4 +29,4 @@ const AddButton = ({ className }: Props) => (
   </Link>
 );
 
-export default AddButton;
+export default EditButton;
