@@ -26,13 +26,17 @@ const TopLink = styled.a`
   display: inline-block;
 `;
 
-const MyPageLink = styled(MdAccountCircle)`
+const MyPageLink = styled.a`
   position: absolute;
   top: 50%;
   right: 0;
   width: 32px;
   height: 32px;
   transform: translate(0, -50%);
+  > svg {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const Header = () => (
@@ -42,7 +46,9 @@ const Header = () => (
         <TopLink>てつどうダイアリー</TopLink>
       </Link>
       <Link href="/mypage">
-        <MyPageLink />
+        <MyPageLink>
+          <MdAccountCircle />
+        </MyPageLink>
       </Link>
     </Inner>
   </Root>

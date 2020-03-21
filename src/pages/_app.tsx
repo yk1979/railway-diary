@@ -53,6 +53,13 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 
+  button {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+  }
+
   h1,
   h2,
   h3,

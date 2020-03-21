@@ -18,7 +18,7 @@ const SearchButton = styled(Button)`
   margin-top: 8px;
 `;
 
-const AddMovie = () => (
+const SearchBox = () => (
   <form>
     <TextInput
       type="text"
@@ -29,4 +29,4 @@ const AddMovie = () => (
   </form>
 );
 
-export default AddMovie;
+export default SearchBox;
