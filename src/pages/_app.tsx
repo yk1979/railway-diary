@@ -1,4 +1,5 @@
 import { AppProps } from "next/app";
+import Head from "next/head";
 import React from "react";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
@@ -81,6 +82,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <Provider store={store}>
       <GlobalStyle />
+      <Head>
+        <title>てつどうダイアリー</title>
+      </Head>
       <Component {...pageProps} />
     </Provider>
   );
