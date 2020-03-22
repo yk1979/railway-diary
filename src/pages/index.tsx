@@ -5,12 +5,6 @@ import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
 
-const StyledLayout = styled(Layout)`
-  > div {
-    position: relative;
-  }
-`;
-
 const StyledEditButton = styled(EditButton)`
   position: absolute;
   right: 16px;
@@ -18,10 +12,10 @@ const StyledEditButton = styled(EditButton)`
 `;
 
 const IndexPage = () => (
-  <StyledLayout>
+  <Layout>
     <SearchBox />
     <StyledEditButton />
-  </StyledLayout>
+  </Layout>
 );
 
 export default IndexPage;

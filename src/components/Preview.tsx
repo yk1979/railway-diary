@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import firebase from "../../firebase";
 import Color from "../constants/Color";
-import { deleteDiary } from "../store/diary/actions";
+import { deleteDraft } from "../store/diary/actions";
 import { DiaryState } from "../store/diary/types";
 import Button, { buttonTheme } from "./Button";
 
@@ -44,10 +44,9 @@ const Preview = ({ diary }: PreviewProps) => {
           <Body>{diary.body}</Body>
           <SubmitButton
             text="きろくする"
-            onClick={(e: Event) => {
+            onClick={async (e: Event) => {
               e.preventDefault();
-              dispatch(deleteDiary(diary.id));
-              firestore
+              await firestore
                 .collection("diaries")
                 .doc(`${diary.id}`)
                 .set({
@@ -55,6 +54,7 @@ const Preview = ({ diary }: PreviewProps) => {
                   title: diary.title,
                   body: diary.body
                 });
+              dispatch(deleteDraft(diary.id));
               router.push("/mypage");
             }}
           />

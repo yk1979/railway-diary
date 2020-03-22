@@ -1,6 +1,6 @@
 import {
   CREATE_DRAFT,
-  DELETE_DIARY,
+  DELETE_DRAFT,
   DiaryActionTypes,
   DiaryState
 } from "./types";
@@ -13,7 +13,7 @@ const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
         title: action.title || "タイトルなし",
         body: action.body
       };
-    case DELETE_DIARY:
+    case DELETE_DRAFT:
       return null;
     default:
       return state;

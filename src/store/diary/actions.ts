@@ -1,4 +1,4 @@
-import { CREATE_DRAFT, DELETE_DIARY, DiaryActionTypes } from "./types";
+import { CREATE_DRAFT, DELETE_DRAFT, DiaryActionTypes } from "./types";
 
 /**
  * action creators
@@ -9,7 +9,7 @@ export const createDraft = (title: string, body: string): DiaryActionTypes => ({
   body
 });
 
-export const deleteDiary = (id: number): DiaryActionTypes => ({
-  type: DELETE_DIARY,
+export const deleteDraft = (id: number): DiaryActionTypes => ({
+  type: DELETE_DRAFT,
   id
 });

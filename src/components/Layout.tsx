@@ -10,6 +10,7 @@ const StyledMain = styled.main`
 `;
 
 const Container = styled.div`
+  position: relative;
   flex-grow: 1;
   width: 100%;
   max-width: 960px;
