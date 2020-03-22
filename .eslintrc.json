@@ -15,6 +15,12 @@
   },
   "plugins": ["@typescript-eslint", "react", "prettier", "simple-import-sort"],
   "rules": {
+    "import/extensions": ["error", "ignorePackages", {
+      "js": "never",
+      "jsx": "never",
+      "ts": "never",
+      "tsx": "never"
+    }],
     "import/order": "off",
     "import/no-unresolved": "off",
     "no-unused-vars": "off",
@@ -26,5 +32,12 @@
     ],
     "react/jsx-props-no-spreading": "off",
     "simple-import-sort/sort": "error"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
+      }
+    }
   }
 }
