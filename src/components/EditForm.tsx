@@ -57,7 +57,9 @@ const EditForm = ({ className, diary }: Props) => {
       onSubmit={e => {
         e.preventDefault();
         if (!diary) {
-          dispatch(createDraft(title, body));
+          dispatch(createDraft({ id: undefined, title, body }));
+        } else {
+          dispatch(createDraft({ id: diary.id, title, body }));
         }
         if (body.length > 0) {
           router.push("/preview");

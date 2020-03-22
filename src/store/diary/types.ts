@@ -19,6 +19,7 @@ export const DELETE_DRAFT = "DELETE_DRAFT";
 
 interface CreateDraftAction {
   type: typeof CREATE_DRAFT;
+  id?: number;
   title: string;
   body: string;
 }

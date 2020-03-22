@@ -7,12 +7,13 @@ import {
 
 const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
   switch (action.type) {
-    case CREATE_DRAFT:
+    case CREATE_DRAFT: {
       return {
-        id: new Date().getTime(),
+        id: action.id || new Date().getTime(),
         title: action.title || "タイトルなし",
         body: action.body
       };
+    }
     case DELETE_DRAFT:
       return null;
     default:

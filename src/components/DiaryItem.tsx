@@ -4,6 +4,7 @@ import { MdDelete, MdModeEdit } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
+import { createDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 
 const Root = styled.div`
@@ -58,15 +59,17 @@ type DiaryItemProps = {
 const DiaryItem = ({ diary }: DiaryItemProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { id, title, body } = diary;
   return (
     <Root>
-      <Title>{diary.title}</Title>
-      <Body>{diary.body}</Body>
+      <Title>{title}</Title>
+      <Body>{body}</Body>
       <Controller>
         <ActionButton
           onClick={e => {
             e.preventDefault();
-            // router.push("/edit");
+            dispatch(createDraft({ id, title, body }));
+            router.push("/edit");
           }}
         >
           <MdModeEdit />
