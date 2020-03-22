@@ -20,9 +20,7 @@ const StyledEditForm = styled(EditForm)`
 `;
 
 const EditPage = () => {
-  const diary = useSelector((state: RootState) =>
-    state.diaries.find(d => d.isEditing === true)
-  );
+  const diary = useSelector((state: RootState) => state.diary);
 
   return (
     <StyledLayout>

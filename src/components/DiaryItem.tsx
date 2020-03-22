@@ -4,7 +4,6 @@ import { MdDelete, MdModeEdit } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import { toggleEditing } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 
 const Root = styled.div`
@@ -52,11 +51,11 @@ const ActionButton = styled.button`
   }
 `;
 
-type DiaryItemType = {
+type DiaryItemProps = {
   diary: Diary;
 };
 
-const DiaryItem = ({ diary }: DiaryItemType) => {
+const DiaryItem = ({ diary }: DiaryItemProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
   return (
@@ -67,8 +66,7 @@ const DiaryItem = ({ diary }: DiaryItemType) => {
         <ActionButton
           onClick={e => {
             e.preventDefault();
-            dispatch(toggleEditing(diary.id));
-            router.push("/edit");
+            // router.push("/edit");
           }}
         >
           <MdModeEdit />

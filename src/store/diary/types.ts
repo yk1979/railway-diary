@@ -5,8 +5,9 @@ export type Diary = {
   id: number;
   title: string;
   body: string;
-  isEditing: boolean;
 };
+
+export type DiaryState = Diary | null;
 
 /**
  * action types
@@ -22,17 +23,9 @@ interface CreateDraftAction {
   body: string;
 }
 
-interface ToggleEditingAction {
-  type: typeof TOGGLE_EDITING;
-  id: number;
-}
-
 interface DeleteDiaryAction {
   type: typeof DELETE_DIARY;
   id: number;
 }
 
-export type DiaryActionTypes =
-  | CreateDraftAction
-  | ToggleEditingAction
-  | DeleteDiaryAction;
+export type DiaryActionTypes = CreateDraftAction | DeleteDiaryAction;

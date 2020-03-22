@@ -5,8 +5,8 @@ import styled from "styled-components";
 
 import firebase from "../../firebase";
 import Color from "../constants/Color";
-import { toggleEditing } from "../store/diary/actions";
-import { Diary } from "../store/diary/types";
+import { deleteDiary } from "../store/diary/actions";
+import { DiaryState } from "../store/diary/types";
 import Button, { buttonTheme } from "./Button";
 
 const Title = styled.div`
@@ -28,7 +28,7 @@ const BackButton = styled(Button)`
 `;
 
 export type PreviewProps = {
-  diary?: Diary;
+  diary: DiaryState;
 };
 
 const Preview = ({ diary }: PreviewProps) => {
@@ -46,13 +46,15 @@ const Preview = ({ diary }: PreviewProps) => {
             text="きろくする"
             onClick={(e: Event) => {
               e.preventDefault();
-              dispatch(toggleEditing(diary.id));
-              firestore.collection("diaries").add({
-                id: diary.id,
-                title: diary.title,
-                body: diary.body,
-                isEditing: diary.isEditing
-              });
+              dispatch(deleteDiary(diary.id));
+              firestore
+                .collection("diaries")
+                .doc(`${diary.id}`)
+                .set({
+                  id: diary.id,
+                  title: diary.title,
+                  body: diary.body
+                });
               router.push("/mypage");
             }}
           />

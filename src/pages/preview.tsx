@@ -6,9 +6,7 @@ import Preview from "../components/Preview";
 import { RootState } from "../store";
 
 const PreviewPage = () => {
-  const diary = useSelector((state: RootState) =>
-    state.diaries.find(d => d.isEditing === true)
-  );
+  const diary = useSelector((state: RootState) => state.diary);
   return (
     <Layout>
       <Preview diary={diary} />

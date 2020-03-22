@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import Color from "../constants/Color";
 import { createDraft } from "../store/diary/actions";
-import { Diary } from "../store/diary/types";
+import { DiaryState } from "../store/diary/types";
 import Button from "./Button";
 
 const StyledForm = styled.form`
@@ -38,7 +38,7 @@ const ToPreviewButton = styled(Button)`
 `;
 
 type EditFormProps = {
-  diary?: Diary;
+  diary?: DiaryState;
 };
 
 type Props = EditFormProps & {
