@@ -8,7 +8,9 @@ import logger from "redux-logger";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
-import rootReducer from "../store";
+import firebase from "../../firebase";
+import rootReducer, { State } from "../store";
+import { Diary } from "../store/diary/types";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -77,12 +79,17 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const store = createStore(
-  rootReducer,
-  composeWithDevTools(applyMiddleware(logger))
-);
+type MyAppProps = AppProps & {
+  initialState: State;
+};
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
+const MyApp = ({ Component, pageProps, initialState }: MyAppProps) => {
+  const store = createStore(
+    rootReducer,
+    initialState,
+    composeWithDevTools(applyMiddleware(logger))
+  );
+
   return (
     <Provider store={store}>
       <GlobalStyle />
@@ -92,6 +99,26 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       <Component {...pageProps} />
     </Provider>
   );
+};
+
+MyApp.getInitialProps = async () => {
+  const firestore = firebase.firestore();
+  const diaries: Diary[] = [];
+
+  await firestore
+    .collection("diaries")
+    .get()
+    .then(snapshots =>
+      snapshots.forEach(doc => {
+        diaries.push(doc.data() as Diary);
+      })
+    );
+
+  return {
+    initialState: {
+      diaries
+    }
+  };
 };
 
 export default MyApp;

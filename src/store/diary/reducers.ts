@@ -1,4 +1,3 @@
-import firebase from "../../../firebase";
 import {
   CREATE_DRAFT,
   DELETE_DIARY,
@@ -7,19 +6,7 @@ import {
   TOGGLE_EDITING
 } from "./types";
 
-const firestore = firebase.firestore();
-const initialDiaries: Diary[] = [];
-
-firestore
-  .collection("diaries")
-  .get()
-  .then(snapshots =>
-    snapshots.forEach(doc => {
-      initialDiaries.push(doc.data() as Diary);
-    })
-  );
-
-const diaries = (state = initialDiaries, action: DiaryActionTypes) => {
+const diaries = (state: Diary[] = [], action: DiaryActionTypes) => {
   switch (action.type) {
     case CREATE_DRAFT:
       return [
