@@ -2,8 +2,9 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import React from "react";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
+import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
+import logger from "redux-logger";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
@@ -76,7 +77,10 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const store = createStore(rootReducer, composeWithDevTools());
+const store = createStore(
+  rootReducer,
+  composeWithDevTools(applyMiddleware(logger))
+);
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (

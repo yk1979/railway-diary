@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@types/react-dom": "^16.9.5",
+    "@types/redux-logger": "^3.0.7",
     "@zeit/next-typescript": "^1.1.1",
     "dotenv": "^8.2.0",
     "eslint-config-airbnb": "^18.0.1",
