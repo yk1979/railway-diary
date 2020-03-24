@@ -4,7 +4,7 @@ const Color = {
   },
   Button: {
     Primary: "#0092ca",
-    Gray: "#bbb"
+    Gray: "#999"
   },
   Background: {
     Default: "#fff",
