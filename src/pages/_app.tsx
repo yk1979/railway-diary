@@ -68,8 +68,9 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 800;
   }
 
-  #root {
-    font-size: 1.6rem;
+  #__next {
+    height: auto;
+    min-height: 100%;
   }
 `;
 

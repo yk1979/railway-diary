@@ -39,14 +39,15 @@ const StyledButton = styled(Button)`
 `;
 
 type DialogueProps = {
+  id: string;
   isOpen: boolean;
   onRequestClose: () => void;
 };
 
-const Dialogue = ({ isOpen, onRequestClose }: DialogueProps) => {
+const Dialogue = ({ id, isOpen, onRequestClose }: DialogueProps) => {
   return (
     <Modal
-      id="test"
+      id={id}
       contentLabel="modalA"
       closeTimeoutMS={150}
       isOpen={isOpen}
@@ -56,7 +57,16 @@ const Dialogue = ({ isOpen, onRequestClose }: DialogueProps) => {
     >
       <Text>この日記を削除しますか？</Text>
       <ButtonWrapper>
-        <StyledButton text="削除する" />
+        <StyledButton
+          text="削除する"
+          onClick={async () => {
+            await firestore
+              .collection("diaries")
+              .doc(id)
+              .delete();
+            onRequestClose();
+          }}
+        />
         <StyledButton
           theme={buttonTheme.back}
           text="やめる"

@@ -1,12 +1,11 @@
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
 import { createDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
-import Dialogue from "./Dialogue";
 
 const Root = styled.div`
   display: flex;
@@ -55,13 +54,12 @@ const ActionButton = styled.button`
 
 type DiaryItemProps = {
   diary: Diary;
+  onDelete: () => void;
 };
 
-const DiaryItem = ({ diary }: DiaryItemProps) => {
+const DiaryItem = ({ diary, onDelete }: DiaryItemProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-
-  const [isOpen, setIsOpen] = useState(false);
 
   const { id, title, body } = diary;
 
@@ -72,25 +70,18 @@ const DiaryItem = ({ diary }: DiaryItemProps) => {
         <Body>{body}</Body>
         <Controller>
           <ActionButton
-            onClick={e => {
-              e.preventDefault();
+            onClick={() => {
               dispatch(createDraft({ id, title, body }));
               router.push("/edit");
             }}
           >
             <MdModeEdit />
           </ActionButton>
-          <ActionButton>
-            <MdDelete
-              onClick={e => {
-                e.preventDefault();
-                setIsOpen(true);
-              }}
-            />
+          <ActionButton onClick={onDelete}>
+            <MdDelete />
           </ActionButton>
         </Controller>
       </Root>
-      <Dialogue isOpen={isOpen} onRequestClose={() => setIsOpen(false)} />
     </>
   );
 };
