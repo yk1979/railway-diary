@@ -40,10 +40,6 @@ const GlobalStyle = createGlobalStyle`
     /* stylelint-disable-next-line */
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
-
-    > div {
-      height: 100%;
-    }
   }
 
   a {

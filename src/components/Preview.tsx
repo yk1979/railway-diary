@@ -3,7 +3,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import firebase from "../../firebase";
+import firestore from "../../firebase";
 import Color from "../constants/Color";
 import { deleteDraft } from "../store/diary/actions";
 import { DiaryState } from "../store/diary/types";
@@ -34,8 +34,6 @@ export type PreviewProps = {
 const Preview = ({ diary }: PreviewProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const firestore = firebase.firestore();
-
   return (
     <form>
       {diary ? (
