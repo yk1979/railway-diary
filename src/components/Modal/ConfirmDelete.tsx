@@ -2,8 +2,8 @@ import React from "react";
 import Modal from "react-modal";
 import styled from "styled-components";
 
-import firestore from "../../firebase";
-import Button, { buttonTheme } from "./Button";
+import firestore from "../../../firebase";
+import Button, { buttonTheme } from "../Button";
 
 Modal.setAppElement("#__next");
 
@@ -38,20 +38,26 @@ const StyledButton = styled(Button)`
   width: 45%;
 `;
 
-type DialogueProps = {
+type ConfirmDeleteProps = {
   id: string;
   isOpen: boolean;
   onRequestClose: () => void;
+  onAfterClose: () => void;
 };
 
-const Dialogue = ({ id, isOpen, onRequestClose }: DialogueProps) => {
+const ConfirmDelete = ({
+  id,
+  isOpen,
+  onRequestClose,
+  onAfterClose
+}: ConfirmDeleteProps) => {
   return (
     <Modal
       id={id}
-      contentLabel="modalA"
       closeTimeoutMS={150}
       isOpen={isOpen}
       onRequestClose={onRequestClose}
+      onAfterClose={onAfterClose}
       shouldCloseOnOverlayClick
       style={customStyles}
     >
@@ -77,4 +83,4 @@ const Dialogue = ({ id, isOpen, onRequestClose }: DialogueProps) => {
   );
 };
 
-export default Dialogue;
+export default ConfirmDelete;
