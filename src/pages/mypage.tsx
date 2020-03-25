@@ -63,6 +63,7 @@ const MyPage = ({ diaries }: MyPageProps) => {
     setNotifierStatus("visible" as NotifierStatus);
     const res = await getDiaries();
     setDiariesList(res);
+    setTimeout(() => setNotifierStatus("hidden" as NotifierStatus), 1000);
   };
 
   return (
