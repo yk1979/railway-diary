@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Modal from "react-modal";
 import styled from "styled-components";
 
@@ -51,13 +51,16 @@ const ConfirmDelete = ({
   onRequestClose,
   onAfterClose
 }: ConfirmDeleteProps) => {
+  const [deleteFlag, setDeleteFlag] = useState(false);
   return (
     <Modal
       id={id}
       closeTimeoutMS={150}
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      onAfterClose={onAfterClose}
+      onAfterClose={() => {
+        if (deleteFlag) onAfterClose();
+      }}
       shouldCloseOnOverlayClick
       style={customStyles}
     >
@@ -70,6 +73,7 @@ const ConfirmDelete = ({
               .collection("diaries")
               .doc(id)
               .delete();
+            setDeleteFlag(true);
             onRequestClose();
           }}
         />
