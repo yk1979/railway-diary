@@ -27,7 +27,6 @@ const PageBottomNotifier = ({ text, status }: PageBottomNotifierProps) => {
     <>
       <Root id="finishDeleting" status={status}>
         {text}
-        {status}
       </Root>
     </>
   );
