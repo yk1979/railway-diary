@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import firestore from "../../firebase";
+import { firestore } from "../../firebase";
 import DiaryItem from "../components/DiaryItem";
 import EditButton from "../components/EditButton";
 import Heading from "../components/Heading";

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import styled from "styled-components";
 
-import firestore from "../../../firebase";
+import { firestore } from "../../../firebase";
 import Button, { buttonTheme } from "../Button";
 
 Modal.setAppElement("#__next");
