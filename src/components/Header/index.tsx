@@ -3,7 +3,6 @@ import React from "react";
 import { MdAccountCircle } from "react-icons/md";
 import styled from "styled-components";
 
-import handleSignIn from "../../../auth";
 import BreakPoint from "../../constants/BreakPoint";
 import Color from "../../constants/Color";
 
@@ -48,12 +47,7 @@ const Header = () => (
         <TopLink>てつどうダイアリー</TopLink>
       </Link>
       <Link href="/mypage">
-        <MyPageLink
-          onClick={e => {
-            e.preventDefault();
-            handleSignIn();
-          }}
-        >
+        <MyPageLink>
           <MdAccountCircle />
         </MyPageLink>
       </Link>

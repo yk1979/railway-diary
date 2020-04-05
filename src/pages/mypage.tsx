@@ -1,9 +1,11 @@
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import { firestore } from "../../firebase";
+import { handleSignIn, handleSignOut } from "../../auth";
+import firebase, { firestore } from "../../firebase";
+import Button, { buttonTheme } from "../components/Button";
 import DiaryItem from "../components/DiaryItem";
 import EditButton from "../components/EditButton";
 import Heading from "../components/Heading";
@@ -43,6 +45,10 @@ const StyledEditButton = styled(EditButton)`
   bottom: 16px;
 `;
 
+const StyledLoginButton = styled(Button)`
+  margin-top: 24px;
+`;
+
 type MyPageProps = {
   diaries: Diary[];
 };
@@ -64,6 +70,18 @@ const MyPage = ({ diaries }: MyPageProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
 
+  const [isUserSignedIn, setIsUserSignedIn] = useState(false);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        setIsUserSignedIn(true);
+      } else {
+        setIsUserSignedIn(false);
+      }
+    });
+  });
+
   const handleDelete = (id: string) => {
     setModalId(id);
     setIsOpen(true);
@@ -79,35 +97,48 @@ const MyPage = ({ diaries }: MyPageProps) => {
   return (
     <StyledLayout>
       <Heading.Text1 text="てつどうの記録" />
-      {diariesList.length > 0 ? (
-        <DiaryList>
-          {diariesList.map(d => (
-            <DiaryItem
-              key={d.id}
-              diary={d}
-              onEdit={() => {
-                dispatch(
-                  createDraft({ id: d.id, title: d.title, body: d.body })
-                );
-                router.push("/edit");
-              }}
-              onDelete={() => handleDelete(String(d.id))}
-            />
-          ))}
-        </DiaryList>
+      {isUserSignedIn ? (
+        <>
+          {diariesList.length > 0 ? (
+            <DiaryList>
+              {diariesList.map(d => (
+                <DiaryItem
+                  key={d.id}
+                  diary={d}
+                  onEdit={() => {
+                    dispatch(
+                      createDraft({ id: d.id, title: d.title, body: d.body })
+                    );
+                    router.push("/edit");
+                  }}
+                  onDelete={() => handleDelete(String(d.id))}
+                />
+              ))}
+            </DiaryList>
+          ) : (
+            <NoDiaryText>まだ日記はありません</NoDiaryText>
+          )}
+          <StyledEditButton />
+          <Modal.ConfirmDelete
+            id={modalId}
+            isOpen={isOpen}
+            onRequestClose={() => setIsOpen(false)}
+            onAfterClose={handleAfterModalClose}
+          />
+          <PageBottomNotifier
+            text="日記を削除しました"
+            status={notifierStatus as NotifierStatus}
+          />
+        </>
       ) : (
-        <NoDiaryText>まだ日記はありません</NoDiaryText>
+        <></>
       )}
-      <StyledEditButton />
-      <Modal.ConfirmDelete
-        id={modalId}
-        isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
-        onAfterClose={handleAfterModalClose}
-      />
-      <PageBottomNotifier
-        text="日記を削除しました"
-        status={notifierStatus as NotifierStatus}
+      <StyledLoginButton
+        text={isUserSignedIn ? "ログアウトする" : "ログインする"}
+        onClick={() => {
+          return isUserSignedIn ? handleSignOut() : handleSignIn();
+        }}
+        theme={isUserSignedIn ? buttonTheme.back : buttonTheme.primary}
       />
     </StyledLayout>
   );
