@@ -13,13 +13,13 @@
       "esnext"
     ],
     "skipLibCheck": true,
-    // "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "allowJs": true
+    "allowJs": true,
+    "noEmit": false
   },
   "include": [
-    "src/**/*",
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
