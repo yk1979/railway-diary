@@ -1,4 +1,6 @@
+import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
 import firestore from "../../firebase";
@@ -10,6 +12,7 @@ import Modal from "../components/Modal";
 import PageBottomNotifier, {
   NotifierStatus
 } from "../components/PageBottomNotifier";
+import { createDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 
 const StyledLayout = styled(Layout)`
@@ -48,6 +51,9 @@ const getDiaries = async () => {
 };
 
 const MyPage = ({ diaries }: MyPageProps) => {
+  const router = useRouter();
+  const dispatch = useDispatch();
+
   const [diariesList, setDiariesList] = useState(diaries);
   // id未定状態の初期値として0を指定している
   const [modalId, setModalId] = useState("0");
@@ -75,6 +81,12 @@ const MyPage = ({ diaries }: MyPageProps) => {
             <DiaryItem
               key={d.id}
               diary={d}
+              onEdit={() => {
+                dispatch(
+                  createDraft({ id: d.id, title: d.title, body: d.body })
+                );
+                router.push("/edit");
+              }}
               onDelete={() => handleDelete(String(d.id))}
             />
           ))}

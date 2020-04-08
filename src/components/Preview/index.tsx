@@ -1,13 +1,9 @@
-import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import firestore from "../../firebase";
-import Color from "../constants/Color";
-import { deleteDraft } from "../store/diary/actions";
-import { DiaryState } from "../store/diary/types";
-import Button, { buttonTheme } from "./Button";
+import Color from "../../constants/Color";
+import { DiaryState } from "../../store/diary/types";
+import Button, { buttonTheme } from "../Button";
 
 const Title = styled.div`
   font-size: 2rem;
@@ -29,11 +25,11 @@ const BackButton = styled(Button)`
 
 export type PreviewProps = {
   diary: DiaryState;
+  onSave: () => Promise<void>;
+  onBack: () => void;
 };
 
-const Preview = ({ diary }: PreviewProps) => {
-  const router = useRouter();
-  const dispatch = useDispatch();
+const Preview = ({ diary, onSave, onBack }: PreviewProps) => {
   return (
     <form>
       {diary ? (
@@ -42,25 +38,16 @@ const Preview = ({ diary }: PreviewProps) => {
           <Body>{diary.body}</Body>
           <SubmitButton
             text="きろくする"
-            onClick={async (e: Event) => {
+            onClick={(e: Event) => {
               e.preventDefault();
-              await firestore
-                .collection("diaries")
-                .doc(`${diary.id}`)
-                .set({
-                  id: diary.id,
-                  title: diary.title,
-                  body: diary.body
-                });
-              dispatch(deleteDraft(diary.id));
-              router.push("/mypage");
+              onSave();
             }}
           />
           <BackButton
             text="もどる"
             onClick={(e: Event) => {
               e.preventDefault();
-              router.push("/edit");
+              onBack();
             }}
             theme={buttonTheme.back}
           />
