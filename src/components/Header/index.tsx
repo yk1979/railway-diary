@@ -3,7 +3,7 @@ import React from "react";
 import { MdAccountCircle } from "react-icons/md";
 import styled from "styled-components";
 
-import Color from "../constants/Color";
+import Color from "../../constants/Color";
 
 const Root = styled.header`
   padding: 8px;

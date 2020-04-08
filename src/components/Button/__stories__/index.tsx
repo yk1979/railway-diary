@@ -1,11 +1,11 @@
 // eslint-disable-next-line
-import { storiesOf } from "@storybook/react";
 import React from "react";
 
 import Button, { buttonTheme } from "..";
 
-const stories = storiesOf("Components", module);
+export default {
+  title: "Button"
+};
 
-stories
-  .add("Default", () => <Button text="Primary" />)
-  .add("Back", () => <Button text="Back" theme={buttonTheme.back} />);
+export const Primary = () => <Button text="Primary" />;
+export const Back = () => <Button text="Back" theme={buttonTheme.back} />;

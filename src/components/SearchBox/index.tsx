@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-import Color from "../constants/Color";
-import Button from "./Button";
+import Color from "../../constants/Color";
+import Button from "../Button";
 
 const TextInput = styled.input`
   width: 100%;
