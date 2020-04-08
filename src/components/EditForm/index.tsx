@@ -1,12 +1,9 @@
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import Color from "../constants/Color";
-import { createDraft } from "../store/diary/actions";
-import { DiaryState } from "../store/diary/types";
-import Button from "./Button";
+import Color from "../../constants/Color";
+import { DiaryState } from "../../store/diary/types";
+import Button from "../Button";
 
 const StyledForm = styled.form`
   display: flex;
@@ -39,31 +36,22 @@ const ToPreviewButton = styled(Button)`
 
 type EditFormProps = {
   diary?: DiaryState;
+  onSubmit: (title: string, body: string) => void;
 };
 
 type Props = EditFormProps & {
   className?: string;
 };
 
-const EditForm = ({ className, diary }: Props) => {
+const EditForm = ({ className, diary, onSubmit }: Props) => {
   const [title, setTitle] = useState(diary ? diary.title : "");
   const [body, setBody] = useState(diary ? diary.body : "");
-
-  const dispatch = useDispatch();
-  const router = useRouter();
 
   return (
     <StyledForm
       onSubmit={e => {
         e.preventDefault();
-        if (!diary) {
-          dispatch(createDraft({ id: undefined, title, body }));
-        } else {
-          dispatch(createDraft({ id: diary.id, title, body }));
-        }
-        if (body.length > 0) {
-          router.push("/preview");
-        }
+        onSubmit(title, body);
       }}
       className={className}
     >

@@ -1,11 +1,8 @@
-import { useRouter } from "next/router";
 import React from "react";
 import { MdDelete, MdModeEdit } from "react-icons/md";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import { createDraft } from "../store/diary/actions";
-import { Diary } from "../store/diary/types";
+import { Diary } from "../../store/diary/types";
 
 const Root = styled.div`
   display: flex;
@@ -54,13 +51,11 @@ const ActionButton = styled.button`
 
 type DiaryItemProps = {
   diary: Diary;
+  onEdit: () => void;
   onDelete: () => void;
 };
 
-const DiaryItem = ({ diary, onDelete }: DiaryItemProps) => {
-  const router = useRouter();
-  const dispatch = useDispatch();
-
+const DiaryItem = ({ diary, onEdit, onDelete }: DiaryItemProps) => {
   const { id, title, body } = diary;
 
   return (
@@ -69,12 +64,7 @@ const DiaryItem = ({ diary, onDelete }: DiaryItemProps) => {
         <Title>{title}</Title>
         <Body>{body}</Body>
         <Controller>
-          <ActionButton
-            onClick={() => {
-              dispatch(createDraft({ id, title, body }));
-              router.push("/edit");
-            }}
-          >
+          <ActionButton onClick={onEdit}>
             <MdModeEdit />
           </ActionButton>
           <ActionButton onClick={onDelete}>
