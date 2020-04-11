@@ -12,15 +12,6 @@ module.exports = {
           options: {
             presets: [['react-app', { flow: false, typescript: true }]],
           },
-        },
-        {
-          loader: require.resolve("ts-loader"),
-        },
-        {
-          loader: require.resolve("react-docgen-typescript-loader"),
-          options: {
-          tsconfigPath: path.resolve(__dirname, "../tsconfig.json"),
-        },
         }
       ]
     });

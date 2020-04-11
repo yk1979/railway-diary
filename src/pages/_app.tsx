@@ -10,7 +10,7 @@ import reset from "styled-reset";
 
 import rootReducer from "../store";
 
-const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle`
   ${reset}
 
   @font-face {
