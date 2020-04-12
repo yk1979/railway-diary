@@ -12,6 +12,7 @@ import Modal from "../components/Modal";
 import PageBottomNotifier, {
   NotifierStatus
 } from "../components/PageBottomNotifier";
+import BreakPoint from "../constants/BreakPoint";
 import { createDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 
@@ -23,9 +24,12 @@ const StyledLayout = styled(Layout)`
 
 const DiaryList = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, 343px);
+  grid-template-columns: repeat(auto-fill, 1fr);
   gap: 16px;
   margin-top: 24px;
+  @media (min-width: ${BreakPoint.Large}px) {
+    grid-template-columns: repeat(auto-fill, 343px);
+  }
 `;
 
 const NoDiaryText = styled.p`

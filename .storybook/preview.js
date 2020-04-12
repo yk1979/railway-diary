@@ -11,7 +11,6 @@ import styled from "styled-components";
 const Container = styled.div`
   max-width: ${BreakPoint.Large}px;
   margin: 0 auto;
-  padding: 16px;
 `;
 
 addDecorator(withKnobs);

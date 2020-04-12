@@ -7,7 +7,6 @@ import { Diary } from "../../store/diary/types";
 const Root = styled.div`
   display: flex;
   flex-direction: column;
-  width: 343px;
   height: 143px;
   padding: 8px;
   border-radius: 4px;
