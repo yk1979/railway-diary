@@ -3,6 +3,7 @@ import React from "react";
 import { MdAccountCircle } from "react-icons/md";
 import styled from "styled-components";
 
+import BreakPoint from "../../constants/BreakPoint";
 import Color from "../../constants/Color";
 
 const Root = styled.header`
@@ -18,7 +19,7 @@ const Root = styled.header`
 
 const Inner = styled.div`
   position: relative;
-  max-width: 960px;
+  max-width: ${BreakPoint.Large}px;
   margin: 0 auto;
 `;
 

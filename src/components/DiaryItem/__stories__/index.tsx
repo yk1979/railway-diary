@@ -12,7 +12,7 @@ const diary = {
 };
 
 export default {
-  title: "DIaryItem"
+  title: "DiaryItem"
 };
 
 // TODO delete action追加
