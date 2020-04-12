@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { text } from "@storybook/addon-knobs";
 import React from "react";
 
 import DiaryItem from "..";
@@ -14,13 +16,20 @@ export default {
 };
 
 // TODO delete action追加
-export const Default = () => (
-  <DiaryItem
-    diary={{ ...diary, body: diary.body.slice(0, 15) }}
-    onEdit={() => {}}
-    onDelete={() => {}}
-  />
-);
+export const Default = () => {
+  const title = text("title", "JR只見線");
+  const body = text(
+    "body",
+    "新潟県魚沼市の小出駅から福島県会津若松市の会津若松駅を結ぶ路線全長約135kmの路線です。"
+  );
+  return (
+    <DiaryItem
+      diary={{ id: 1, title, body }}
+      onEdit={() => {}}
+      onDelete={() => {}}
+    />
+  );
+};
 export const ClampedBody = () => (
   <DiaryItem diary={diary} onEdit={() => {}} onDelete={() => {}} />
 );
