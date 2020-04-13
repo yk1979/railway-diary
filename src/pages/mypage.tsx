@@ -80,7 +80,7 @@ const MyPage = ({ diaries }: MyPageProps) => {
         setIsUserSignedIn(false);
       }
     });
-  });
+  }, []);
 
   const handleDelete = (id: string) => {
     setModalId(id);
