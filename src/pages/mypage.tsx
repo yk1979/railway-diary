@@ -1,3 +1,4 @@
+import { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -49,9 +50,9 @@ const StyledLoginButton = styled(Button)`
   margin-top: 24px;
 `;
 
-type MyPageProps = {
-  diaries: Diary[];
-};
+// type MyPageProps = {
+//   diaries: Diary[];
+// };
 
 const getDiaries = async () => {
   const res: Diary[] = [];
@@ -60,11 +61,10 @@ const getDiaries = async () => {
   return res;
 };
 
-const MyPage = ({ diaries }: MyPageProps) => {
+const MyPage = (/* { diaries }: MyPageProps */) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const [diariesList, setDiariesList] = useState(diaries);
   // id未定状態の初期値として0を指定している
   const [modalId, setModalId] = useState("0");
   const [isOpen, setIsOpen] = useState(false);
@@ -73,16 +73,21 @@ const MyPage = ({ diaries }: MyPageProps) => {
   const [isUserSignedIn, setIsUserSignedIn] = useState(false);
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        setIsUserSignedIn(true);
-      } else {
-        setIsUserSignedIn(false);
-      }
-    });
+    function subscribeAuthStatusChange() {
+      firebase.auth().onAuthStateChanged(user => {
+        setIsUserSignedIn(!!user);
+      });
+    }
+    subscribeAuthStatusChange();
+    return function unsubscribeAuthStatus() {
+      subscribeAuthStatusChange();
+    };
   }, []);
 
-  const handleDelete = (id: string) => {
+  const diaries: Diary[] = [];
+  const [diariesList, setDiariesList] = useState(diaries);
+
+  const handleDeleteDiary = (id: string) => {
     setModalId(id);
     setIsOpen(true);
   };
@@ -111,7 +116,7 @@ const MyPage = ({ diaries }: MyPageProps) => {
                     );
                     router.push("/edit");
                   }}
-                  onDelete={() => handleDelete(String(d.id))}
+                  onDelete={() => handleDeleteDiary(String(d.id))}
                 />
               ))}
             </DiaryList>
@@ -144,12 +149,12 @@ const MyPage = ({ diaries }: MyPageProps) => {
   );
 };
 
-MyPage.getInitialProps = async () => {
-  const diaries = await getDiaries();
+// MyPage.getInitialProps = async ({ req }: NextPageContext) => {
+//   const diaries = await getDiaries();
 
-  return {
-    diaries
-  };
-};
+//   return {
+//     diaries
+//   };
+// };
 
 export default MyPage;
