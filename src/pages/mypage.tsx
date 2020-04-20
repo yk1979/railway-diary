@@ -1,4 +1,5 @@
-import { NextPageContext } from "next";
+import { auth } from "firebase-admin";
+import { MyNextContext } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -51,7 +52,7 @@ const StyledLoginButton = styled(Button)`
 `;
 
 // type MyPageProps = {
-//   diaries: Diary[];
+//   user: auth.DecodedIdToken | null;
 // };
 
 const getDiaries = async () => {
@@ -61,7 +62,7 @@ const getDiaries = async () => {
   return res;
 };
 
-const MyPage = (/* { diaries }: MyPageProps */) => {
+const MyPage = (/* { user }: MyPageProps */) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -149,12 +150,12 @@ const MyPage = (/* { diaries }: MyPageProps */) => {
   );
 };
 
-// MyPage.getInitialProps = async ({ req }: NextPageContext) => {
-//   const diaries = await getDiaries();
+MyPage.getInitialProps = async ({ req }: MyNextContext) => {
+  const user = req && req.session ? req.session.decodedToken : null;
 
-//   return {
-//     diaries
-//   };
-// };
+  return {
+    user
+  };
+};
 
 export default MyPage;
