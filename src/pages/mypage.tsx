@@ -51,6 +51,7 @@ const StyledLoginButton = styled(Button)`
   margin-top: 24px;
 `;
 
+// TODO propsの型を縛れない問題修正
 type MyPageProps = {
   token: auth.DecodedIdToken | null;
 };
@@ -72,8 +73,7 @@ const MyPage: NextPage<MyPageProps> = ({ token }: MyPageProps) => {
   const [diaries, setDiaries] = useState<Diary[]>([]);
 
   const addDbListener = () => {
-    const db = firestore;
-    const listener = db.collection("diaries").onSnapshot(
+    const listener = firestore.collection("diaries").onSnapshot(
       querySnapshot => {
         const res: Diary[] = [];
         querySnapshot.forEach(doc => {
