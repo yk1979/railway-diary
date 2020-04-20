@@ -1,5 +1,5 @@
 import { auth } from "firebase-admin";
-import { MyNextContext } from "next";
+import { MyNextContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -51,63 +51,91 @@ const StyledLoginButton = styled(Button)`
   margin-top: 24px;
 `;
 
-// type MyPageProps = {
-//   user: auth.DecodedIdToken | null;
-// };
-
-const getDiaries = async () => {
-  const res: Diary[] = [];
-  const collections = await firestore.collection("diaries").get();
-  collections.forEach(doc => res.push(doc.data() as Diary));
-  return res;
+type MyPageProps = {
+  token: auth.DecodedIdToken | null;
 };
 
-const MyPage = (/* { user }: MyPageProps */) => {
+// TODO: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
+// TODO: FirebaseError: Missing or insufficient permissions.
+
+const MyPage: NextPage<MyPageProps> = ({ token }: MyPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // id未定状態の初期値として0を指定している
-  const [modalId, setModalId] = useState("0");
-  const [isOpen, setIsOpen] = useState(false);
+  const [modalId, setModalId] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
+  const [isUserSignedIn, setIsUserSignedIn] = useState(!!token);
+  const [unSubscribeDb, setUnsubscribeDb] = useState<{ [key: string]: any }>(
+    {}
+  );
+  const [diaries, setDiaries] = useState<Diary[]>([]);
 
-  const [isUserSignedIn, setIsUserSignedIn] = useState(false);
+  const addDbListener = () => {
+    const db = firestore;
+    const listener = db.collection("diaries").onSnapshot(
+      querySnapshot => {
+        const res: Diary[] = [];
+        querySnapshot.forEach(doc => {
+          res.push(doc.data() as Diary);
+        });
+        if (res.length > 0) {
+          setDiaries(res);
+        }
+      },
+      err => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      }
+    );
+    setUnsubscribeDb({ listener });
+  };
 
-  useEffect(() => {
-    function subscribeAuthStatusChange() {
-      firebase.auth().onAuthStateChanged(user => {
-        setIsUserSignedIn(!!user);
-      });
+  const removeDbListener = () => {
+    if (unSubscribeDb.listener) {
+      unSubscribeDb.listener();
     }
-    subscribeAuthStatusChange();
-    return function unsubscribeAuthStatus() {
-      subscribeAuthStatusChange();
-    };
-  }, []);
-
-  const diaries: Diary[] = [];
-  const [diariesList, setDiariesList] = useState(diaries);
+  };
 
   const handleDeleteDiary = (id: string) => {
     setModalId(id);
-    setIsOpen(true);
+    setIsModalOpen(true);
   };
 
   const handleAfterModalClose = async () => {
     setNotifierStatus("visible" as NotifierStatus);
-    const res = await getDiaries();
-    setDiariesList(res);
     setTimeout(() => setNotifierStatus("hidden" as NotifierStatus), 1000);
   };
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(user => {
+      setIsUserSignedIn(!!user);
+      if (user) {
+        user.getIdToken().then(tkn =>
+          fetch("/api/login", {
+            method: "POST",
+            headers: new Headers({ "Content-Type": "application/json" }),
+            credentials: "same-origin",
+            body: JSON.stringify({ tkn })
+          }).then(() => addDbListener())
+        );
+      } else {
+        fetch("/api/logout", {
+          method: "POST",
+          credentials: "same-origin"
+        }).then(() => removeDbListener());
+      }
+    });
+  }, []);
 
   return (
     <StyledLayout>
       <Heading.Text1 text="てつどうの記録" />
       {isUserSignedIn ? (
         <>
-          {diariesList.length > 0 ? (
+          {diaries.length > 0 ? (
             <DiaryList>
-              {diariesList.map(d => (
+              {diaries.map(d => (
                 <DiaryItem
                   key={d.id}
                   diary={d}
@@ -127,8 +155,8 @@ const MyPage = (/* { user }: MyPageProps */) => {
           <StyledEditButton />
           <Modal.ConfirmDelete
             id={modalId}
-            isOpen={isOpen}
-            onRequestClose={() => setIsOpen(false)}
+            isOpen={isModalOpen}
+            onRequestClose={() => setIsModalOpen(false)}
             onAfterClose={handleAfterModalClose}
           />
           <PageBottomNotifier
@@ -151,10 +179,10 @@ const MyPage = (/* { user }: MyPageProps */) => {
 };
 
 MyPage.getInitialProps = async ({ req }: MyNextContext) => {
-  const user = req && req.session ? req.session.decodedToken : null;
+  const token = req && req.session ? req.session.decodedToken : null;
 
   return {
-    user
+    token
   };
 };
 
