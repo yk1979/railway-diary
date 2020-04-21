@@ -51,7 +51,6 @@ const StyledLoginButton = styled(Button)`
   margin-top: 24px;
 `;
 
-// TODO propsの型を縛れない問題修正
 type MyPageProps = {
   token: auth.DecodedIdToken | null;
 };

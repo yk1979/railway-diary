@@ -40,8 +40,7 @@ app.prepare().then(() => {
     })
   );
 
-  // TODO any修正
-  server.use((req: any, _, next) => {
+  server.use((req, _, next) => {
     req.firebaseServer = firebase;
     next();
   });
