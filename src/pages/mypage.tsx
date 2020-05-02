@@ -1,4 +1,3 @@
-import { auth } from "firebase-admin";
 import { MyNextContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -52,24 +51,22 @@ const StyledLoginButton = styled(Button)`
 `;
 
 type MyPageProps = {
-  token: auth.DecodedIdToken | null;
+  user: boolean;
+  diariesData: Diary[];
 };
 
-// TODO: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-// TODO: FirebaseError: Missing or insufficient permissions.
-
-const MyPage: NextPage<MyPageProps> = ({ token }: MyPageProps) => {
+const MyPage: NextPage<MyPageProps> = ({ user, diariesData }: MyPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
   const [modalId, setModalId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
-  const [isUserSignedIn, setIsUserSignedIn] = useState(!!token);
-  const [unSubscribeDb, setUnsubscribeDb] = useState<{ [key: string]: any }>(
-    {}
-  );
-  const [diaries, setDiaries] = useState<Diary[]>([]);
+  const [isUserSignedIn, setIsUserSignedIn] = useState(!!user);
+  const [unsubscribeDb, setUnsubscribeDb] = useState<{
+    [key: string]: (() => void) | undefined;
+  }>({});
+  const [diaries, setDiaries] = useState<Diary[]>(diariesData);
 
   const addDbListener = () => {
     const listener = firestore.collection("diaries").onSnapshot(
@@ -91,8 +88,8 @@ const MyPage: NextPage<MyPageProps> = ({ token }: MyPageProps) => {
   };
 
   const removeDbListener = () => {
-    if (unSubscribeDb.listener) {
-      unSubscribeDb.listener();
+    if (unsubscribeDb.listener) {
+      unsubscribeDb.listener();
     }
   };
 
@@ -107,15 +104,17 @@ const MyPage: NextPage<MyPageProps> = ({ token }: MyPageProps) => {
   };
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(user => {
-      setIsUserSignedIn(!!user);
-      if (user) {
-        user.getIdToken().then(tkn =>
+    if (user) addDbListener();
+
+    firebase.auth().onAuthStateChanged(currentUser => {
+      setIsUserSignedIn(!!currentUser);
+      if (currentUser) {
+        currentUser.getIdToken().then(token =>
           fetch("/api/login", {
             method: "POST",
             headers: new Headers({ "Content-Type": "application/json" }),
             credentials: "same-origin",
-            body: JSON.stringify({ tkn })
+            body: JSON.stringify({ token })
           }).then(() => addDbListener())
         );
       } else {
@@ -178,10 +177,28 @@ const MyPage: NextPage<MyPageProps> = ({ token }: MyPageProps) => {
 };
 
 MyPage.getInitialProps = async ({ req }: MyNextContext) => {
-  const token = req && req.session ? req.session.decodedToken : null;
+  const user = !!req?.session?.decodedToken;
+  const diariesData: Diary[] = [];
+
+  if (user) {
+    // eslint-disable-next-line no-unused-expressions
+    try {
+      const collections = await req?.firebaseServer
+        .firestore()
+        .collection("diaries")
+        .get();
+      collections!.forEach(doc => {
+        diariesData.push(doc.data() as Diary);
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  }
 
   return {
-    token
+    user,
+    diariesData
   };
 };
 
