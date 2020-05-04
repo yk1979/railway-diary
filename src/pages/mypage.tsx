@@ -197,7 +197,7 @@ const MyPage: NextPage<MyPageProps> = ({
 
 MyPage.getInitialProps = async ({ req }: MyNextContext) => {
   const token = req?.session?.decodedToken;
-  const userData: MyPageProps["userData"] = token
+  const userData: UserState = token
     ? {
         uid: token.uid,
         name: token.name
