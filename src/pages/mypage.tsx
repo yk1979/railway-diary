@@ -1,7 +1,7 @@
 import { MyNextContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import firebase, { firestore } from "../../firebase";
@@ -16,8 +16,11 @@ import PageBottomNotifier, {
   NotifierStatus
 } from "../components/PageBottomNotifier";
 import BreakPoint from "../constants/BreakPoint";
+import { RootState } from "../store";
 import { createDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
+import { userSignIn, userSignOut } from "../store/user/actions";
+import { UserState } from "../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -51,18 +54,21 @@ const StyledLoginButton = styled(Button)`
 `;
 
 type MyPageProps = {
-  user: boolean;
+  userData: UserState;
   diariesData: Diary[];
 };
 
-const MyPage: NextPage<MyPageProps> = ({ user, diariesData }: MyPageProps) => {
+const MyPage: NextPage<MyPageProps> = ({
+  userData,
+  diariesData
+}: MyPageProps) => {
+  console.log("my page get initial props is fired");
   const router = useRouter();
   const dispatch = useDispatch();
 
   const [modalId, setModalId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
-  const [isUserSignedIn, setIsUserSignedIn] = useState(!!user);
   const [unsubscribeDb, setUnsubscribeDb] = useState<{
     [key: string]: (() => void) | undefined;
   }>({});
@@ -104,27 +110,42 @@ const MyPage: NextPage<MyPageProps> = ({ user, diariesData }: MyPageProps) => {
   };
 
   useEffect(() => {
-    if (user) addDbListener();
+    if (userData) {
+      console.log("userData is exists");
+      addDbListener();
+      dispatch(userSignIn(userData));
+    }
 
-    firebase.auth().onAuthStateChanged(currentUser => {
-      setIsUserSignedIn(!!currentUser);
+    firebase.auth().onAuthStateChanged(async currentUser => {
+      console.log("auth state changed");
       if (currentUser) {
-        currentUser.getIdToken().then(token =>
-          fetch("/api/login", {
-            method: "POST",
-            headers: new Headers({ "Content-Type": "application/json" }),
-            credentials: "same-origin",
-            body: JSON.stringify({ token })
-          }).then(() => addDbListener())
+        console.log("current user is exists");
+        const token = await currentUser.getIdToken();
+        await fetch("/api/login", {
+          method: "POST",
+          headers: new Headers({ "Content-Type": "application/json" }),
+          credentials: "same-origin",
+          body: JSON.stringify({ token })
+        });
+        dispatch(
+          userSignIn({
+            uid: currentUser.uid,
+            name: currentUser.displayName
+          })
         );
+        addDbListener();
       } else {
-        fetch("/api/logout", {
+        await fetch("/api/logout", {
           method: "POST",
           credentials: "same-origin"
-        }).then(() => removeDbListener());
+        });
+        dispatch(userSignOut());
+        removeDbListener();
       }
     });
   }, []);
+
+  const isUserSignedIn = useSelector((state: RootState) => !!state.user);
 
   return (
     <StyledLayout>
@@ -167,9 +188,7 @@ const MyPage: NextPage<MyPageProps> = ({ user, diariesData }: MyPageProps) => {
       )}
       <StyledLoginButton
         text={isUserSignedIn ? "ログアウトする" : "ログインする"}
-        onClick={() => {
-          return isUserSignedIn ? handleSignOut() : handleSignIn();
-        }}
+        onClick={() => (isUserSignedIn ? handleSignOut() : handleSignIn())}
         theme={isUserSignedIn ? buttonTheme.back : buttonTheme.primary}
       />
     </StyledLayout>
@@ -177,10 +196,16 @@ const MyPage: NextPage<MyPageProps> = ({ user, diariesData }: MyPageProps) => {
 };
 
 MyPage.getInitialProps = async ({ req }: MyNextContext) => {
-  const user = !!req?.session?.decodedToken;
+  const token = req?.session?.decodedToken;
+  const userData: MyPageProps["userData"] = token
+    ? {
+        uid: token.uid,
+        name: token.name
+      }
+    : null;
   const diariesData: Diary[] = [];
 
-  if (user) {
+  if (userData) {
     // eslint-disable-next-line no-unused-expressions
     try {
       const collections = await req?.firebaseServer
@@ -197,7 +222,7 @@ MyPage.getInitialProps = async ({ req }: MyNextContext) => {
   }
 
   return {
-    user,
+    userData,
     diariesData
   };
 };

@@ -13,8 +13,6 @@ export type DiaryState = Diary | null;
  * action types
  */
 export const CREATE_DRAFT = "CREATE_DRAFT";
-export const ADD_DIARY = "ADD_DIARY";
-export const TOGGLE_EDITING = "TOGGLE_EDITING";
 export const DELETE_DRAFT = "DELETE_DRAFT";
 
 interface CreateDraftAction {
