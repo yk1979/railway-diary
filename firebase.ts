@@ -1,4 +1,5 @@
 import "firebase/firestore";
+import "firebase/auth";
 
 import firebase from "firebase/app";
 
@@ -17,6 +18,5 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const firestore = firebase.firestore();
-
-export default firestore;
+export default firebase;
+export const firestore = firebase.firestore();

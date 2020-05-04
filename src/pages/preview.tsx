@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import firestore from "../../firebase";
+import { firestore } from "../../firebase";
 import Layout from "../components/Layout";
 import Preview from "../components/Preview";
 import { RootState } from "../store";

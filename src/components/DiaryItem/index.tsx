@@ -55,7 +55,7 @@ type DiaryItemProps = {
 };
 
 const DiaryItem = ({ diary, onEdit, onDelete }: DiaryItemProps) => {
-  const { id, title, body } = diary;
+  const { title, body } = diary;
 
   return (
     <>
