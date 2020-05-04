@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import { handleSignIn, handleSignOut } from "../../auth";
 import firebase, { firestore } from "../../firebase";
+import { handleSignIn, handleSignOut } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import DiaryItem from "../components/DiaryItem";
 import EditButton from "../components/EditButton";
