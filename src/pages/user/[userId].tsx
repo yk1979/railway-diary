@@ -4,23 +4,23 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import firebase, { firestore } from "../../firebase";
-import { handleSignIn, handleSignOut } from "../auth";
-import Button, { buttonTheme } from "../components/Button";
-import DiaryItem from "../components/DiaryItem";
-import EditButton from "../components/EditButton";
-import Heading from "../components/Heading";
-import Layout from "../components/Layout";
-import Modal from "../components/Modal";
+import firebase, { firestore } from "../../../firebase";
+import { handleSignIn, handleSignOut } from "../../auth";
+import Button, { buttonTheme } from "../../components/Button";
+import DiaryItem from "../../components/DiaryItem";
+import EditButton from "../../components/EditButton";
+import Heading from "../../components/Heading";
+import Layout from "../../components/Layout";
+import Modal from "../../components/Modal";
 import PageBottomNotifier, {
   NotifierStatus
-} from "../components/PageBottomNotifier";
-import BreakPoint from "../constants/BreakPoint";
-import { RootState } from "../store";
-import { createDraft } from "../store/diary/actions";
-import { Diary } from "../store/diary/types";
-import { userSignIn, userSignOut } from "../store/user/actions";
-import { UserState } from "../store/user/types";
+} from "../../components/PageBottomNotifier";
+import BreakPoint from "../../constants/BreakPoint";
+import { RootState } from "../../store";
+import { createDraft } from "../../store/diary/actions";
+import { Diary } from "../../store/diary/types";
+import { userSignIn, userSignOut } from "../../store/user/actions";
+import { UserState } from "../../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -58,24 +58,26 @@ type MyPageProps = {
   diariesData: Diary[];
 };
 
-const MyPage: NextPage<MyPageProps> = ({
+const UserPage: NextPage<MyPageProps> = ({
   userData,
   diariesData
 }: MyPageProps) => {
-  console.log("my page get initial props is fired");
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const [modalId, setModalId] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notifierStatus, setNotifierStatus] = useState("hidden");
   const [unsubscribeDb, setUnsubscribeDb] = useState<{
     [key: string]: (() => void) | undefined;
   }>({});
   const [diaries, setDiaries] = useState<Diary[]>(diariesData);
 
-  const addDbListener = () => {
-    const listener = firestore.collection("diaries").onSnapshot(
+  const [modalId, setModalId] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notifierStatus, setNotifierStatus] = useState("hidden");
+
+  const user = useSelector((state: RootState) => state.user);
+
+  const addDbListener = (userId: string) => {
+    const listener = firestore.collection(`users/${userId}/diaries`).onSnapshot(
       querySnapshot => {
         const res: Diary[] = [];
         querySnapshot.forEach(doc => {
@@ -99,7 +101,7 @@ const MyPage: NextPage<MyPageProps> = ({
     }
   };
 
-  const handleDeleteDiary = (id: string) => {
+  const handleOpenDeleteModal = (id: string) => {
     setModalId(id);
     setIsModalOpen(true);
   };
@@ -111,15 +113,12 @@ const MyPage: NextPage<MyPageProps> = ({
 
   useEffect(() => {
     if (userData) {
-      console.log("userData is exists");
-      addDbListener();
+      addDbListener(userData.uid);
       dispatch(userSignIn(userData));
     }
 
     firebase.auth().onAuthStateChanged(async currentUser => {
-      console.log("auth state changed");
       if (currentUser) {
-        console.log("current user is exists");
         const token = await currentUser.getIdToken();
         await fetch("/api/login", {
           method: "POST",
@@ -133,7 +132,7 @@ const MyPage: NextPage<MyPageProps> = ({
             name: currentUser.displayName
           })
         );
-        addDbListener();
+        addDbListener(currentUser.uid);
       } else {
         await fetch("/api/logout", {
           method: "POST",
@@ -145,12 +144,10 @@ const MyPage: NextPage<MyPageProps> = ({
     });
   }, []);
 
-  const isUserSignedIn = useSelector((state: RootState) => !!state.user);
-
   return (
     <StyledLayout>
       <Heading.Text1 text="てつどうの記録" />
-      {isUserSignedIn ? (
+      {user ? (
         <>
           {diaries.length > 0 ? (
             <DiaryList>
@@ -164,7 +161,7 @@ const MyPage: NextPage<MyPageProps> = ({
                     );
                     router.push("/edit");
                   }}
-                  onDelete={() => handleDeleteDiary(String(d.id))}
+                  onDelete={() => handleOpenDeleteModal(String(d.id))}
                 />
               ))}
             </DiaryList>
@@ -177,6 +174,12 @@ const MyPage: NextPage<MyPageProps> = ({
             isOpen={isModalOpen}
             onRequestClose={() => setIsModalOpen(false)}
             onAfterClose={handleAfterModalClose}
+            onDelete={async () => {
+              await firestore
+                .collection(`users/${user.uid}/diaries/`)
+                .doc(modalId)
+                .delete();
+            }}
           />
           <PageBottomNotifier
             text="日記を削除しました"
@@ -187,22 +190,25 @@ const MyPage: NextPage<MyPageProps> = ({
         <></>
       )}
       <StyledLoginButton
-        text={isUserSignedIn ? "ログアウトする" : "ログインする"}
-        onClick={() => (isUserSignedIn ? handleSignOut() : handleSignIn())}
-        theme={isUserSignedIn ? buttonTheme.back : buttonTheme.primary}
+        text={user ? "ログアウトする" : "ログインする"}
+        onClick={() => (user ? handleSignOut() : handleSignIn())}
+        theme={user ? buttonTheme.back : buttonTheme.primary}
       />
     </StyledLayout>
   );
 };
 
-MyPage.getInitialProps = async ({ req }: MyNextContext) => {
+UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
+  const { userId } = query;
   const token = req?.session?.decodedToken;
+
   const userData: UserState = token
     ? {
         uid: token.uid,
         name: token.name
       }
     : null;
+
   const diariesData: Diary[] = [];
 
   if (userData) {
@@ -210,7 +216,7 @@ MyPage.getInitialProps = async ({ req }: MyNextContext) => {
     try {
       const collections = await req?.firebaseServer
         .firestore()
-        .collection("diaries")
+        .collection(`users/${userData.name}/diaries`)
         .get();
       collections!.forEach(doc => {
         diariesData.push(doc.data() as Diary);
@@ -222,9 +228,10 @@ MyPage.getInitialProps = async ({ req }: MyNextContext) => {
   }
 
   return {
+    userId,
     userData,
     diariesData
   };
 };
 
-export default MyPage;
+export default UserPage;

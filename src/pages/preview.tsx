@@ -31,9 +31,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
           onSave={async () => {
             if (diary) {
               await firestore
-                .collection("users")
-                .doc(user?.name || "no name")
-                .collection("diaries")
+                .collection(`/users/${user?.name || "no name"}/diaries/`)
                 .doc(`${diary.id}`)
                 .set({
                   id: diary.id,
@@ -41,7 +39,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
                   body: diary.body
                 });
               dispatch(deleteDraft(diary.id));
-              router.push("/mypage");
+              router.push(`user/${user.uid}`);
             }
           }}
           onBack={() => {

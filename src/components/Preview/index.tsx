@@ -12,6 +12,7 @@ const Title = styled.div`
 const Body = styled.div`
   margin-top: 8px;
   padding: 8px;
+  white-space: pre-wrap;
   border: 1px solid ${Color.Border.Default};
 `;
 
