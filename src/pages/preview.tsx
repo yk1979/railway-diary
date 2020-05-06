@@ -24,14 +24,14 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
   const user = useSelector((state: RootState) => state.user) || userData;
 
   return (
-    <Layout>
+    <Layout userId={user ? user.uid : null}>
       {user ? (
         <Preview
           diary={diary}
           onSave={async () => {
             if (diary) {
               await firestore
-                .collection(`/users/${user?.name || "no name"}/diaries/`)
+                .collection(`/users/${user.uid}/diaries/`)
                 .doc(`${diary.id}`)
                 .set({
                   id: diary.id,
@@ -39,7 +39,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
                   body: diary.body
                 });
               dispatch(deleteDraft(diary.id));
-              router.push(`user/${user.uid}`);
+              router.push(`/user/${user.uid}`);
             }
           }}
           onBack={() => {

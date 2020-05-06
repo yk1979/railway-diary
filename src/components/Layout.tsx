@@ -20,16 +20,22 @@ const Container = styled.div`
   padding: 24px 16px;
 `;
 
-type Props = {
+type LayoutProps = {
+  userId: string | null;
+};
+
+type Props = LayoutProps & {
   className?: string;
   children: React.ReactNode;
 };
 
-const Layout = ({ children, className }: Props) => (
-  <StyledMain className={className}>
-    <Header />
-    <Container>{children}</Container>
-  </StyledMain>
-);
+const Layout = ({ userId, children, className }: Props) => {
+  return (
+    <StyledMain className={className}>
+      <Header userId={userId} />
+      <Container>{children}</Container>
+    </StyledMain>
+  );
+};
 
 export default Layout;

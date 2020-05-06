@@ -40,13 +40,17 @@ const MyPageLink = styled.a`
   }
 `;
 
-const Header = () => (
+type HeaderProps = {
+  userId: string | null;
+};
+
+const Header = ({ userId }: HeaderProps) => (
   <Root>
     <Inner>
       <Link href="/">
         <TopLink>てつどうダイアリー</TopLink>
       </Link>
-      <Link href="/mypage">
+      <Link href={`/user/${userId || "anonymous"}`}>
         <MyPageLink>
           <MdAccountCircle />
         </MyPageLink>

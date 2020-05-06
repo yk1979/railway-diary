@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import firebase from "../../firebase";
-import { handleSignIn, handleSignOut } from "../auth";
+import { handleSignIn } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
@@ -45,16 +45,15 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
   const dispatch = useDispatch();
   const diary = useSelector((state: RootState) => state.diary);
 
+  const user = useSelector((state: RootState) => state.user) || userData;
+
   useEffect(() => {
     if (userData) {
-      console.log("userData is exists");
       dispatch(userSignIn(userData));
     }
 
     firebase.auth().onAuthStateChanged(async currentUser => {
-      console.log("auth state changed");
       if (currentUser) {
-        console.log("current user is exists");
         const token = await currentUser.getIdToken();
         await fetch("/api/login", {
           method: "POST",
@@ -81,7 +80,7 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
   const isUserSignedIn = useSelector((state: RootState) => !!state.user);
 
   return (
-    <StyledLayout>
+    <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
       {isUserSignedIn ? (
         <StyledEditForm

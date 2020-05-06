@@ -53,15 +53,17 @@ const StyledLoginButton = styled(Button)`
   margin-top: 24px;
 `;
 
-type MyPageProps = {
-  userData: UserState;
+type UserPageProps = {
+  signedInUser: UserState;
+  userId: string;
   diariesData: Diary[];
 };
 
-const UserPage: NextPage<MyPageProps> = ({
-  userData,
+const UserPage: NextPage<UserPageProps> = ({
+  signedInUser,
+  userId,
   diariesData
-}: MyPageProps) => {
+}: UserPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -74,10 +76,10 @@ const UserPage: NextPage<MyPageProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
 
-  const user = useSelector((state: RootState) => state.user);
+  const user = useSelector((state: RootState) => state.user) || signedInUser;
 
-  const addDbListener = (userId: string) => {
-    const listener = firestore.collection(`users/${userId}/diaries`).onSnapshot(
+  const addDbListener = (id: string) => {
+    const listener = firestore.collection(`users/${id}/diaries`).onSnapshot(
       querySnapshot => {
         const res: Diary[] = [];
         querySnapshot.forEach(doc => {
@@ -112,9 +114,9 @@ const UserPage: NextPage<MyPageProps> = ({
   };
 
   useEffect(() => {
-    if (userData) {
-      addDbListener(userData.uid);
-      dispatch(userSignIn(userData));
+    if (signedInUser) {
+      addDbListener(userId);
+      dispatch(userSignIn(signedInUser));
     }
 
     firebase.auth().onAuthStateChanged(async currentUser => {
@@ -145,7 +147,7 @@ const UserPage: NextPage<MyPageProps> = ({
   }, []);
 
   return (
-    <StyledLayout>
+    <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうの記録" />
       {user ? (
         <>
@@ -199,10 +201,10 @@ const UserPage: NextPage<MyPageProps> = ({
 };
 
 UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
-  const { userId } = query;
+  const userId = query.userId as string;
   const token = req?.session?.decodedToken;
 
-  const userData: UserState = token
+  const signedInUser: UserState = token
     ? {
         uid: token.uid,
         name: token.name
@@ -211,12 +213,12 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
 
   const diariesData: Diary[] = [];
 
-  if (userData) {
+  if (signedInUser) {
     // eslint-disable-next-line no-unused-expressions
     try {
       const collections = await req?.firebaseServer
         .firestore()
-        .collection(`users/${userData.name}/diaries`)
+        .collection(`users/${userId}/diaries`)
         .get();
       collections!.forEach(doc => {
         diariesData.push(doc.data() as Diary);
@@ -228,8 +230,8 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
   }
 
   return {
+    signedInUser,
     userId,
-    userData,
     diariesData
   };
 };
