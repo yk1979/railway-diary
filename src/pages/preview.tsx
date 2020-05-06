@@ -30,8 +30,13 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
           diary={diary}
           onSave={async () => {
             if (diary) {
+              // TODO まとめて
               await firestore
-                .collection(`/users/${user.uid}/diaries/`)
+                .collection(`/users/`)
+                .doc(user.uid)
+                .set({ name: user.name });
+              await firestore
+                .collection(`/users/${user.uid}/diaries`)
                 .doc(`${diary.id}`)
                 .set({
                   id: diary.id,
@@ -39,6 +44,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
                   body: diary.body
                 });
               dispatch(deleteDraft(diary.id));
+              // TODO ローディング処理
               router.push(`/user/${user.uid}`);
             }
           }}
@@ -56,7 +62,6 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
 export default PreviewPage;
 
 PreviewPage.getInitialProps = async ({ req }: MyNextContext) => {
-  console.log("edit page get initial props is fired");
   const token = req?.session?.decodedToken;
   const userData: UserState = token
     ? {

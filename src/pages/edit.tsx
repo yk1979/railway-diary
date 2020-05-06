@@ -77,12 +77,10 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
     });
   }, []);
 
-  const isUserSignedIn = useSelector((state: RootState) => !!state.user);
-
   return (
     <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
-      {isUserSignedIn ? (
+      {user ? (
         <StyledEditForm
           diary={diary}
           onSubmit={(title, body) => {
@@ -111,7 +109,6 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
 };
 
 EditPage.getInitialProps = async ({ req }: MyNextContext) => {
-  console.log("edit page get initial props is fired");
   const token = req?.session?.decodedToken;
   const userData: UserState = token
     ? {

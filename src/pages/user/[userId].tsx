@@ -55,13 +55,16 @@ const StyledLoginButton = styled(Button)`
 
 type UserPageProps = {
   signedInUser: UserState;
-  userId: string;
+  userData: {
+    uid: string;
+    name: string;
+  };
   diariesData: Diary[];
 };
 
 const UserPage: NextPage<UserPageProps> = ({
   signedInUser,
-  userId,
+  userData,
   diariesData
 }: UserPageProps) => {
   const router = useRouter();
@@ -115,7 +118,7 @@ const UserPage: NextPage<UserPageProps> = ({
 
   useEffect(() => {
     if (signedInUser) {
-      addDbListener(userId);
+      addDbListener(userData.uid);
       dispatch(userSignIn(signedInUser));
     }
 
@@ -134,7 +137,7 @@ const UserPage: NextPage<UserPageProps> = ({
             name: currentUser.displayName
           })
         );
-        addDbListener(currentUser.uid);
+        addDbListener(userData.uid);
       } else {
         await fetch("/api/logout", {
           method: "POST",
@@ -148,9 +151,9 @@ const UserPage: NextPage<UserPageProps> = ({
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
-      <Heading.Text1 text="てつどうの記録" />
-      {user ? (
+      {user && (
         <>
+          <Heading.Text1 text={`${userData.name} さんの てつどうの記録`} />
           {diaries.length > 0 ? (
             <DiaryList>
               {diaries.map(d => (
@@ -178,7 +181,7 @@ const UserPage: NextPage<UserPageProps> = ({
             onAfterClose={handleAfterModalClose}
             onDelete={async () => {
               await firestore
-                .collection(`users/${user.uid}/diaries/`)
+                .collection(`users/${userData.uid}/diaries/`)
                 .doc(modalId)
                 .delete();
             }}
@@ -188,8 +191,6 @@ const UserPage: NextPage<UserPageProps> = ({
             status={notifierStatus as NotifierStatus}
           />
         </>
-      ) : (
-        <></>
       )}
       <StyledLoginButton
         text={user ? "ログアウトする" : "ログインする"}
@@ -211,18 +212,32 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
       }
     : null;
 
+  const userData = {
+    uid: userId,
+    name: ""
+  };
+
   const diariesData: Diary[] = [];
 
   if (signedInUser) {
     // eslint-disable-next-line no-unused-expressions
     try {
-      const collections = await req?.firebaseServer
+      userData.name = await req?.firebaseServer
+        .firestore()
+        .collection(`users`)
+        .doc(userId)
+        .get()
+        .then(doc => doc.data())
+        .then(res => res?.name);
+      await req?.firebaseServer
         .firestore()
         .collection(`users/${userId}/diaries`)
-        .get();
-      collections!.forEach(doc => {
-        diariesData.push(doc.data() as Diary);
-      });
+        .get()
+        .then(collections => {
+          collections.forEach(doc => {
+            diariesData.push(doc.data() as Diary);
+          });
+        });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
@@ -231,7 +246,7 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
 
   return {
     signedInUser,
-    userId,
+    userData,
     diariesData
   };
 };
