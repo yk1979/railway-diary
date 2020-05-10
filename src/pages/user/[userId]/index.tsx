@@ -4,22 +4,22 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import { firestore } from "../../../firebase";
-import Button, { buttonTheme } from "../../components/Button";
-import DiaryCard from "../../components/DiaryCard";
-import EditButton from "../../components/EditButton";
-import Heading from "../../components/Heading";
-import Layout from "../../components/Layout";
-import Modal from "../../components/Modal";
+import { firestore } from "../../../../firebase";
+import Button, { buttonTheme } from "../../../components/Button";
+import DiaryCard from "../../../components/DiaryCard";
+import EditButton from "../../../components/EditButton";
+import Heading from "../../../components/Heading";
+import Layout from "../../../components/Layout";
+import Modal from "../../../components/Modal";
 import PageBottomNotifier, {
   NotifierStatus
-} from "../../components/PageBottomNotifier";
-import BreakPoint from "../../constants/BreakPoint";
-import { RootState } from "../../store";
-import { createDraft } from "../../store/diary/actions";
-import { Diary } from "../../store/diary/types";
-import { userSignIn, userSignOut } from "../../store/user/actions";
-import { UserState } from "../../store/user/types";
+} from "../../../components/PageBottomNotifier";
+import BreakPoint from "../../../constants/BreakPoint";
+import { RootState } from "../../../store";
+import { createDraft } from "../../../store/diary/actions";
+import { Diary } from "../../../store/diary/types";
+import { userSignIn, userSignOut } from "../../../store/user/actions";
+import { UserState } from "../../../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -201,7 +201,6 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
   const diariesData: Diary[] = [];
 
   if (signedInUser) {
-    // eslint-disable-next-line no-unused-expressions
     try {
       author.name = await req?.firebaseServer
         .firestore()

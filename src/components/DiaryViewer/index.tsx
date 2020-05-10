@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import Color from "../../constants/Color";
-import { DiaryState } from "../../store/diary/types";
+import { Diary } from "../../store/diary/types";
 import Button, { buttonTheme } from "../Button";
 
 const Title = styled.div`
@@ -25,43 +25,34 @@ const BackButton = styled(Button)`
 `;
 
 export type PreviewProps = {
-  diary: DiaryState;
-  onSave: () => Promise<void>;
-  onBack: () => void;
+  diary: Diary;
+  controller?: {
+    onSave: () => Promise<void>;
+    onBack: () => void;
+  };
 };
 
-const Preview = ({ diary, onSave, onBack }: PreviewProps) => {
+const DiaryViewer = ({ diary, controller }: PreviewProps) => {
   return (
     <form>
-      {diary ? (
+      <Title>{diary.title}</Title>
+      <Body>{diary.body}</Body>
+      {controller && (
         <>
-          <Title>{diary.title}</Title>
-          <Body>{diary.body}</Body>
           <SubmitButton
             text="きろくする"
             onClick={(e: Event) => {
               e.preventDefault();
-              onSave();
+              controller.onSave();
             }}
           />
           <BackButton
             text="もどる"
             onClick={(e: Event) => {
               e.preventDefault();
-              onBack();
+              controller.onBack();
             }}
             theme={buttonTheme.back}
-          />
-        </>
-      ) : (
-        <>
-          <div>編集中の日記はありません</div>
-          <BackButton
-            text="日記を書く"
-            onClick={(e: Event) => {
-              e.preventDefault();
-              onBack();
-            }}
           />
         </>
       )}
@@ -69,4 +60,4 @@ const Preview = ({ diary, onSave, onBack }: PreviewProps) => {
   );
 };
 
-export default Preview;
+export default DiaryViewer;

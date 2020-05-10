@@ -63,22 +63,20 @@ const DiaryCard = ({
   const { title, body } = diary;
 
   return (
-    <>
-      <Root>
-        <Title>{title}</Title>
-        <Body>{body}</Body>
-        {isControllable && (
-          <Controller>
-            <ActionButton onClick={onEdit}>
-              <MdModeEdit />
-            </ActionButton>
-            <ActionButton onClick={onDelete}>
-              <MdDelete />
-            </ActionButton>
-          </Controller>
-        )}
-      </Root>
-    </>
+    <Root>
+      <Title>{title}</Title>
+      <Body>{body}</Body>
+      {isControllable && (
+        <Controller>
+          <ActionButton onClick={onEdit}>
+            <MdModeEdit />
+          </ActionButton>
+          <ActionButton onClick={onDelete}>
+            <MdDelete />
+          </ActionButton>
+        </Controller>
+      )}
+    </Root>
   );
 };
 
