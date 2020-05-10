@@ -51,36 +51,12 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
     if (userData) {
       dispatch(userSignIn(userData));
     }
-
-    firebase.auth().onAuthStateChanged(async currentUser => {
-      if (currentUser) {
-        const token = await currentUser.getIdToken();
-        await fetch("/api/login", {
-          method: "POST",
-          headers: new Headers({ "Content-Type": "application/json" }),
-          credentials: "same-origin",
-          body: JSON.stringify({ token })
-        });
-        dispatch(
-          userSignIn({
-            uid: currentUser.uid,
-            name: currentUser.displayName
-          })
-        );
-      } else {
-        await fetch("/api/logout", {
-          method: "POST",
-          credentials: "same-origin"
-        });
-        dispatch(userSignOut());
-      }
-    });
   }, []);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
-      {user ? (
+      {user && (
         <StyledEditForm
           diary={diary}
           onSubmit={(title, body) => {
@@ -94,15 +70,6 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
             }
           }}
         />
-      ) : (
-        <>
-          <Text>ログインして てつどうを記録しましょう</Text>
-          <StyledLoginButton
-            text="ログインする"
-            onClick={handleSignIn}
-            theme={buttonTheme.primary}
-          />
-        </>
       )}
     </StyledLayout>
   );

@@ -45,6 +45,16 @@ app.prepare().then(() => {
     next();
   });
 
+  // TODO すべてのページで未ログイン状態ならloginページにリダイレクトさせて、ログイン後は元のリクエストページに戻したい
+  // /\/(?!login)/ でログインページ以外のパスに引っ掛けようとしたけど、パスが"/login"の時も引っかかっちゃってうまくいかず
+  server.get(["/", "/edit", "/preview", "/user/:userId"], (req, res, next) => {
+    if (req?.session?.decodedToken) {
+      next();
+    } else {
+      res.redirect("/login");
+    }
+  });
+
   server.post("/api/login", async (req, res) => {
     if (!req.body) res.sendStatus(400);
 
@@ -60,6 +70,7 @@ app.prepare().then(() => {
 
   server.post("/api/logout", (req, res) => {
     req.session!.decodedToken = null;
+    console.log("deleted decodedToken", req.session!.decodedToken);
     res.json({ status: true });
   });
 

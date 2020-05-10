@@ -54,7 +54,16 @@ const Preview = ({ diary, onSave, onBack }: PreviewProps) => {
           />
         </>
       ) : (
-        <div>編集中の日記はありません</div>
+        <>
+          <div>編集中の日記はありません</div>
+          <BackButton
+            text="日記を書く"
+            onClick={(e: Event) => {
+              e.preventDefault();
+              onBack();
+            }}
+          />
+        </>
       )}
     </form>
   );

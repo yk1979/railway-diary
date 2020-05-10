@@ -25,6 +25,7 @@ const Inner = styled.div`
 
 const TopLink = styled.a`
   display: inline-block;
+  color: ${Color.Text.White};
 `;
 
 const MyPageLink = styled.a`
@@ -47,14 +48,14 @@ type HeaderProps = {
 const Header = ({ userId }: HeaderProps) => (
   <Root>
     <Inner>
-      <Link href="/">
-        <TopLink>てつどうダイアリー</TopLink>
-      </Link>
-      <Link href={`/user/${userId || "anonymous"}`}>
-        <MyPageLink>
-          <MdAccountCircle />
-        </MyPageLink>
-      </Link>
+      <TopLink href="/">てつどうダイアリー</TopLink>
+      {userId && (
+        <Link href={`/user/${userId}`}>
+          <MyPageLink>
+            <MdAccountCircle />
+          </MyPageLink>
+        </Link>
+      )}
     </Inner>
   </Root>
 );

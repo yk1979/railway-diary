@@ -24,6 +24,7 @@ export const Base = styled.button`
   background: ${({ theme }) => theme.background};
   border: none;
   border-radius: 6px;
+  cursor: pointer;
 `;
 
 type ButtonBaseProps = {

@@ -1,6 +1,6 @@
 import { MyNextContext, NextPage } from "next";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { firestore } from "../../firebase";
@@ -8,6 +8,7 @@ import Layout from "../components/Layout";
 import Preview from "../components/Preview";
 import { RootState } from "../store";
 import { deleteDraft } from "../store/diary/actions";
+import { userSignIn } from "../store/user/actions";
 import { UserState } from "../store/user/types";
 
 type PreviewPageProps = {
@@ -20,6 +21,12 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const diary = useSelector((state: RootState) => state.diary);
+
+  useEffect(() => {
+    if (userData) {
+      dispatch(userSignIn(userData));
+    }
+  }, []);
 
   const user = useSelector((state: RootState) => state.user) || userData;
 
@@ -46,6 +53,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
               dispatch(deleteDraft(diary.id));
               // TODO ローディング処理
               router.push(`/user/${user.uid}`);
+              router.push("/edit");
             }
           }}
           onBack={() => {
@@ -53,7 +61,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
           }}
         />
       ) : (
-        <p>あれれ？何かがおかしいですよこれ</p>
+        router.push("/edit")
       )}
     </Layout>
   );

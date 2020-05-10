@@ -55,7 +55,7 @@ const StyledLoginButton = styled(Button)`
 
 type UserPageProps = {
   signedInUser: UserState;
-  userData: {
+  author: {
     uid: string;
     name: string;
   };
@@ -64,7 +64,7 @@ type UserPageProps = {
 
 const UserPage: NextPage<UserPageProps> = ({
   signedInUser,
-  userData,
+  author,
   diariesData
 }: UserPageProps) => {
   const router = useRouter();
@@ -117,43 +117,20 @@ const UserPage: NextPage<UserPageProps> = ({
   };
 
   useEffect(() => {
-    if (signedInUser) {
-      addDbListener(userData.uid);
-      dispatch(userSignIn(signedInUser));
+    if (user) {
+      addDbListener(author.uid);
+      dispatch(userSignIn(user));
+    } else {
+      removeDbListener();
+      dispatch(userSignOut());
     }
-
-    firebase.auth().onAuthStateChanged(async currentUser => {
-      if (currentUser) {
-        const token = await currentUser.getIdToken();
-        await fetch("/api/login", {
-          method: "POST",
-          headers: new Headers({ "Content-Type": "application/json" }),
-          credentials: "same-origin",
-          body: JSON.stringify({ token })
-        });
-        dispatch(
-          userSignIn({
-            uid: currentUser.uid,
-            name: currentUser.displayName
-          })
-        );
-        addDbListener(userData.uid);
-      } else {
-        await fetch("/api/logout", {
-          method: "POST",
-          credentials: "same-origin"
-        });
-        dispatch(userSignOut());
-        removeDbListener();
-      }
-    });
-  }, []);
+  }, [user?.uid]);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
       {user && (
         <>
-          <Heading.Text1 text={`${userData.name} さんの てつどうの記録`} />
+          <Heading.Text1 text={`${author.name} さんの てつどうの記録`} />
           {diaries.length > 0 ? (
             <DiaryList>
               {diaries.map(d => (
@@ -181,7 +158,7 @@ const UserPage: NextPage<UserPageProps> = ({
             onAfterClose={handleAfterModalClose}
             onDelete={async () => {
               await firestore
-                .collection(`users/${userData.uid}/diaries/`)
+                .collection(`users/${author.uid}/diaries/`)
                 .doc(modalId)
                 .delete();
             }}
@@ -192,11 +169,15 @@ const UserPage: NextPage<UserPageProps> = ({
           />
         </>
       )}
-      <StyledLoginButton
-        text={user ? "ログアウトする" : "ログインする"}
-        onClick={() => (user ? handleSignOut() : handleSignIn())}
-        theme={user ? buttonTheme.back : buttonTheme.primary}
-      />
+      {user?.uid === author.uid && (
+        <StyledLoginButton
+          text="ログアウトする"
+          onClick={() => {
+            window.location.href = "/login";
+          }}
+          theme={buttonTheme.back}
+        />
+      )}
     </StyledLayout>
   );
 };
@@ -212,7 +193,7 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
       }
     : null;
 
-  const userData = {
+  const author = {
     uid: userId,
     name: ""
   };
@@ -222,7 +203,7 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
   if (signedInUser) {
     // eslint-disable-next-line no-unused-expressions
     try {
-      userData.name = await req?.firebaseServer
+      author.name = await req?.firebaseServer
         .firestore()
         .collection(`users`)
         .doc(userId)
@@ -246,7 +227,7 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
 
   return {
     signedInUser,
-    userData,
+    author,
     diariesData
   };
 };

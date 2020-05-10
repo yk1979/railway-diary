@@ -1,12 +1,13 @@
 import { MyNextContext, NextPage } from "next";
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
 import { RootState } from "../store";
+import { userSignIn } from "../store/user/actions";
 import { UserState } from "../store/user/types";
 
 const StyledEditButton = styled(EditButton)`
@@ -20,6 +21,13 @@ type IndexPageProps = {
 };
 
 const IndexPage: NextPage<IndexPageProps> = ({ userData }: IndexPageProps) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (userData) {
+      dispatch(userSignIn(userData));
+    }
+  }, []);
+
   const user = useSelector((state: RootState) => state.user) || userData;
 
   return (
