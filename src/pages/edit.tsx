@@ -4,15 +4,12 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import firebase from "../../firebase";
-import { handleSignIn } from "../auth";
-import Button, { buttonTheme } from "../components/Button";
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
 import { RootState } from "../store";
 import { createDraft } from "../store/diary/actions";
-import { userSignIn, userSignOut } from "../store/user/actions";
+import { userSignIn } from "../store/user/actions";
 import { UserState } from "../store/user/types";
 
 const StyledLayout = styled(Layout)`
@@ -24,15 +21,6 @@ const StyledLayout = styled(Layout)`
 
 const StyledEditForm = styled(EditForm)`
   flex: 1;
-  margin-top: 24px;
-`;
-
-const Text = styled.p`
-  margin-top: 32px;
-  text-align: center;
-`;
-
-const StyledLoginButton = styled(Button)`
   margin-top: 24px;
 `;
 

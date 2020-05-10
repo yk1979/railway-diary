@@ -70,7 +70,6 @@ app.prepare().then(() => {
 
   server.post("/api/logout", (req, res) => {
     req.session!.decodedToken = null;
-    console.log("deleted decodedToken", req.session!.decodedToken);
     res.json({ status: true });
   });
 

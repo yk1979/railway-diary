@@ -4,10 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import firebase, { firestore } from "../../../firebase";
-import { handleSignIn, handleSignOut } from "../../auth";
+import { firestore } from "../../../firebase";
 import Button, { buttonTheme } from "../../components/Button";
-import DiaryItem from "../../components/DiaryItem";
+import DiaryCard from "../../components/DiaryCard";
 import EditButton from "../../components/EditButton";
 import Heading from "../../components/Heading";
 import Layout from "../../components/Layout";
@@ -134,9 +133,10 @@ const UserPage: NextPage<UserPageProps> = ({
           {diaries.length > 0 ? (
             <DiaryList>
               {diaries.map(d => (
-                <DiaryItem
+                <DiaryCard
                   key={d.id}
                   diary={d}
+                  isControllable={user?.uid === author.uid}
                   onEdit={() => {
                     dispatch(
                       createDraft({ id: d.id, title: d.title, body: d.body })

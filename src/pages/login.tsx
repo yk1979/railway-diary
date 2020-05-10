@@ -1,5 +1,4 @@
 import { MyNextContext } from "next";
-import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -99,7 +98,6 @@ const LoginPage = ({ userData }: LoginPageProps) => {
 
 LoginPage.getInitialProps = ({ req }: MyNextContext) => {
   const token = req?.session?.decodedToken;
-  console.log(token);
 
   const userData = token
     ? {
