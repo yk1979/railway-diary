@@ -49,7 +49,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
                   await firestore
                     .collection(`/users/`)
                     .doc(user.uid)
-                    .set({ name: user.name });
+                    .set({ name: user.name, picture: user.picture });
                   await firestore
                     .collection(`/users/${user.uid}/diaries`)
                     .doc(`${diary.id}`)
@@ -91,7 +91,8 @@ PreviewPage.getInitialProps = async ({ req }: MyNextContext) => {
   const userData: UserState = token
     ? {
         uid: token.uid,
-        name: token.name
+        name: token.name,
+        picture: token.picture
       }
     : null;
 

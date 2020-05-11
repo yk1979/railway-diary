@@ -5,7 +5,8 @@ import { Diary } from "../../store/diary/types";
 import Button, { buttonTheme } from "../Button";
 
 const Title = styled.div`
-  font-size: 2rem;
+  font-weight: bold;
+  font-size: 3.2rem;
 `;
 
 const Body = styled.div`
@@ -29,9 +30,13 @@ export type PreviewProps = {
   };
 };
 
-const DiaryViewer = ({ diary, controller }: PreviewProps) => {
+type Props = PreviewProps & {
+  className?: string;
+};
+
+const DiaryViewer = ({ diary, controller, className }: Props) => {
   return (
-    <form>
+    <div className={className}>
       <Title>{diary.title}</Title>
       <Body>{diary.body}</Body>
       {controller && (
@@ -53,7 +58,7 @@ const DiaryViewer = ({ diary, controller }: PreviewProps) => {
           />
         </>
       )}
-    </form>
+    </div>
   );
 };
 

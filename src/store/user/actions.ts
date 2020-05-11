@@ -3,10 +3,11 @@ import { User, USER_SIGN_IN, USER_SIGN_OUT, UserActionTypes } from "./types";
 /**
  * action creators
  */
-export const userSignIn = ({ uid, name }: User): UserActionTypes => ({
+export const userSignIn = ({ uid, name, picture }: User): UserActionTypes => ({
   type: USER_SIGN_IN,
   uid,
-  name
+  name,
+  picture
 });
 
 export const userSignOut = (): UserActionTypes => ({

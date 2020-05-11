@@ -5,24 +5,18 @@ import styled from "styled-components";
 
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
-import Color from "../../../../constants/Color";
+import UserProfile from "../../../../components/UserProfile";
 import { RootState } from "../../../../store";
 import { Diary } from "../../../../store/diary/types";
-import { UserState } from "../../../../store/user/types";
+import { User, UserState } from "../../../../store/user/types";
 
-const Link = styled.a`
-  display: block;
-  margin-top: 32px;
-  padding-top: 8px;
-  border-top: 1px solid ${Color.Border.Default};
+const StyledDiaryViewer = styled(DiaryViewer)`
+  margin-top: 24px;
 `;
 
 type UserDiaryPageProps = {
   signedInUser: UserState;
-  author: {
-    uid: string;
-    name: string;
-  };
+  author: User;
   diary: Diary;
 };
 
@@ -35,9 +29,15 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
 
   return (
     <Layout userId={user ? user.uid : null}>
-      <DiaryViewer diary={diary} />
-      {/* TODO アイコン情報も入れてコンポーネント化したい */}
-      <Link href={`/user/${author.uid}/`}>{author.name}</Link>
+      <UserProfile
+        userName={author.name || "unknown"}
+        thumbnail={author.picture}
+        info={{
+          text: "更新日が入ります",
+          as: "time"
+        }}
+      />
+      <StyledDiaryViewer diary={diary} />
     </Layout>
   );
 };
@@ -51,24 +51,29 @@ UserDiaryPage.getInitialProps = async ({ req, res, query }: MyNextContext) => {
   const signedInUser: UserState = token
     ? {
         uid: token.uid,
-        name: token.name
+        name: token.name,
+        picture: token.picture
       }
     : null;
 
   const author = {
     uid: userId,
-    name: ""
+    name: "",
+    picture: ""
   };
 
   if (signedInUser) {
     try {
-      author.name = await req?.firebaseServer
+      await req?.firebaseServer
         .firestore()
         .collection(`users`)
         .doc(userId)
         .get()
         .then(doc => doc.data())
-        .then(response => response?.name);
+        .then(response => {
+          author.name = response?.name;
+          author.picture = response?.picture;
+        });
       const diaryData = await req?.firebaseServer
         .firestore()
         .collection(`users/${userId}/diaries/`)

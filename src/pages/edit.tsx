@@ -68,7 +68,8 @@ EditPage.getInitialProps = async ({ req }: MyNextContext) => {
   const userData: UserState = token
     ? {
         uid: token.uid,
-        name: token.name
+        name: token.name,
+        picture: token.picture
       }
     : null;
 
