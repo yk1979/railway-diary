@@ -5,8 +5,6 @@ import styled from "styled-components";
 import { Diary } from "../../store/diary/types";
 
 const Root = styled.div`
-  display: flex;
-  flex-direction: column;
   height: 143px;
   padding: 8px;
   border-radius: 4px;
@@ -28,6 +26,7 @@ const Body = styled.p`
   font-size: 1.4rem;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  white-space: pre-wrap;
 `;
 
 const Controller = styled.div`
@@ -48,13 +47,19 @@ const ActionButton = styled.button`
   }
 `;
 
-type DiaryItemProps = {
+type DiaryCardProps = {
   diary: Diary;
+  isControllable: boolean;
   onEdit: () => void;
   onDelete: () => void;
 };
 
-const DiaryItem = ({ diary, onEdit, onDelete }: DiaryItemProps) => {
+const DiaryCard = ({
+  diary,
+  isControllable,
+  onEdit,
+  onDelete
+}: DiaryCardProps) => {
   const { title, body } = diary;
 
   return (
@@ -62,17 +67,19 @@ const DiaryItem = ({ diary, onEdit, onDelete }: DiaryItemProps) => {
       <Root>
         <Title>{title}</Title>
         <Body>{body}</Body>
-        <Controller>
-          <ActionButton onClick={onEdit}>
-            <MdModeEdit />
-          </ActionButton>
-          <ActionButton onClick={onDelete}>
-            <MdDelete />
-          </ActionButton>
-        </Controller>
+        {isControllable && (
+          <Controller>
+            <ActionButton onClick={onEdit}>
+              <MdModeEdit />
+            </ActionButton>
+            <ActionButton onClick={onDelete}>
+              <MdDelete />
+            </ActionButton>
+          </Controller>
+        )}
       </Root>
     </>
   );
 };
 
-export default DiaryItem;
+export default DiaryCard;

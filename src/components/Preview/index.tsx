@@ -12,6 +12,7 @@ const Title = styled.div`
 const Body = styled.div`
   margin-top: 8px;
   padding: 8px;
+  white-space: pre-wrap;
   border: 1px solid ${Color.Border.Default};
 `;
 
@@ -53,7 +54,16 @@ const Preview = ({ diary, onSave, onBack }: PreviewProps) => {
           />
         </>
       ) : (
-        <div>編集中の日記はありません</div>
+        <>
+          <div>編集中の日記はありません</div>
+          <BackButton
+            text="日記を書く"
+            onClick={(e: Event) => {
+              e.preventDefault();
+              onBack();
+            }}
+          />
+        </>
       )}
     </form>
   );

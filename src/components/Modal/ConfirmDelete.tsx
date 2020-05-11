@@ -43,13 +43,15 @@ type ConfirmDeleteProps = {
   isOpen: boolean;
   onRequestClose: () => void;
   onAfterClose: () => void;
+  onDelete: () => void;
 };
 
 const ConfirmDelete = ({
   id,
   isOpen,
   onRequestClose,
-  onAfterClose
+  onAfterClose,
+  onDelete
 }: ConfirmDeleteProps) => {
   const [deleteFlag, setDeleteFlag] = useState(false);
   return (
@@ -68,11 +70,8 @@ const ConfirmDelete = ({
       <ButtonWrapper>
         <StyledButton
           text="削除する"
-          onClick={async () => {
-            await firestore
-              .collection("diaries")
-              .doc(id)
-              .delete();
+          onClick={() => {
+            onDelete();
             setDeleteFlag(true);
             onRequestClose();
           }}
