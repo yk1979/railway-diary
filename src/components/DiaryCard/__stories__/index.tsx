@@ -25,11 +25,17 @@ export const Default = () => {
   return (
     <DiaryItem
       diary={{ id: 1, title, body }}
+      isControllable
       onEdit={() => {}}
       onDelete={() => {}}
     />
   );
 };
 export const ClampedBody = () => (
-  <DiaryItem diary={diary} onEdit={() => {}} onDelete={() => {}} />
+  <DiaryItem
+    diary={diary}
+    isControllable
+    onEdit={() => {}}
+    onDelete={() => {}}
+  />
 );
