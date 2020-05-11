@@ -8,7 +8,6 @@ import Color from "../../constants/Color";
 
 const Root = styled.header`
   padding: 8px;
-  color: ${Color.Text.White};
   font-weight: bold;
   font-size: 2.4rem;
   font-family: "corporate-logo", sans-serif;
@@ -38,6 +37,7 @@ const MyPageLink = styled.a`
   > svg {
     width: 100%;
     height: 100%;
+    color: ${Color.Text.White};
   }
 `;
 

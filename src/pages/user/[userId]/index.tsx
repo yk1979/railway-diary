@@ -136,14 +136,24 @@ const UserPage: NextPage<UserPageProps> = ({
                 <DiaryCard
                   key={d.id}
                   diary={d}
-                  isControllable={user?.uid === author.uid}
-                  onEdit={() => {
-                    dispatch(
-                      createDraft({ id: d.id, title: d.title, body: d.body })
-                    );
-                    router.push("/edit");
-                  }}
-                  onDelete={() => handleOpenDeleteModal(String(d.id))}
+                  url={`/user/${author.uid}/diary/${d.id}`}
+                  controller={
+                    user?.uid === author.uid
+                      ? {
+                          onEdit: () => {
+                            dispatch(
+                              createDraft({
+                                id: d.id,
+                                title: d.title,
+                                body: d.body
+                              })
+                            );
+                            router.push("/edit");
+                          },
+                          onDelete: () => handleOpenDeleteModal(String(d.id))
+                        }
+                      : undefined
+                  }
                 />
               ))}
             </DiaryList>

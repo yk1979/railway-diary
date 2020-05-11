@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-import Color from "../../constants/Color";
 import { Diary } from "../../store/diary/types";
 import Button, { buttonTheme } from "../Button";
 
@@ -10,10 +9,8 @@ const Title = styled.div`
 `;
 
 const Body = styled.div`
-  margin-top: 8px;
-  padding: 8px;
+  margin-top: 16px;
   white-space: pre-wrap;
-  border: 1px solid ${Color.Border.Default};
 `;
 
 const SubmitButton = styled(Button)`

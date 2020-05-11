@@ -5,10 +5,17 @@ import styled from "styled-components";
 import { Diary } from "../../store/diary/types";
 
 const Root = styled.div`
+  display: flex;
+  flex-direction: column;
   height: 143px;
   padding: 8px;
   border-radius: 4px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+`;
+
+const Link = styled.a`
+  display: block;
+  flex: 1 0 0%;
 `;
 
 const Title = styled.div`
@@ -49,29 +56,28 @@ const ActionButton = styled.button`
 
 type DiaryCardProps = {
   diary: Diary;
-  isControllable: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
+  url: string;
+  controller?: {
+    onEdit: () => void;
+    onDelete: () => void;
+  };
 };
 
-const DiaryCard = ({
-  diary,
-  isControllable,
-  onEdit,
-  onDelete
-}: DiaryCardProps) => {
+const DiaryCard = ({ diary, url, controller }: DiaryCardProps) => {
   const { title, body } = diary;
 
   return (
     <Root>
-      <Title>{title}</Title>
-      <Body>{body}</Body>
-      {isControllable && (
+      <Link href={url}>
+        <Title>{title}</Title>
+        <Body>{body}</Body>
+      </Link>
+      {controller && (
         <Controller>
-          <ActionButton onClick={onEdit}>
+          <ActionButton onClick={controller.onEdit}>
             <MdModeEdit />
           </ActionButton>
-          <ActionButton onClick={onDelete}>
+          <ActionButton onClick={controller.onDelete}>
             <MdDelete />
           </ActionButton>
         </Controller>
