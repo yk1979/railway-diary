@@ -2,5 +2,5 @@ export type Diary = {
   id: string;
   title: string;
   body: string;
-  lastEdited: Date;
+  lastEdited: string;
 };

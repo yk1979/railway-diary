@@ -34,9 +34,9 @@ const Text = styled.span`
 type UserProfileProps = {
   userName: string;
   thumbnail: string;
-  info: {
+  info?: {
     text: string | Date;
-    date?: Date;
+    date?: string;
   };
 };
 
@@ -49,13 +49,14 @@ const UserProfile = ({ userName, thumbnail, info, className }: Props) => (
     <UserThumbnail src={thumbnail} />
     <Inner>
       <UserName>{userName}</UserName>
-      {info.date ? (
-        <Text as="time" dateTime={String(info.date)}>
-          {info.text}
-        </Text>
-      ) : (
-        <Text>{info.text}</Text>
-      )}
+      {info &&
+        (info.date ? (
+          <Text as="time" dateTime={info.date}>
+            {info.text}
+          </Text>
+        ) : (
+          <Text>{info.text}</Text>
+        ))}
     </Inner>
   </Root>
 );

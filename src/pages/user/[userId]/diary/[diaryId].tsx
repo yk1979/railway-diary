@@ -1,5 +1,6 @@
-import format from "date-fns/format";
+import { format, utcToZonedTime } from "date-fns-tz";
 import fromUnixTime from "date-fns/fromUnixTime";
+import parseISO from "date-fns/parseISO";
 import { MyNextContext, NextPage } from "next";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -28,14 +29,15 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   diary
 }: UserDiaryPageProps) => {
   const user = useSelector((state: RootState) => state.user) || signedInUser;
-  console.log(typeof diary.lastEdited);
   return (
     <Layout userId={user ? user.uid : null}>
       <UserProfile
         userName={author.name || "unknown"}
         thumbnail={author.picture}
         info={{
-          text: format(new Date(diary.lastEdited), "yyyy-MM-dd hh:mm"),
+          text: format(parseISO(diary.lastEdited), "yyyy-MM-dd hh:mm", {
+            timeZone: "Asia/Tokyo"
+          }),
           date: diary.lastEdited
         }}
       />
@@ -84,14 +86,16 @@ UserDiaryPage.getInitialProps = async ({ req, res, query }: MyNextContext) => {
         .then((doc): Diary | undefined => {
           const data = doc.data();
           if (!data) return undefined;
-          console.log(data.lastEdited);
           return {
             id: data.id,
             title: data.title,
             body: data.body,
             // TODO タイムゾーンを日本に変更
             // eslint-disable-next-line no-underscore-dangle
-            lastEdited: fromUnixTime(data.lastEdited.seconds)
+            lastEdited: utcToZonedTime(
+              fromUnixTime(data.lastEdited.seconds),
+              "Asia/Tokyo"
+            ).toISOString()
           };
         });
 
