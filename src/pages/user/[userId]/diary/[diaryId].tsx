@@ -90,7 +90,6 @@ UserDiaryPage.getInitialProps = async ({ req, res, query }: MyNextContext) => {
             id: data.id,
             title: data.title,
             body: data.body,
-            // TODO タイムゾーンを日本に変更
             // eslint-disable-next-line no-underscore-dangle
             lastEdited: utcToZonedTime(
               fromUnixTime(data.lastEdited.seconds),
