@@ -49,9 +49,18 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
           diary={diary}
           onSubmit={(title, body) => {
             if (!diary) {
-              dispatch(createDraft({ id: undefined, title, body }));
+              dispatch(
+                createDraft({ id: "", title, body, lastEdited: undefined })
+              );
             } else {
-              dispatch(createDraft({ id: diary.id, title, body }));
+              dispatch(
+                createDraft({
+                  id: diary.id,
+                  title,
+                  body,
+                  lastEdited: diary.lastEdited
+                })
+              );
             }
             if (body.length > 0) {
               router.push("/preview");

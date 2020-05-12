@@ -16,9 +16,9 @@ import PageBottomNotifier, {
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
+import { Diary } from "../../../server/types";
 import { RootState } from "../../../store";
 import { createDraft } from "../../../store/diary/actions";
-import { Diary } from "../../../store/diary/types";
 import { userSignIn, userSignOut } from "../../../store/user/actions";
 import { User, UserState } from "../../../store/user/types";
 
@@ -138,6 +138,7 @@ const UserPage: NextPage<UserPageProps> = ({
           />
           {diaries.length > 0 ? (
             <DiaryList>
+              {/* TODO 更新日順に並び替え */}
               {diaries.map(d => (
                 <DiaryCard
                   key={d.id}
@@ -151,7 +152,8 @@ const UserPage: NextPage<UserPageProps> = ({
                               createDraft({
                                 id: d.id,
                                 title: d.title,
-                                body: d.body
+                                body: d.body,
+                                lastEdited: undefined
                               })
                             );
                             router.push("/edit");

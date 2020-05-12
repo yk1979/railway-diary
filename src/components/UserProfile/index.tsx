@@ -15,8 +15,11 @@ const UserThumbnail = styled.img`
   border-radius: 50%;
 `;
 
-const UserName = styled.p`
+const Inner = styled.div`
   margin-left: 8px;
+`;
+
+const UserName = styled.p`
   font-size: 1.4rem;
   line-height: 1.2;
 `;
@@ -31,9 +34,9 @@ const Text = styled.span`
 type UserProfileProps = {
   userName: string;
   thumbnail: string;
-  info?: {
-    text: string;
-    as?: React.ElementType;
+  info: {
+    text: string | Date;
+    date?: Date;
   };
 };
 
@@ -44,10 +47,16 @@ type Props = UserProfileProps & {
 const UserProfile = ({ userName, thumbnail, info, className }: Props) => (
   <Root className={className}>
     <UserThumbnail src={thumbnail} />
-    <UserName>
-      {userName}
-      {info && <Text as={info.as}>{info.text}</Text>}
-    </UserName>
+    <Inner>
+      <UserName>{userName}</UserName>
+      {info.date ? (
+        <Text as="time" dateTime={String(info.date)}>
+          {info.text}
+        </Text>
+      ) : (
+        <Text>{info.text}</Text>
+      )}
+    </Inner>
   </Root>
 );
 

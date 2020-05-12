@@ -1,3 +1,5 @@
+import format from "date-fns/format";
+import fromUnixTime from "date-fns/fromUnixTime";
 import { MyNextContext, NextPage } from "next";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -6,8 +8,8 @@ import styled from "styled-components";
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
 import UserProfile from "../../../../components/UserProfile";
+import { Diary } from "../../../../server/types";
 import { RootState } from "../../../../store";
-import { Diary } from "../../../../store/diary/types";
 import { User, UserState } from "../../../../store/user/types";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
@@ -26,15 +28,15 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   diary
 }: UserDiaryPageProps) => {
   const user = useSelector((state: RootState) => state.user) || signedInUser;
-
+  console.log(typeof diary.lastEdited);
   return (
     <Layout userId={user ? user.uid : null}>
       <UserProfile
         userName={author.name || "unknown"}
         thumbnail={author.picture}
         info={{
-          text: "更新日が入ります",
-          as: "time"
+          text: format(new Date(diary.lastEdited), "yyyy-MM-dd hh:mm"),
+          date: diary.lastEdited
         }}
       />
       <StyledDiaryViewer diary={diary} />
@@ -79,7 +81,19 @@ UserDiaryPage.getInitialProps = async ({ req, res, query }: MyNextContext) => {
         .collection(`users/${userId}/diaries/`)
         .doc(diaryId)
         .get()
-        .then(doc => doc.data() as Diary);
+        .then((doc): Diary | undefined => {
+          const data = doc.data();
+          if (!data) return undefined;
+          console.log(data.lastEdited);
+          return {
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            // TODO タイムゾーンを日本に変更
+            // eslint-disable-next-line no-underscore-dangle
+            lastEdited: fromUnixTime(data.lastEdited.seconds)
+          };
+        });
 
       if (!diaryData) {
         // TODO nextの404ページに飛ばしたい

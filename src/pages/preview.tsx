@@ -44,24 +44,23 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
             diary={diary}
             controller={{
               onSave: async () => {
-                if (diary) {
-                  // TODO まとめて
-                  await firestore
-                    .collection(`/users/`)
-                    .doc(user.uid)
-                    .set({ name: user.name, picture: user.picture });
-                  await firestore
-                    .collection(`/users/${user.uid}/diaries`)
-                    .doc(`${diary.id}`)
-                    .set({
-                      id: diary.id,
-                      title: diary.title,
-                      body: diary.body
-                    });
-                  dispatch(deleteDraft(diary.id));
-                  // TODO ローディング処理
-                  router.push(`/user/${user.uid}`);
-                }
+                // TODO まとめて
+                await firestore
+                  .collection(`/users/`)
+                  .doc(user.uid)
+                  .set({ name: user.name, picture: user.picture });
+                await firestore
+                  .collection(`/users/${user.uid}/diaries`)
+                  .doc(`${diary.id}`)
+                  .set({
+                    id: diary.id,
+                    title: diary.title,
+                    body: diary.body,
+                    lastEdited: new Date()
+                  });
+                dispatch(deleteDraft());
+                // TODO ローディング処理
+                router.push(`/user/${user.uid}`);
               },
               onBack: () => {
                 router.push("/edit");
