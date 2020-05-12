@@ -2,7 +2,7 @@ import React from "react";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import styled from "styled-components";
 
-import { Diary } from "../../store/diary/types";
+import { Diary } from "../../server/types";
 
 const Root = styled.div`
   display: flex;

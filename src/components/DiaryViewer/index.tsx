@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { Diary } from "../../store/diary/types";
+import { Diary } from "../../server/types";
 import Button, { buttonTheme } from "../Button";
 
 const Title = styled.div`
@@ -23,7 +23,7 @@ const BackButton = styled(Button)`
 `;
 
 export type PreviewProps = {
-  diary: Diary;
+  diary: Omit<Diary, "lastEdited">;
   controller?: {
     onSave: () => Promise<void>;
     onBack: () => void;

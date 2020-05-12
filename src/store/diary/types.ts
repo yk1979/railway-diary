@@ -2,11 +2,11 @@
  * state types
  */
 export type Diary = {
-  id: number;
+  id: string;
   title: string;
   body: string;
+  lastEdited?: Date;
 };
-
 export type DiaryState = Diary | null;
 
 /**
@@ -15,16 +15,12 @@ export type DiaryState = Diary | null;
 export const CREATE_DRAFT = "CREATE_DRAFT";
 export const DELETE_DRAFT = "DELETE_DRAFT";
 
-interface CreateDraftAction {
+type CreateDraftAction = {
   type: typeof CREATE_DRAFT;
-  id?: number;
-  title: string;
-  body: string;
-}
+} & Diary;
 
-interface DeleteDiaryAction {
+type DeleteDiaryAction = {
   type: typeof DELETE_DRAFT;
-  id: number;
-}
+};
 
 export type DiaryActionTypes = CreateDraftAction | DeleteDiaryAction;

@@ -9,7 +9,7 @@ const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
   switch (action.type) {
     case CREATE_DRAFT: {
       return {
-        id: action.id || new Date().getTime(),
+        id: action.id || String(new Date().getTime()),
         title: action.title || "タイトルなし",
         body: action.body
       };
