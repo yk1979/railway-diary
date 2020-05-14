@@ -4,27 +4,32 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import { firestore } from "../../../firebase";
-import Button, { buttonTheme } from "../../components/Button";
-import DiaryCard from "../../components/DiaryCard";
-import EditButton from "../../components/EditButton";
-import Heading from "../../components/Heading";
-import Layout from "../../components/Layout";
-import Modal from "../../components/Modal";
+import { firestore } from "../../../../firebase";
+import Button, { buttonTheme } from "../../../components/Button";
+import DiaryCard from "../../../components/DiaryCard";
+import EditButton from "../../../components/EditButton";
+import Heading from "../../../components/Heading";
+import Layout from "../../../components/Layout";
+import Modal from "../../../components/Modal";
 import PageBottomNotifier, {
   NotifierStatus
-} from "../../components/PageBottomNotifier";
-import BreakPoint from "../../constants/BreakPoint";
-import { RootState } from "../../store";
-import { createDraft } from "../../store/diary/actions";
-import { Diary } from "../../store/diary/types";
-import { userSignIn, userSignOut } from "../../store/user/actions";
-import { UserState } from "../../store/user/types";
+} from "../../../components/PageBottomNotifier";
+import UserProfile from "../../../components/UserProfile";
+import BreakPoint from "../../../constants/BreakPoint";
+import { Diary } from "../../../server/types";
+import { RootState } from "../../../store";
+import { createDraft } from "../../../store/diary/actions";
+import { userSignIn, userSignOut } from "../../../store/user/actions";
+import { User, UserState } from "../../../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
     padding-bottom: 88px;
   }
+`;
+
+const StyledUserProfile = styled(UserProfile)`
+  margin-top: 16px;
 `;
 
 const DiaryList = styled.div`
@@ -54,10 +59,7 @@ const StyledLoginButton = styled(Button)`
 
 type UserPageProps = {
   signedInUser: UserState;
-  author: {
-    uid: string;
-    name: string;
-  };
+  author: User;
   diariesData: Diary[];
 };
 
@@ -129,21 +131,40 @@ const UserPage: NextPage<UserPageProps> = ({
     <StyledLayout userId={user ? user.uid : null}>
       {user && (
         <>
-          <Heading.Text1 text={`${author.name} さんの てつどうの記録`} />
+          <Heading.Text1 text="てつどうの記録" />
+          <StyledUserProfile
+            user={{
+              uid: author.uid,
+              name: author.name || "unknown"
+            }}
+            thumbnail={author.picture}
+          />
           {diaries.length > 0 ? (
             <DiaryList>
+              {/* TODO 更新日順に並び替え */}
               {diaries.map(d => (
                 <DiaryCard
                   key={d.id}
                   diary={d}
-                  isControllable={user?.uid === author.uid}
-                  onEdit={() => {
-                    dispatch(
-                      createDraft({ id: d.id, title: d.title, body: d.body })
-                    );
-                    router.push("/edit");
-                  }}
-                  onDelete={() => handleOpenDeleteModal(String(d.id))}
+                  url={`/user/${author.uid}/diary/${d.id}`}
+                  controller={
+                    user?.uid === author.uid
+                      ? {
+                          onEdit: () => {
+                            dispatch(
+                              createDraft({
+                                id: d.id,
+                                title: d.title,
+                                body: d.body,
+                                lastEdited: ""
+                              })
+                            );
+                            router.push("/edit");
+                          },
+                          onDelete: () => handleOpenDeleteModal(String(d.id))
+                        }
+                      : undefined
+                  }
                 />
               ))}
             </DiaryList>
@@ -189,27 +210,31 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
   const signedInUser: UserState = token
     ? {
         uid: token.uid,
-        name: token.name
+        name: token.name,
+        picture: token.picture
       }
     : null;
 
   const author = {
     uid: userId,
-    name: ""
+    name: "",
+    picture: ""
   };
 
   const diariesData: Diary[] = [];
 
   if (signedInUser) {
-    // eslint-disable-next-line no-unused-expressions
     try {
-      author.name = await req?.firebaseServer
+      await req?.firebaseServer
         .firestore()
         .collection(`users`)
         .doc(userId)
         .get()
         .then(doc => doc.data())
-        .then(res => res?.name);
+        .then(res => {
+          author.name = res?.name;
+          author.picture = res?.picture;
+        });
       await req?.firebaseServer
         .firestore()
         .collection(`users/${userId}/diaries`)

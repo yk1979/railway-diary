@@ -12,6 +12,7 @@ const Color = {
   },
   Text: {
     Default: "#333",
+    Gray: "#666",
     White: "#fff"
   },
   Border: {

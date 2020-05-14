@@ -9,6 +9,7 @@ import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
 import { RootState } from "../store";
 import { userSignIn, userSignOut } from "../store/user/actions";
+import { UserState } from "../store/user/types";
 
 const Text = styled.p`
   margin-top: 24px;
@@ -19,10 +20,7 @@ const StyledButton = styled(Button)`
 `;
 
 type LoginPageProps = {
-  userData: {
-    uid: string;
-    name: string;
-  };
+  userData: UserState;
 };
 
 const LoginPage = ({ userData }: LoginPageProps) => {
@@ -48,7 +46,8 @@ const LoginPage = ({ userData }: LoginPageProps) => {
         dispatch(
           userSignIn({
             uid: currentUser.uid,
-            name: currentUser.displayName
+            name: currentUser.displayName,
+            picture: currentUser.photoURL || ""
           })
         );
         // TODO ログイン後は元いたページに戻したい
@@ -102,7 +101,8 @@ LoginPage.getInitialProps = ({ req }: MyNextContext) => {
   const userData = token
     ? {
         uid: token.uid,
-        name: token.name
+        name: token.name,
+        picture: token.picture
       }
     : null;
 

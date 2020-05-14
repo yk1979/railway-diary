@@ -8,6 +8,7 @@ import logger from "redux-logger";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
+import Color from "../constants/Color";
 import rootReducer from "../store";
 
 export const GlobalStyle = createGlobalStyle`
@@ -44,6 +45,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   a {
+    color: ${Color.Text.Default};
     cursor: pointer;
 
     &:link,
@@ -57,6 +59,7 @@ export const GlobalStyle = createGlobalStyle`
     padding: 0;
     background: none;
     border: 0;
+    cursor: pointer;
   }
 
   h1,

@@ -1,14 +1,21 @@
 import React from "react";
-import { MdDelete, MdModeEdit } from "react-icons/md";
 import styled from "styled-components";
 
-import { Diary } from "../../store/diary/types";
+import { Diary } from "../../server/types";
+import DiaryController from "../DiaryController";
 
 const Root = styled.div`
+  display: flex;
+  flex-direction: column;
   height: 143px;
   padding: 8px;
   border-radius: 4px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+`;
+
+const Link = styled.a`
+  display: block;
+  flex: 1 0 0%;
 `;
 
 const Title = styled.div`
@@ -29,56 +36,31 @@ const Body = styled.p`
   white-space: pre-wrap;
 `;
 
-const Controller = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-`;
-
-const ActionButton = styled.button`
-  width: 24px;
-  height: 24px;
-
-  & + & {
-    margin-left: 8px;
-  }
-  > svg {
-    font-size: 2.4rem;
-  }
-`;
-
 type DiaryCardProps = {
   diary: Diary;
-  isControllable: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
+  url: string;
+  controller?: {
+    onEdit: () => void;
+    onDelete: () => void;
+  };
 };
 
-const DiaryCard = ({
-  diary,
-  isControllable,
-  onEdit,
-  onDelete
-}: DiaryCardProps) => {
+const DiaryCard = ({ diary, url, controller }: DiaryCardProps) => {
   const { title, body } = diary;
 
   return (
-    <>
-      <Root>
+    <Root>
+      <Link href={url}>
         <Title>{title}</Title>
         <Body>{body}</Body>
-        {isControllable && (
-          <Controller>
-            <ActionButton onClick={onEdit}>
-              <MdModeEdit />
-            </ActionButton>
-            <ActionButton onClick={onDelete}>
-              <MdDelete />
-            </ActionButton>
-          </Controller>
-        )}
-      </Root>
-    </>
+      </Link>
+      {controller && (
+        <DiaryController
+          onEdit={controller.onEdit}
+          onDelete={controller.onDelete}
+        />
+      )}
+    </Root>
   );
 };
 

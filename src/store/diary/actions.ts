@@ -1,4 +1,4 @@
-import { CREATE_DRAFT, DELETE_DRAFT, DiaryActionTypes } from "./types";
+import { CREATE_DRAFT, DELETE_DRAFT, Diary, DiaryActionTypes } from "./types";
 
 /**
  * action creators
@@ -6,19 +6,16 @@ import { CREATE_DRAFT, DELETE_DRAFT, DiaryActionTypes } from "./types";
 export const createDraft = ({
   id,
   title,
-  body
-}: {
-  id: number | undefined;
-  title: string;
-  body: string;
-}): DiaryActionTypes => ({
+  body,
+  lastEdited
+}: Diary): DiaryActionTypes => ({
   type: CREATE_DRAFT,
   id,
   title,
-  body
+  body,
+  lastEdited
 });
 
-export const deleteDraft = (id: number): DiaryActionTypes => ({
-  type: DELETE_DRAFT,
-  id
+export const deleteDraft = (): DiaryActionTypes => ({
+  type: DELETE_DRAFT
 });

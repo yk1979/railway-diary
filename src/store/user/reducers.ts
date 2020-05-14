@@ -10,7 +10,8 @@ const user = (state: UserState = null, action: UserActionTypes) => {
     case USER_SIGN_IN: {
       return {
         uid: action.uid,
-        name: action.name
+        name: action.name,
+        picture: action.picture
       };
     }
     case USER_SIGN_OUT:

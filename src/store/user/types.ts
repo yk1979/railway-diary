@@ -4,6 +4,7 @@
 export type User = {
   uid: string;
   name: string | null;
+  picture: string;
 };
 
 export type UserState = User | null;
@@ -20,6 +21,7 @@ interface UserSignInAction {
   type: typeof USER_SIGN_IN;
   uid: string;
   name: string | null;
+  picture: string;
 }
 
 interface UserSignOutAction {
