@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import { Diary } from "../../server/types";
 import Button, { buttonTheme } from "../Button";
+import DiaryController from "../DiaryController";
 
 const Title = styled.div`
   font-weight: bold;
@@ -24,9 +25,13 @@ const BackButton = styled(Button)`
 
 export type PreviewProps = {
   diary: Omit<Diary, "lastEdited">;
-  controller?: {
+  buttons?: {
     onSave: () => Promise<void>;
     onBack: () => void;
+  };
+  controller?: {
+    onEdit: () => void;
+    onDelete: () => void;
   };
 };
 
@@ -34,25 +39,33 @@ type Props = PreviewProps & {
   className?: string;
 };
 
-const DiaryViewer = ({ diary, controller, className }: Props) => {
+const DiaryViewer = ({ diary, buttons, controller, className }: Props) => {
   return (
     <div className={className}>
-      <Title>{diary.title}</Title>
+      <Title>
+        {diary.title}
+        {controller && (
+          <DiaryController
+            onEdit={controller.onEdit}
+            onDelete={controller.onDelete}
+          />
+        )}
+      </Title>
       <Body>{diary.body}</Body>
-      {controller && (
+      {buttons && (
         <>
           <SubmitButton
             text="きろくする"
             onClick={(e: Event) => {
               e.preventDefault();
-              controller.onSave();
+              buttons.onSave();
             }}
           />
           <BackButton
             text="もどる"
             onClick={(e: Event) => {
               e.preventDefault();
-              controller.onBack();
+              buttons.onBack();
             }}
             theme={buttonTheme.back}
           />

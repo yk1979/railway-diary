@@ -1,8 +1,8 @@
 import React from "react";
-import { MdDelete, MdModeEdit } from "react-icons/md";
 import styled from "styled-components";
 
 import { Diary } from "../../server/types";
+import DiaryController from "../DiaryController";
 
 const Root = styled.div`
   display: flex;
@@ -36,24 +36,6 @@ const Body = styled.p`
   white-space: pre-wrap;
 `;
 
-const Controller = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-`;
-
-const ActionButton = styled.button`
-  width: 24px;
-  height: 24px;
-
-  & + & {
-    margin-left: 8px;
-  }
-  > svg {
-    font-size: 2.4rem;
-  }
-`;
-
 type DiaryCardProps = {
   diary: Diary;
   url: string;
@@ -73,14 +55,10 @@ const DiaryCard = ({ diary, url, controller }: DiaryCardProps) => {
         <Body>{body}</Body>
       </Link>
       {controller && (
-        <Controller>
-          <ActionButton onClick={controller.onEdit}>
-            <MdModeEdit />
-          </ActionButton>
-          <ActionButton onClick={controller.onDelete}>
-            <MdDelete />
-          </ActionButton>
-        </Controller>
+        <DiaryController
+          onEdit={controller.onEdit}
+          onDelete={controller.onDelete}
+        />
       )}
     </Root>
   );

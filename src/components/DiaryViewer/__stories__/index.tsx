@@ -20,14 +20,25 @@ const diary: Diary = {
 };
 
 export const Default = () => {
-  return (
-    <DiaryViewer
-      diary={diary}
-      controller={{
-        onSave: async () => {},
-        onBack: () => {}
-      }}
-    />
-  );
+  return <DiaryViewer diary={diary} />;
 };
-export const Uncontrollable = () => <DiaryViewer diary={diary} />;
+
+export const WithButtons = () => (
+  <DiaryViewer
+    diary={diary}
+    buttons={{
+      onSave: async () => {},
+      onBack: () => {}
+    }}
+  />
+);
+
+export const WithControllers = () => (
+  <DiaryViewer
+    diary={diary}
+    controller={{
+      onEdit: () => {},
+      onDelete: () => {}
+    }}
+  />
+);
