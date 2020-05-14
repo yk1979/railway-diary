@@ -8,11 +8,17 @@ const Root = styled.div`
   align-items: center;
 `;
 
-const UserThumbnail = styled.img`
+const UserThumbnail = styled.a`
   display: block;
   width: 36px;
   height: 36px;
+  overflow: hidden;
   border-radius: 50%;
+
+  > img {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const Inner = styled.div`
@@ -32,7 +38,10 @@ const Text = styled.span`
 `;
 
 type UserProfileProps = {
-  userName: string;
+  user: {
+    uid: string;
+    name: string;
+  };
   thumbnail: string;
   info?: {
     text: string | Date;
@@ -44,11 +53,13 @@ type Props = UserProfileProps & {
   className?: string;
 };
 
-const UserProfile = ({ userName, thumbnail, info, className }: Props) => (
+const UserProfile = ({ user, thumbnail, info, className }: Props) => (
   <Root className={className}>
-    <UserThumbnail src={thumbnail} />
+    <UserThumbnail href={`/user/${user.uid}`}>
+      <img src={thumbnail} alt={user.name} />
+    </UserThumbnail>
     <Inner>
-      <UserName>{userName}</UserName>
+      <UserName>{user.name}</UserName>
       {info &&
         (info.date ? (
           <Text as="time" dateTime={info.date}>

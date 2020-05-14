@@ -75,7 +75,6 @@ const UserPage: NextPage<UserPageProps> = ({
     [key: string]: (() => void) | undefined;
   }>({});
   const [diaries, setDiaries] = useState<Diary[]>(diariesData);
-  const [authorData, setAuthorData] = useState(author);
 
   const [modalId, setModalId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -126,7 +125,7 @@ const UserPage: NextPage<UserPageProps> = ({
       removeDbListener();
       dispatch(userSignOut());
     }
-  }, [user?.uid, authorData.name]);
+  }, [user?.uid]);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
@@ -134,7 +133,10 @@ const UserPage: NextPage<UserPageProps> = ({
         <>
           <Heading.Text1 text="てつどうの記録" />
           <StyledUserProfile
-            userName={author.name || "unknown"}
+            user={{
+              uid: author.uid,
+              name: author.name || "unknown"
+            }}
             thumbnail={author.picture}
           />
           {diaries.length > 0 ? (

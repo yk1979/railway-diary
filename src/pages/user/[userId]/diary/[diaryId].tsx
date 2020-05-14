@@ -45,7 +45,10 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   return (
     <Layout userId={user ? user.uid : null}>
       <UserProfile
-        userName={author.name || "unknown"}
+        user={{
+          uid: author.uid,
+          name: author.name || "unknown"
+        }}
         thumbnail={author.picture}
         info={{
           text: format(parseISO(diary.lastEdited), "yyyy-MM-dd HH:mm", {
