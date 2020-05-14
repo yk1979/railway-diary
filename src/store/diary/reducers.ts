@@ -11,7 +11,8 @@ const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
       return {
         id: action.id || String(new Date().getTime()),
         title: action.title || "タイトルなし",
-        body: action.body
+        body: action.body,
+        lastEdited: action.lastEdited
       };
     }
     case DELETE_DRAFT:

@@ -5,7 +5,7 @@ export type Diary = {
   id: string;
   title: string;
   body: string;
-  lastEdited?: Date;
+  lastEdited: string;
 };
 export type DiaryState = Diary | null;
 

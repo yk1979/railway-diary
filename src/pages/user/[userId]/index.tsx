@@ -75,6 +75,7 @@ const UserPage: NextPage<UserPageProps> = ({
     [key: string]: (() => void) | undefined;
   }>({});
   const [diaries, setDiaries] = useState<Diary[]>(diariesData);
+  const [authorData, setAuthorData] = useState(author);
 
   const [modalId, setModalId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -125,7 +126,7 @@ const UserPage: NextPage<UserPageProps> = ({
       removeDbListener();
       dispatch(userSignOut());
     }
-  }, [user?.uid]);
+  }, [user?.uid, authorData.name]);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
@@ -153,7 +154,7 @@ const UserPage: NextPage<UserPageProps> = ({
                                 id: d.id,
                                 title: d.title,
                                 body: d.body,
-                                lastEdited: undefined
+                                lastEdited: ""
                               })
                             );
                             router.push("/edit");

@@ -42,7 +42,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
         (diary ? (
           <DiaryViewer
             diary={diary}
-            controller={{
+            buttons={{
               onSave: async () => {
                 // TODO まとめて
                 await firestore

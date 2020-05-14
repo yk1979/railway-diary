@@ -36,8 +36,8 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
   const user = useSelector((state: RootState) => state.user) || userData;
 
   useEffect(() => {
-    if (userData) {
-      dispatch(userSignIn(userData));
+    if (user) {
+      dispatch(userSignIn(user));
     }
   }, []);
 
@@ -49,9 +49,7 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
           diary={diary}
           onSubmit={(title, body) => {
             if (!diary) {
-              dispatch(
-                createDraft({ id: "", title, body, lastEdited: undefined })
-              );
+              dispatch(createDraft({ id: "", title, body, lastEdited: "" }));
             } else {
               dispatch(
                 createDraft({
