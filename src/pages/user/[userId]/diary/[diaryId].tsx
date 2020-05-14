@@ -60,20 +60,24 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
       <StyledDiaryViewer
         diary={diary}
         // TODO fix
-        controller={{
-          onEdit: () => {
-            dispatch(
-              createDraft({
-                id: diary.id,
-                title: diary.title,
-                body: diary.body,
-                lastEdited: ""
-              })
-            );
-            router.push("/edit");
-          },
-          onDelete: () => {}
-        }}
+        controller={
+          user?.uid === author.uid
+            ? {
+                onEdit: () => {
+                  dispatch(
+                    createDraft({
+                      id: diary.id,
+                      title: diary.title,
+                      body: diary.body,
+                      lastEdited: ""
+                    })
+                  );
+                  router.push("/edit");
+                },
+                onDelete: () => {}
+              }
+            : undefined
+        }
       />
     </Layout>
   );
