@@ -83,7 +83,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   );
 };
 
-UserDiaryPage.getInitialProps = async ({ req, res, query }: MyNextContext) => {
+export async function getServerSideProps({ req, res, query }: MyNextContext) {
   const userId = query.userId as string;
   const diaryId = query.diaryId as string;
   const token = req?.session?.decodedToken;
@@ -149,10 +149,12 @@ UserDiaryPage.getInitialProps = async ({ req, res, query }: MyNextContext) => {
   }
 
   return {
-    signedInUser,
-    author,
-    diary
+    props: {
+      signedInUser,
+      author,
+      diary
+    }
   };
-};
+}
 
 export default UserDiaryPage;

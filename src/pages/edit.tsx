@@ -70,7 +70,7 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
   );
 };
 
-EditPage.getInitialProps = async ({ req }: MyNextContext) => {
+export async function getServerSideProps({ req }: MyNextContext) {
   const token = req?.session?.decodedToken;
   const userData: UserState = token
     ? {
@@ -81,8 +81,8 @@ EditPage.getInitialProps = async ({ req }: MyNextContext) => {
     : null;
 
   return {
-    userData
+    props: { userData }
   };
-};
+}
 
 export default EditPage;

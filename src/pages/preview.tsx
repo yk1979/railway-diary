@@ -85,7 +85,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
 
 export default PreviewPage;
 
-PreviewPage.getInitialProps = async ({ req }: MyNextContext) => {
+export async function getServerSideProps({ req }: MyNextContext) {
   const token = req?.session?.decodedToken;
   const userData: UserState = token
     ? {
@@ -96,6 +96,6 @@ PreviewPage.getInitialProps = async ({ req }: MyNextContext) => {
     : null;
 
   return {
-    userData
+    props: { userData }
   };
-};
+}
