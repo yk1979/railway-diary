@@ -38,7 +38,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ userData }: IndexPageProps) => {
   );
 };
 
-IndexPage.getInitialProps = async ({ req }: MyNextContext) => {
+export async function getServerSideProps({ req }: MyNextContext) {
   const token = req?.session?.decodedToken;
 
   const userData: UserState = token
@@ -50,8 +50,8 @@ IndexPage.getInitialProps = async ({ req }: MyNextContext) => {
     : null;
 
   return {
-    userData
+    props: { userData }
   };
-};
+}
 
 export default IndexPage;

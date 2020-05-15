@@ -1,3 +1,5 @@
+import { fromUnixTime } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 import { MyNextContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -203,7 +205,7 @@ const UserPage: NextPage<UserPageProps> = ({
   );
 };
 
-UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
+export async function getServerSideProps({ req, query }: MyNextContext) {
   const userId = query.userId as string;
   const token = req?.session?.decodedToken;
 
@@ -241,7 +243,17 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
         .get()
         .then(collections => {
           collections.forEach(doc => {
-            diariesData.push(doc.data() as Diary);
+            const data = doc.data();
+            diariesData.push({
+              id: data.id,
+              title: data.title,
+              body: data.body,
+              // eslint-disable-next-line no-underscore-dangle
+              lastEdited: utcToZonedTime(
+                fromUnixTime(data.lastEdited.seconds),
+                "Asia/Tokyo"
+              ).toISOString()
+            });
           });
         });
     } catch (err) {
@@ -251,10 +263,12 @@ UserPage.getInitialProps = async ({ req, query }: MyNextContext) => {
   }
 
   return {
-    signedInUser,
-    author,
-    diariesData
+    props: {
+      signedInUser,
+      author,
+      diariesData
+    }
   };
-};
+}
 
 export default UserPage;
