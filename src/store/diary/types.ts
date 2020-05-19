@@ -17,7 +17,8 @@ export const DELETE_DRAFT = "DELETE_DRAFT";
 
 type CreateDraftAction = {
   type: typeof CREATE_DRAFT;
-} & Diary;
+  payload: Diary;
+};
 
 type DeleteDiaryAction = {
   type: typeof DELETE_DRAFT;

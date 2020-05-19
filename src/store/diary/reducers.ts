@@ -9,10 +9,10 @@ const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
   switch (action.type) {
     case CREATE_DRAFT: {
       return {
-        id: action.id || String(new Date().getTime()),
-        title: action.title || "タイトルなし",
-        body: action.body,
-        lastEdited: action.lastEdited
+        id: action.payload.id || String(new Date().getTime()),
+        title: action.payload.title || "タイトルなし",
+        body: action.payload.body,
+        lastEdited: action.payload.lastEdited
       };
     }
     case DELETE_DRAFT:

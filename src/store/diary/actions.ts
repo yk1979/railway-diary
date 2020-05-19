@@ -10,10 +10,12 @@ export const createDraft = ({
   lastEdited
 }: Diary): DiaryActionTypes => ({
   type: CREATE_DRAFT,
-  id,
-  title,
-  body,
-  lastEdited
+  payload: {
+    id,
+    title,
+    body,
+    lastEdited
+  }
 });
 
 export const deleteDraft = (): DiaryActionTypes => ({

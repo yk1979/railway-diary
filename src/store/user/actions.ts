@@ -5,9 +5,11 @@ import { User, USER_SIGN_IN, USER_SIGN_OUT, UserActionTypes } from "./types";
  */
 export const userSignIn = ({ uid, name, picture }: User): UserActionTypes => ({
   type: USER_SIGN_IN,
-  uid,
-  name,
-  picture
+  payload: {
+    uid,
+    name,
+    picture
+  }
 });
 
 export const userSignOut = (): UserActionTypes => ({
