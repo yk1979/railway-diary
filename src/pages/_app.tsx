@@ -1,4 +1,4 @@
-import { AppProps } from "next/app";
+import App, { AppProps } from "next/app";
 import Head from "next/head";
 import React from "react";
 import { createGlobalStyle } from "styled-components";
@@ -74,16 +74,19 @@ export const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
-  return (
-    <>
-      <GlobalStyle />
-      <Head>
-        <title>てつどうダイアリー</title>
-      </Head>
-      <Component {...pageProps} />
-    </>
-  );
-};
+class WrappedApp extends App {
+  render() {
+    const { Component, pageProps } = this.props;
+    return (
+      <>
+        <GlobalStyle />
+        <Head>
+          <title>てつどうダイアリー</title>
+        </Head>
+        <Component {...pageProps} />
+      </>
+    );
+  }
+}
 
-export default wrapper.withRedux(MyApp);
+export default wrapper.withRedux(WrappedApp);
