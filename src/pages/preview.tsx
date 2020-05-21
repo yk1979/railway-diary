@@ -1,6 +1,6 @@
-import { MyNextContext, NextPage } from "next";
+import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
@@ -8,33 +8,19 @@ import { firestore } from "../../firebase";
 import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
-import { RootState } from "../store";
+import { RootState, wrapper } from "../store";
 import { deleteDraft } from "../store/diary/actions";
 import { userSignIn } from "../store/user/actions";
-import { UserState } from "../store/user/types";
 
 const BackButton = styled(Button)`
   margin-top: 16px;
 `;
 
-type PreviewPageProps = {
-  userData: UserState;
-};
-
-const PreviewPage: NextPage<PreviewPageProps> = ({
-  userData
-}: PreviewPageProps) => {
+const PreviewPage: NextPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const diary = useSelector((state: RootState) => state.diary);
-
-  useEffect(() => {
-    if (userData) {
-      dispatch(userSignIn(userData));
-    }
-  }, []);
-
-  const user = useSelector((state: RootState) => state.user) || userData;
+  const user = useSelector((state: RootState) => state.user);
 
   return (
     <Layout userId={user ? user.uid : null}>
@@ -85,17 +71,19 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
 
 export default PreviewPage;
 
-export async function getServerSideProps({ req }: MyNextContext) {
-  const token = req?.session?.decodedToken;
-  const userData: UserState = token
-    ? {
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture
-      }
-    : null;
+export const getServerSideProps = wrapper.getServerSideProps(
+  // TODO any修正
+  ({ req, store }: any) => {
+    const token = req?.session?.decodedToken;
 
-  return {
-    props: { userData }
-  };
-}
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture
+        })
+      );
+    }
+  }
+);

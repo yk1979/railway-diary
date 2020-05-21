@@ -1,13 +1,13 @@
-import { MyNextContext, NextPage } from "next";
+import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { RootState } from "../store";
+import { RootState, wrapper } from "../store";
 import { createDraft } from "../store/diary/actions";
 import { userSignIn } from "../store/user/actions";
 import { UserState } from "../store/user/types";
@@ -28,18 +28,11 @@ type EditPageProps = {
   userData: UserState;
 };
 
-const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
+const EditPage: NextPage<EditPageProps> = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const diary = useSelector((state: RootState) => state.diary);
-
-  const user = useSelector((state: RootState) => state.user) || userData;
-
-  useEffect(() => {
-    if (user) {
-      dispatch(userSignIn(user));
-    }
-  }, []);
+  const user = useSelector((state: RootState) => state.user);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
@@ -70,19 +63,21 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
   );
 };
 
-export async function getServerSideProps({ req }: MyNextContext) {
-  const token = req?.session?.decodedToken;
-  const userData: UserState = token
-    ? {
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture
-      }
-    : null;
+// TODO any修正
+export const getServerSideProps = wrapper.getServerSideProps(
+  ({ req, store }: any) => {
+    const token = req?.session?.decodedToken;
 
-  return {
-    props: { userData }
-  };
-}
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture
+        })
+      );
+    }
+  }
+);
 
 export default EditPage;

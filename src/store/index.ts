@@ -1,4 +1,4 @@
-import { Context, createWrapper, HYDRATE, MakeStore } from "next-redux-wrapper";
+import { createWrapper, HYDRATE, MakeStore } from "next-redux-wrapper";
 import {
   AnyAction,
   applyMiddleware,
@@ -40,7 +40,7 @@ export const rootReducer = (
   return combinedReducer(state, action);
 };
 
-const makeStore: MakeStore<RootState> = (ctx: Context) =>
+const makeStore: MakeStore<RootState> = () =>
   createStore(rootReducer, composeWithDevTools(applyMiddleware(logger)));
 
 export const wrapper = createWrapper<RootState>(makeStore, { debug: true });

@@ -1,12 +1,12 @@
 import { fromUnixTime } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
-import { MyNextContext, NextPage } from "next";
+import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import { firestore } from "../../../../firebase";
+import firebase, { firestore } from "../../../../firebase";
 import Button, { buttonTheme } from "../../../components/Button";
 import DiaryCard from "../../../components/DiaryCard";
 import EditButton from "../../../components/EditButton";
@@ -19,10 +19,10 @@ import PageBottomNotifier, {
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
 import { Diary } from "../../../server/types";
-import { RootState } from "../../../store";
+import { RootState, wrapper } from "../../../store";
 import { createDraft } from "../../../store/diary/actions";
-import { userSignIn, userSignOut } from "../../../store/user/actions";
-import { User, UserState } from "../../../store/user/types";
+import { userSignIn } from "../../../store/user/actions";
+import { User } from "../../../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -60,13 +60,11 @@ const StyledLoginButton = styled(Button)`
 `;
 
 type UserPageProps = {
-  signedInUser: UserState;
   author: User;
   diariesData: Diary[];
 };
 
 const UserPage: NextPage<UserPageProps> = ({
-  signedInUser,
   author,
   diariesData
 }: UserPageProps) => {
@@ -82,7 +80,7 @@ const UserPage: NextPage<UserPageProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
 
-  const user = useSelector((state: RootState) => state.user) || signedInUser;
+  const user = useSelector((state: RootState) => state.user);
 
   const addDbListener = (id: string) => {
     const listener = firestore.collection(`users/${id}/diaries`).onSnapshot(
@@ -97,7 +95,7 @@ const UserPage: NextPage<UserPageProps> = ({
       },
       err => {
         // eslint-disable-next-line no-console
-        console.error(err);
+        console.error("クライアント側、オンスナップショットでこけた", err);
       }
     );
     setUnsubscribeDb({ listener });
@@ -120,13 +118,13 @@ const UserPage: NextPage<UserPageProps> = ({
   };
 
   useEffect(() => {
-    if (user) {
-      addDbListener(author.uid);
-      dispatch(userSignIn(user));
-    } else {
-      removeDbListener();
-      dispatch(userSignOut());
-    }
+    firebase.auth().onAuthStateChanged(currentUser => {
+      if (currentUser) {
+        addDbListener(author.uid);
+      } else {
+        removeDbListener();
+      }
+    });
   }, [user?.uid]);
 
   return (
@@ -143,7 +141,6 @@ const UserPage: NextPage<UserPageProps> = ({
           />
           {diaries.length > 0 ? (
             <DiaryList>
-              {/* TODO 更新日順に並び替え */}
               {diaries.map(d => (
                 <DiaryCard
                   key={d.id}
@@ -205,70 +202,73 @@ const UserPage: NextPage<UserPageProps> = ({
   );
 };
 
-export async function getServerSideProps({ req, query }: MyNextContext) {
-  const userId = query.userId as string;
-  const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps(
+  async ({ req, query, store }: any) => {
+    const userId = query.userId as string;
+    const token = req?.session?.decodedToken;
 
-  const signedInUser: UserState = token
-    ? {
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture
-      }
-    : null;
+    const author = {
+      uid: userId,
+      name: "",
+      picture: ""
+    };
 
-  const author = {
-    uid: userId,
-    name: "",
-    picture: ""
-  };
+    const diariesData: Diary[] = [];
 
-  const diariesData: Diary[] = [];
-
-  if (signedInUser) {
-    try {
-      await req?.firebaseServer
-        .firestore()
-        .collection(`users`)
-        .doc(userId)
-        .get()
-        .then(doc => doc.data())
-        .then(res => {
-          author.name = res?.name;
-          author.picture = res?.picture;
-        });
-      await req?.firebaseServer
-        .firestore()
-        .collection(`users/${userId}/diaries`)
-        .get()
-        .then(collections => {
-          collections.forEach(doc => {
-            const data = doc.data();
-            diariesData.push({
-              id: data.id,
-              title: data.title,
-              body: data.body,
-              // eslint-disable-next-line no-underscore-dangle
-              lastEdited: utcToZonedTime(
-                fromUnixTime(data.lastEdited.seconds),
-                "Asia/Tokyo"
-              ).toISOString()
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture
+        })
+      );
+      try {
+        await req?.firebaseServer
+          .firestore()
+          .collection(`users`)
+          .doc(userId)
+          .get()
+          .then((doc: any) => doc.data())
+          .then((res: any) => {
+            author.name = res?.name;
+            author.picture = res?.picture;
+          });
+        await req?.firebaseServer
+          .firestore()
+          .collection(`users/${userId}/diaries`)
+          .get()
+          .then((collections: any) => {
+            collections.forEach((doc: any) => {
+              const data = doc.data();
+              diariesData.push({
+                id: data.id,
+                title: data.title,
+                body: data.body,
+                // eslint-disable-next-line no-underscore-dangle
+                lastEdited: utcToZonedTime(
+                  fromUnixTime(data.lastEdited.seconds),
+                  "Asia/Tokyo"
+                ).toISOString()
+              });
             });
           });
-        });
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Error, could not fetch diary data in server side: ",
+          err
+        );
+      }
     }
-  }
 
-  return {
-    props: {
-      signedInUser,
-      author,
-      diariesData
-    }
-  };
-}
+    return {
+      props: {
+        author,
+        diariesData
+      }
+    };
+  }
+);
 
 export default UserPage;
