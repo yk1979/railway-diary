@@ -1,3 +1,4 @@
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -83,8 +84,7 @@ const LoginPage = () => {
 };
 
 export const getServerSideProps = wrapper.getServerSideProps(
-  // any修正
-  ({ req, store }: any) => {
+  ({ req, store }: MyNextContext) => {
     const token = req?.session?.decodedToken;
 
     if (token) {

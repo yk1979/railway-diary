@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -63,9 +64,8 @@ const EditPage: NextPage<EditPageProps> = () => {
   );
 };
 
-// TODO any修正
 export const getServerSideProps = wrapper.getServerSideProps(
-  ({ req, store }: any) => {
+  ({ req, store }: MyNextContext) => {
     const token = req?.session?.decodedToken;
 
     if (token) {

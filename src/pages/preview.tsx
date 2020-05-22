@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -72,8 +73,7 @@ const PreviewPage: NextPage = () => {
 export default PreviewPage;
 
 export const getServerSideProps = wrapper.getServerSideProps(
-  // TODO any修正
-  ({ req, store }: any) => {
+  ({ req, store }: MyNextContext) => {
     const token = req?.session?.decodedToken;
 
     if (token) {

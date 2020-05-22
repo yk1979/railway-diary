@@ -2,6 +2,7 @@ import { format, utcToZonedTime } from "date-fns-tz";
 import fromUnixTime from "date-fns/fromUnixTime";
 import parseISO from "date-fns/parseISO";
 import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -76,8 +77,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
 };
 
 export const getServerSideProps = wrapper.getServerSideProps(
-  // TODO any修正
-  async ({ req, res, query, store }: any) => {
+  async ({ req, res, query, store }: MyNextContext) => {
     const userId = query.userId as string;
     const diaryId = query.diaryId as string;
     const token = req?.session?.decodedToken;
@@ -104,8 +104,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
           .collection(`users`)
           .doc(userId)
           .get()
-          .then((doc: any) => doc.data())
-          .then((response: any) => {
+          .then(doc => doc.data())
+          .then(response => {
             author.name = response?.name;
             author.picture = response?.picture;
           });
@@ -114,7 +114,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
           .collection(`users/${userId}/diaries/`)
           .doc(diaryId)
           .get()
-          .then((doc: any): Diary | undefined => {
+          .then((doc): Diary | undefined => {
             const data = doc.data();
             if (!data) return undefined;
             return {

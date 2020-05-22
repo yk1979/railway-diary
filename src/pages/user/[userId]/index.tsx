@@ -1,6 +1,7 @@
 import { fromUnixTime } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,6 +24,7 @@ import { RootState, wrapper } from "../../../store";
 import { createDraft } from "../../../store/diary/actions";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
+// import { MyNextContext } from "../../../types/next.d";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -203,7 +205,7 @@ const UserPage: NextPage<UserPageProps> = ({
 };
 
 export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ req, query, store }: any) => {
+  async ({ req, query, store }: MyNextContext) => {
     const userId = query.userId as string;
     const token = req?.session?.decodedToken;
 
@@ -229,8 +231,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
           .collection(`users`)
           .doc(userId)
           .get()
-          .then((doc: any) => doc.data())
-          .then((res: any) => {
+          .then(doc => doc.data())
+          .then(res => {
             author.name = res?.name;
             author.picture = res?.picture;
           });
@@ -238,8 +240,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
           .firestore()
           .collection(`users/${userId}/diaries`)
           .get()
-          .then((collections: any) => {
-            collections.forEach((doc: any) => {
+          .then(collections => {
+            collections.forEach(doc => {
               const data = doc.data();
               diariesData.push({
                 id: data.id,
