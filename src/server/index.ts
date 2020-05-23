@@ -25,7 +25,7 @@ app.prepare().then(() => {
   server.use(express.urlencoded({ extended: true }));
 
   // next.jsのヘルスチェック
-  server.get("/healtz", (_, res) => {
+  server.get("/healthz", (_, res) => {
     res.send("OK");
   });
 
@@ -40,7 +40,7 @@ app.prepare().then(() => {
     })
   );
 
-  server.use((req: any, _, next) => {
+  server.use((req, _, next) => {
     req.firebaseServer = firebase;
     next();
   });

@@ -11,9 +11,9 @@ import styled from "styled-components";
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
 import UserProfile from "../../../../components/UserProfile";
-import { Diary } from "../../../../server/types";
 import { RootState, wrapper } from "../../../../store";
 import { createDraft } from "../../../../store/diary/actions";
+import { Diary } from "../../../../store/diary/types";
 import { userSignIn } from "../../../../store/user/actions";
 import { User } from "../../../../store/user/types";
 

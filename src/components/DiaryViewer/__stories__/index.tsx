@@ -3,7 +3,7 @@ import { text } from "@storybook/addon-knobs";
 import React from "react";
 
 import DiaryViewer from "..";
-import { Diary } from "../../../server/types";
+import { Diary } from "../../../store/diary/types";
 
 export default {
   title: "DiaryViewer"

@@ -19,9 +19,9 @@ import PageBottomNotifier, {
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
-import { Diary } from "../../../server/types";
 import { RootState, wrapper } from "../../../store";
 import { createDraft } from "../../../store/diary/actions";
+import { Diary } from "../../../store/diary/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
 // import { MyNextContext } from "../../../types/next.d";

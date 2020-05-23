@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { Diary } from "../../server/types";
+import { Diary } from "../../store/diary/types";
 import Button, { buttonTheme } from "../Button";
 import DiaryController from "../DiaryController";
 

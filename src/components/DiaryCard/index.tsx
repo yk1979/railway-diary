@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { Diary } from "../../server/types";
+import { Diary } from "../../store/diary/types";
 import DiaryController from "../DiaryController";
 
 const Root = styled.div`
