@@ -9,6 +9,8 @@ const Root = styled.h1`
   font-family: ${Font.Family.Primary};
 `;
 
-const Text1 = ({ text, as }: HeadingProps) => <Root as={as}>{text}</Root>;
+const Text1 = ({ text, as = "h1" }: HeadingProps) => (
+  <Root as={as}>{text}</Root>
+);
 
 export default Text1;
