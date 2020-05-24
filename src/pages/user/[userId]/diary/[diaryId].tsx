@@ -114,7 +114,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
           .collection(`users/${userId}/diaries/`)
           .doc(diaryId)
           .get()
-          .then((doc): Diary | undefined => {
+          .then(doc => {
             const data = doc.data();
             if (!data) return undefined;
             return {
