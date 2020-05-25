@@ -2,7 +2,8 @@ import {
   CREATE_DRAFT,
   DELETE_DRAFT,
   DiaryActionTypes,
-  DiaryState
+  DiaryState,
+  GET_DIARY
 } from "./types";
 
 const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
@@ -16,6 +17,8 @@ const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
     }
     case DELETE_DRAFT:
       return null;
+    case GET_DIARY:
+      return { ...action.payload };
     default:
       return state;
   }

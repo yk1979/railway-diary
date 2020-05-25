@@ -8,11 +8,12 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
+import firebase from "../../../../../firebase";
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
 import UserProfile from "../../../../components/UserProfile";
 import { RootState, wrapper } from "../../../../store";
-import { createDraft } from "../../../../store/diary/actions";
+import { createDraft, requestDiary } from "../../../../store/diary/actions";
 import { Diary } from "../../../../store/diary/types";
 import { userSignIn } from "../../../../store/user/actions";
 import { User } from "../../../../store/user/types";
@@ -50,6 +51,20 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
           date: diary.lastEdited
         }}
       />
+      <button
+        type="button"
+        onClick={() => {
+          dispatch(
+            requestDiary({
+              fireStore: firebase.firestore(),
+              userId: author.uid,
+              diaryId: diary.id
+            })
+          );
+        }}
+      >
+        saga test
+      </button>
       <StyledDiaryViewer
         diary={diary}
         // TODO fix
