@@ -1,20 +1,9 @@
 import { fromUnixTime } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
-import { all, call, put, take, takeEvery } from "redux-saga/effects";
+import { all, call, put, takeEvery } from "redux-saga/effects";
 
 import { getDiary } from "./store/diary/actions";
 import { Diary, REQUEST_DIARY, RequestDairyAction } from "./store/diary/types";
-
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
-export function* helloSaga() {
-  yield call(delay, 1000);
-  yield console.log("Hello Sagas!");
-}
-
-export function* watchIncrementAsync() {
-  yield takeEvery("SAGA_TEST", helloSaga);
-}
 
 const fetchDiaryFromFireStore = async ({
   fireStore,
@@ -52,5 +41,5 @@ export function* handleFetchDiary() {
 }
 
 export default function* rootSaga() {
-  yield all([helloSaga(), watchIncrementAsync(), handleFetchDiary()]);
+  yield all([handleFetchDiary()]);
 }

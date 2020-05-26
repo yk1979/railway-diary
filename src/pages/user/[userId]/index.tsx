@@ -1,6 +1,5 @@
 import { fromUnixTime } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
-import { Store } from "express-session";
 import { NextPage } from "next";
 import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
@@ -145,14 +144,6 @@ const UserPage: NextPage<UserPageProps> = ({
             }}
             thumbnail={author.picture}
           />
-          <button
-            type="button"
-            onClick={() => {
-              dispatch({ type: "SAGA_TEST" });
-            }}
-          >
-            saga test
-          </button>
           {diaries.length > 0 ? (
             <DiaryList>
               {diaries.map(d => (

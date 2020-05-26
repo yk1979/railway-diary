@@ -25,7 +25,6 @@ export interface SagaStore extends Store {
   sagaTask?: Task;
 }
 
-
 const combinedReducer = combineReducers({
   diary,
   user
