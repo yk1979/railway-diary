@@ -11,17 +11,25 @@ import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
 import { RootState, wrapper } from "../store";
 import { deleteDraft } from "../store/diary/actions";
+import { Diary } from "../store/diary/types";
 import { userSignIn } from "../store/user/actions";
+import { User } from "../store/user/types";
 
 const BackButton = styled(Button)`
   margin-top: 16px;
 `;
 
-const PreviewPage: NextPage = () => {
+type PreviewPageProps = {
+  diary: Diary;
+  user: User;
+};
+
+const PreviewPage: NextPage<PreviewPageProps> = ({
+  diary,
+  user
+}: PreviewPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const diary = useSelector((state: RootState) => state.diary);
-  const user = useSelector((state: RootState) => state.user);
 
   return (
     <Layout userId={user ? user.uid : null}>
@@ -85,5 +93,14 @@ export const getServerSideProps = wrapper.getServerSideProps(
         })
       );
     }
+
+    const { diary, user } = store.getState();
+
+    return {
+      props: {
+        diary,
+        user
+      }
+    };
   }
 );

@@ -7,7 +7,7 @@ export type Diary = {
   body: string;
   lastEdited: string;
 };
-export type DiaryState = Diary | null;
+export type DiaryState = Diary | Diary[] | null;
 
 /**
  * action types

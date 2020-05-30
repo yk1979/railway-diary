@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 import Color from "../../constants/Color";
-import { DiaryState } from "../../store/diary/types";
+import { Diary } from "../../store/diary/types";
 import Button from "../Button";
 
 const StyledForm = styled.form`
@@ -35,7 +35,7 @@ const ToPreviewButton = styled(Button)`
 `;
 
 type EditFormProps = {
-  diary?: DiaryState;
+  diary?: Diary;
   onSubmit: (title: string, body: string) => void;
 };
 
@@ -44,8 +44,8 @@ type Props = EditFormProps & {
 };
 
 const EditForm = ({ className, diary, onSubmit }: Props) => {
-  const [title, setTitle] = useState(diary ? diary.title : "");
-  const [body, setBody] = useState(diary ? diary.body : "");
+  const [title, setTitle] = useState(diary?.title || "");
+  const [body, setBody] = useState(diary?.body || "");
 
   return (
     <StyledForm

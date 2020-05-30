@@ -2,16 +2,17 @@ import { NextPage } from "next";
 import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { RootState, wrapper } from "../store";
+import { wrapper } from "../store";
 import { createDraft } from "../store/diary/actions";
+import { Diary } from "../store/diary/types";
 import { userSignIn } from "../store/user/actions";
-import { UserState } from "../store/user/types";
+import { User } from "../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -26,14 +27,13 @@ const StyledEditForm = styled(EditForm)`
 `;
 
 type EditPageProps = {
-  userData: UserState;
+  diary: Diary;
+  user: User;
 };
 
-const EditPage: NextPage<EditPageProps> = () => {
+const EditPage: NextPage<EditPageProps> = ({ diary, user }: EditPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const diary = useSelector((state: RootState) => state.diary);
-  const user = useSelector((state: RootState) => state.user);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
@@ -77,6 +77,14 @@ export const getServerSideProps = wrapper.getServerSideProps(
         })
       );
     }
+    const { diary, user } = store.getState();
+
+    return {
+      props: {
+        diary,
+        user
+      }
+    };
   }
 );
 
