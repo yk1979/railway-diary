@@ -15,7 +15,9 @@ export type DiaryState = Diary | null;
 export const CREATE_DRAFT = "CREATE_DRAFT";
 export const DELETE_DRAFT = "DELETE_DRAFT";
 export const REQUEST_DIARY = "REQUEST_DIARY";
+export const REQUEST_DIARIES = "REQUEST_DIARIES";
 export const GET_DIARY = "GET_DIARY";
+export const GET_DIARIES = "GET_DIARIES";
 
 type CreateDraftAction = {
   type: typeof CREATE_DRAFT;
@@ -26,13 +28,20 @@ type DeleteDiaryAction = {
   type: typeof DELETE_DRAFT;
 };
 
-export type RequestDairyAction = {
+export type RequestDiaryAction = {
   type: typeof REQUEST_DIARY;
   payload: {
-    fireStore: any;
-    // fireStore: FirebaseFirestore.Firestore;
+    fireStore: FirebaseFirestore.Firestore;
     userId: string;
     diaryId: string;
+  };
+};
+
+export type RequestDiariesAction = {
+  type: typeof REQUEST_DIARIES;
+  payload: {
+    fireStore: FirebaseFirestore.Firestore;
+    userId: string;
   };
 };
 
@@ -41,8 +50,15 @@ export type GetDiaryAction = {
   payload: Diary;
 };
 
+export type GetDiariesAction = {
+  type: typeof GET_DIARIES;
+  payload: Diary[];
+};
+
 export type DiaryActionTypes =
   | CreateDraftAction
   | DeleteDiaryAction
-  | RequestDairyAction
-  | GetDiaryAction;
+  | RequestDiaryAction
+  | RequestDiariesAction
+  | GetDiaryAction
+  | GetDiariesAction;

@@ -1,10 +1,9 @@
-import { fromUnixTime } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
 import { NextPage } from "next";
 import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { END } from "redux-saga";
 import styled from "styled-components";
 
 import firebase, { firestore } from "../../../../firebase";
@@ -19,8 +18,9 @@ import PageBottomNotifier, {
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
+import { fetchUserFromFireStore } from "../../../lib/firestore";
 import { RootState, wrapper } from "../../../store";
-import { createDraft } from "../../../store/diary/actions";
+import { createDraft, requestDiaries } from "../../../store/diary/actions";
 import { Diary } from "../../../store/diary/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
@@ -211,15 +211,9 @@ export const getServerSideProps = wrapper.getServerSideProps(
   async ({ req, query, store }: MyNextContext) => {
     const userId = query.userId as string;
     const token = req?.session?.decodedToken;
+    let author!: User;
 
-    const author = {
-      uid: userId,
-      name: "",
-      picture: ""
-    };
-
-    const diariesData: Diary[] = [];
-
+    // TODO 存在しないuserId叩かれた時エラーにしたい
     if (token) {
       store.dispatch(
         userSignIn({
@@ -229,35 +223,16 @@ export const getServerSideProps = wrapper.getServerSideProps(
         })
       );
       try {
-        await req?.firebaseServer
-          .firestore()
-          .collection(`users`)
-          .doc(userId)
-          .get()
-          .then(doc => doc.data())
-          .then(res => {
-            author.name = res?.name;
-            author.picture = res?.picture;
-          });
-        await req?.firebaseServer
-          .firestore()
-          .collection(`users/${userId}/diaries`)
-          .get()
-          .then(collections => {
-            collections.forEach(doc => {
-              const data = doc.data();
-              diariesData.push({
-                id: data.id,
-                title: data.title,
-                body: data.body,
-                // eslint-disable-next-line no-underscore-dangle
-                lastEdited: utcToZonedTime(
-                  fromUnixTime(data.lastEdited.seconds),
-                  "Asia/Tokyo"
-                ).toISOString()
-              });
-            });
-          });
+        const fireStore = req?.firebaseServer.firestore();
+        author = await fetchUserFromFireStore({ fireStore, userId });
+        store.dispatch(
+          requestDiaries({
+            fireStore,
+            userId
+          })
+        );
+        store.dispatch(END);
+        await store.sagaTask?.toPromise();
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error(
@@ -270,7 +245,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     return {
       props: {
         author,
-        diariesData
+        diariesData: store.getState().diary
       }
     };
   }

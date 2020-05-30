@@ -11,6 +11,7 @@ import styled from "styled-components";
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
 import UserProfile from "../../../../components/UserProfile";
+import { fetchUserFromFireStore } from "../../../../lib/firestore";
 import { RootState, wrapper } from "../../../../store";
 import { createDraft, requestDiary } from "../../../../store/diary/actions";
 import { Diary } from "../../../../store/diary/types";
@@ -82,12 +83,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     const diaryId = query.diaryId as string;
     const token = req?.session?.decodedToken;
     let diary!: Diary;
-
-    const author = {
-      uid: userId,
-      name: "",
-      picture: ""
-    };
+    let author!: User;
 
     if (token) {
       store.dispatch(
@@ -100,16 +96,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
       try {
         const fireStore = req?.firebaseServer.firestore();
-        await fireStore
-          .collection(`users`)
-          .doc(userId)
-          .get()
-          .then(doc => doc.data())
-          .then(response => {
-            author.name = response?.name;
-            author.picture = response?.picture;
-          });
-
+        author = await fetchUserFromFireStore({ fireStore, userId });
         store.dispatch(
           requestDiary({
             fireStore,
