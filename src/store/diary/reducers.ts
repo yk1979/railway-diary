@@ -3,8 +3,8 @@ import {
   DELETE_DRAFT,
   DiaryActionTypes,
   DiaryState,
-  GET_DIARIES,
-  GET_DIARY
+  SET_DIARIES,
+  SET_DIARY
 } from "./types";
 
 // TODO 一緒に使うことは今のところないけど、下書きと後悔済みの日記が同じdiary stateで管理されているのは微妙な気が
@@ -19,9 +19,9 @@ const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
     }
     case DELETE_DRAFT:
       return null;
-    case GET_DIARY:
+    case SET_DIARY:
       return { ...action.payload };
-    case GET_DIARIES:
+    case SET_DIARIES:
       return [...action.payload];
     default:
       return state;

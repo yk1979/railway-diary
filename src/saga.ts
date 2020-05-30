@@ -1,39 +1,53 @@
 import { all, call, put, takeEvery } from "redux-saga/effects";
 
 import {
-  fetchDiariesFromFireStore,
-  fetchDiaryFromFireStore
+  deleteDiaryFromFireStore,
+  getDiariesFromFireStore,
+  getDiaryFromFireStore
 } from "./lib/firestore";
-import { getDiaries, getDiary } from "./store/diary/actions";
+import { setDiaries, setDiary } from "./store/diary/actions";
 import {
-  REQUEST_DIARIES,
-  REQUEST_DIARY,
-  RequestDiariesAction,
-  RequestDiaryAction
+  DELETE_DIARY,
+  DeleteDiaryAction,
+  GET_DIARIES,
+  GET_DIARY,
+  GetDiariesAction,
+  GetDiaryAction
 } from "./store/diary/types";
 
-function* fetchDiary(action: RequestDiaryAction) {
-  const payload = yield call(fetchDiaryFromFireStore, action.payload);
+function* runGetDiary(action: GetDiaryAction) {
+  const payload = yield call(getDiaryFromFireStore, action.payload);
   if (payload) {
-    yield put(getDiary(payload));
+    yield put(setDiary(payload));
   }
 }
 
-function* fetchDiaries(action: RequestDiariesAction) {
-  const payload = yield call(fetchDiariesFromFireStore, action.payload);
+function* runGetDiaries(action: GetDiariesAction) {
+  const payload = yield call(getDiariesFromFireStore, action.payload);
   if (payload) {
-    yield put(getDiaries(payload));
+    yield put(setDiaries(payload));
   }
 }
 
-export function* handleFetchDiary() {
-  yield takeEvery(REQUEST_DIARY, fetchDiary);
+function* runDeleteDiary(action: DeleteDiaryAction) {
+  const payload = yield call(deleteDiaryFromFireStore, action.payload);
+  if (payload) {
+    yield put(setDiary(payload));
+  }
 }
 
-export function* handleFetchDiaries() {
-  yield takeEvery(REQUEST_DIARIES, fetchDiaries);
+export function* handleGetDiary() {
+  yield takeEvery(GET_DIARY, runGetDiary);
+}
+
+export function* handleGetDiaries() {
+  yield takeEvery(GET_DIARIES, runGetDiaries);
+}
+
+export function* handleDeleteDiary() {
+  yield takeEvery(DELETE_DIARY, runDeleteDiary);
 }
 
 export default function* rootSaga() {
-  yield all([handleFetchDiary(), handleFetchDiaries()]);
+  yield all([handleGetDiary(), handleGetDiaries()]);
 }

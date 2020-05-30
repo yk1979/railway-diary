@@ -18,12 +18,12 @@ import PageBottomNotifier, {
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
-import { fetchUserFromFireStore } from "../../../lib/firestore";
+import { getUserFromFireStore } from "../../../lib/firestore";
 import { RootState, wrapper } from "../../../store";
 import {
   createDraft,
   getDiaries,
-  requestDiaries
+  setDiaries
 } from "../../../store/diary/actions";
 import { Diary } from "../../../store/diary/types";
 import { userSignIn } from "../../../store/user/actions";
@@ -95,7 +95,7 @@ const UserPage: NextPage<UserPageProps> = ({
           res.push(doc.data() as Diary);
         });
         if (res.length > 0) {
-          dispatch(getDiaries(res));
+          dispatch(setDiaries(res));
         }
       },
       err => {
@@ -184,6 +184,7 @@ const UserPage: NextPage<UserPageProps> = ({
             isOpen={isModalOpen}
             onRequestClose={() => setIsModalOpen(false)}
             onAfterClose={handleAfterModalClose}
+            // TODO: 日記削除時の挙動もstoreで管理
             onDelete={async () => {
               await firestore
                 .collection(`users/${author.uid}/diaries/`)
@@ -228,9 +229,9 @@ export const getServerSideProps = wrapper.getServerSideProps(
       );
       try {
         const fireStore = req?.firebaseServer.firestore();
-        author = await fetchUserFromFireStore({ fireStore, userId });
+        author = await getUserFromFireStore({ fireStore, userId });
         store.dispatch(
-          requestDiaries({
+          getDiaries({
             fireStore,
             userId
           })
@@ -253,7 +254,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
         res?.status(404).send("not found");
     } else {
       diaries = diariesData;
-      console.log("=========diaries===========-", diaries);
     }
 
     return {

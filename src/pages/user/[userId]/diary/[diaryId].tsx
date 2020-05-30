@@ -11,9 +11,9 @@ import styled from "styled-components";
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
 import UserProfile from "../../../../components/UserProfile";
-import { fetchUserFromFireStore } from "../../../../lib/firestore";
+import { getUserFromFireStore } from "../../../../lib/firestore";
 import { RootState, wrapper } from "../../../../store";
-import { createDraft, requestDiary } from "../../../../store/diary/actions";
+import { createDraft, getDiary } from "../../../../store/diary/actions";
 import { Diary } from "../../../../store/diary/types";
 import { userSignIn } from "../../../../store/user/actions";
 import { User } from "../../../../store/user/types";
@@ -96,9 +96,9 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
       try {
         const fireStore = req?.firebaseServer.firestore();
-        author = await fetchUserFromFireStore({ fireStore, userId });
+        author = await getUserFromFireStore({ fireStore, userId });
         store.dispatch(
-          requestDiary({
+          getDiary({
             fireStore,
             userId,
             diaryId

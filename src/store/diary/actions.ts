@@ -1,14 +1,16 @@
 import {
   CREATE_DRAFT,
+  DELETE_DIARY,
   DELETE_DRAFT,
+  DeleteDiaryAction,
   Diary,
   DiaryActionTypes,
   GET_DIARIES,
   GET_DIARY,
-  REQUEST_DIARIES,
-  REQUEST_DIARY,
-  RequestDiariesAction,
-  RequestDiaryAction
+  GetDiariesAction,
+  GetDiaryAction,
+  SET_DIARIES,
+  SET_DIARY
 } from "./types";
 
 /**
@@ -23,26 +25,31 @@ export const deleteDraft = (): DiaryActionTypes => ({
   type: DELETE_DRAFT
 });
 
-export const requestDiary = (
-  payload: RequestDiaryAction["payload"]
+export const getDiary = (
+  payload: GetDiaryAction["payload"]
 ): DiaryActionTypes => ({
-  type: REQUEST_DIARY,
-  payload
-});
-
-export const requestDiaries = (
-  payload: RequestDiariesAction["payload"]
-): DiaryActionTypes => ({
-  type: REQUEST_DIARIES,
-  payload
-});
-
-export const getDiary = (payload: Diary): DiaryActionTypes => ({
   type: GET_DIARY,
   payload
 });
 
-export const getDiaries = (payload: Diary[]): DiaryActionTypes => ({
+export const getDiaries = (
+  payload: GetDiariesAction["payload"]
+): DiaryActionTypes => ({
   type: GET_DIARIES,
+  payload
+});
+
+export const setDiary = (payload: Diary): DiaryActionTypes => ({
+  type: SET_DIARY,
+  payload
+});
+
+export const setDiaries = (payload: Diary[]): DiaryActionTypes => ({
+  type: SET_DIARIES,
+  payload
+});
+
+export const deleteDiary = (payload: DeleteDiaryAction["payload"]) => ({
+  type: DELETE_DIARY,
   payload
 });

@@ -2,13 +2,14 @@ import { fromUnixTime } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 
 import {
+  DeleteDiaryAction,
   Diary,
-  RequestDiariesAction,
-  RequestDiaryAction
+  GetDiariesAction,
+  GetDiaryAction
 } from "../store/diary/types";
 import { User } from "../store/user/types";
 
-export async function fetchUserFromFireStore({
+export async function getUserFromFireStore({
   fireStore,
   userId
 }: {
@@ -27,11 +28,11 @@ export async function fetchUserFromFireStore({
   };
 }
 
-export async function fetchDiaryFromFireStore({
+export async function getDiaryFromFireStore({
   fireStore,
   userId,
   diaryId
-}: RequestDiaryAction["payload"]): Promise<Diary | undefined> {
+}: GetDiaryAction["payload"]): Promise<Diary | undefined> {
   const diaryData = await fireStore
     .collection(`users/${userId}/diaries/`)
     .doc(`${diaryId}`)
@@ -42,7 +43,6 @@ export async function fetchDiaryFromFireStore({
     id: diaryData.id,
     title: diaryData.title,
     body: diaryData.body,
-    // eslint-disable-next-line no-underscore-dangle
     lastEdited: utcToZonedTime(
       fromUnixTime(diaryData.lastEdited.seconds),
       "Asia/Tokyo"
@@ -50,10 +50,10 @@ export async function fetchDiaryFromFireStore({
   };
 }
 
-export async function fetchDiariesFromFireStore({
+export async function getDiariesFromFireStore({
   fireStore,
   userId
-}: RequestDiariesAction["payload"]) {
+}: GetDiariesAction["payload"]) {
   const diariesData: any[] = [];
   await fireStore
     .collection(`users/${userId}/diaries`)
@@ -74,4 +74,15 @@ export async function fetchDiariesFromFireStore({
       });
     });
   return diariesData;
+}
+
+export async function deleteDiaryFromFireStore({
+  fireStore,
+  userId,
+  diaryId
+}: DeleteDiaryAction["payload"]) {
+  await fireStore
+    .collection(`users/${userId}/diaries/`)
+    .doc(diaryId)
+    .delete();
 }
