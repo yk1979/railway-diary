@@ -106,19 +106,19 @@ export const getServerSideProps = wrapper.getServerSideProps(
         );
         store.dispatch(END);
         await store.sagaTask?.toPromise();
-
-        const diaryData = store.getState().diary;
-        if (!diaryData) {
-          // TODO nextの404ページに飛ばしたい
-          // eslint-disable-next-line
-        res?.status(404).send("not found");
-        } else {
-          diary = diaryData;
-        }
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error(err);
       }
+    }
+
+    const diaryData = store.getState().diary;
+    if (!diaryData) {
+      // TODO nextの404ページに飛ばしたい
+      // eslint-disable-next-line
+        res?.status(404).send("not found");
+    } else {
+      diary = diaryData;
     }
 
     return {

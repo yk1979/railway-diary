@@ -22,7 +22,7 @@ const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
     case GET_DIARY:
       return { ...action.payload };
     case GET_DIARIES:
-      return { ...action.payload };
+      return [...action.payload];
     default:
       return state;
   }

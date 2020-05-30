@@ -20,7 +20,11 @@ import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
 import { fetchUserFromFireStore } from "../../../lib/firestore";
 import { RootState, wrapper } from "../../../store";
-import { createDraft, requestDiaries } from "../../../store/diary/actions";
+import {
+  createDraft,
+  getDiaries,
+  requestDiaries
+} from "../../../store/diary/actions";
 import { Diary } from "../../../store/diary/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
@@ -63,12 +67,12 @@ const StyledLoginButton = styled(Button)`
 
 type UserPageProps = {
   author: User;
-  diariesData: Diary[];
+  diaries: Diary[];
 };
 
 const UserPage: NextPage<UserPageProps> = ({
   author,
-  diariesData
+  diaries
 }: UserPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -76,7 +80,6 @@ const UserPage: NextPage<UserPageProps> = ({
   const [unsubscribeDb, setUnsubscribeDb] = useState<{
     [key: string]: (() => void) | undefined;
   }>({});
-  const [diaries, setDiaries] = useState<Diary[]>(diariesData);
 
   const [modalId, setModalId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,7 +95,7 @@ const UserPage: NextPage<UserPageProps> = ({
           res.push(doc.data() as Diary);
         });
         if (res.length > 0) {
-          setDiaries(res);
+          dispatch(getDiaries(res));
         }
       },
       err => {
@@ -208,9 +211,10 @@ const UserPage: NextPage<UserPageProps> = ({
 };
 
 export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ req, query, store }: MyNextContext) => {
+  async ({ req, res, query, store }: MyNextContext) => {
     const userId = query.userId as string;
     const token = req?.session?.decodedToken;
+    let diaries: Diary[] = [];
     let author!: User;
 
     // TODO 存在しないuserId叩かれた時エラーにしたい
@@ -242,10 +246,20 @@ export const getServerSideProps = wrapper.getServerSideProps(
       }
     }
 
+    const diariesData = store.getState().diary;
+    if (!diariesData) {
+      // TODO nextの404ページに飛ばしたい
+      // eslint-disable-next-line
+        res?.status(404).send("not found");
+    } else {
+      diaries = diariesData;
+      console.log("=========diaries===========-", diaries);
+    }
+
     return {
       props: {
         author,
-        diariesData: store.getState().diary
+        diaries
       }
     };
   }
