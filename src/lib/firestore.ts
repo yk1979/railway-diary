@@ -28,17 +28,31 @@ export async function getUserFromFirestore({
   };
 }
 
+async function setDiaryUserToFireStore({
+  firestore,
+  user
+}: {
+  firestore: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
+  user: User;
+}) {
+  await firestore
+    .collection(`/users/`)
+    .doc(user.uid)
+    .set({ name: user.name, picture: user.picture });
+}
+
 export async function createDiaryToFirestore({
   firestore,
-  userId,
+  user,
   diary
 }: {
   firestore: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
-  userId: string;
+  user: User;
   diary: Diary;
 }) {
+  setDiaryUserToFireStore({ firestore, user });
   firestore
-    .collection(`/users/${userId}/diaries`)
+    .collection(`/users/${user.uid}/diaries`)
     .doc(`${diary.id}`)
     .set({
       id: diary.id,

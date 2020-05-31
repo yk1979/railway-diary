@@ -9,7 +9,10 @@ import { firestore } from "../../firebase";
 import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
-import { createDiaryToFirestore } from "../lib/firestore";
+import {
+  createDiaryToFirestore,
+  setDiaryUserToFireStore
+} from "../lib/firestore";
 import { RootState, wrapper } from "../store";
 import { deleteDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
@@ -40,12 +43,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
             diary={diary}
             buttons={{
               onSave: async () => {
-                // TODO まとめて
-                await firestore
-                  .collection(`/users/`)
-                  .doc(user.uid)
-                  .set({ name: user.name, picture: user.picture });
-                createDiaryToFirestore({ firestore, userId: user.uid, diary });
+                createDiaryToFirestore({ firestore, user, diary });
                 dispatch(deleteDraft());
                 // TODO ローディング処理
                 router.push(`/user/${user.uid}`);
