@@ -22,6 +22,7 @@ import { getUserFromFirestore } from "../../../lib/firestore";
 import { RootState, wrapper } from "../../../store";
 import {
   createDraft,
+  deleteDiary,
   getDiaries,
   setDiaries
 } from "../../../store/diary/actions";
@@ -185,11 +186,10 @@ const UserPage: NextPage<UserPageProps> = ({
             onRequestClose={() => setIsModalOpen(false)}
             onAfterClose={handleAfterModalClose}
             // TODO: 日記削除時の挙動もstoreで管理
-            onDelete={async () => {
-              await firestore
-                .collection(`users/${author.uid}/diaries/`)
-                .doc(modalId)
-                .delete();
+            onDelete={() => {
+              dispatch(
+                deleteDiary({ firestore, userId: author.uid, diaryId: modalId })
+              );
             }}
           />
           <PageBottomNotifier

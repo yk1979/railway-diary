@@ -2,13 +2,13 @@ import { NextPage } from "next";
 import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { wrapper } from "../store";
+import { RootState, wrapper } from "../store";
 import { createDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
 import { userSignIn } from "../store/user/actions";
@@ -27,13 +27,14 @@ const StyledEditForm = styled(EditForm)`
 `;
 
 type EditPageProps = {
-  diary: Diary;
   user: User;
 };
 
-const EditPage: NextPage<EditPageProps> = ({ diary, user }: EditPageProps) => {
+const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const diary = useSelector((state: RootState) => state.diary as Diary);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
@@ -77,11 +78,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
         })
       );
     }
-    const { diary, user } = store.getState();
+    const { user } = store.getState();
 
     return {
       props: {
-        diary,
         user
       }
     };

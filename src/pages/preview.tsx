@@ -9,6 +9,7 @@ import { firestore } from "../../firebase";
 import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
+import { createDiaryToFirestore } from "../lib/firestore";
 import { RootState, wrapper } from "../store";
 import { deleteDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
@@ -20,16 +21,16 @@ const BackButton = styled(Button)`
 `;
 
 type PreviewPageProps = {
-  diary: Diary;
   user: User;
 };
 
 const PreviewPage: NextPage<PreviewPageProps> = ({
-  diary,
   user
 }: PreviewPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const diary = useSelector((state: RootState) => state.diary as Diary);
 
   return (
     <Layout userId={user ? user.uid : null}>
@@ -44,15 +45,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
                   .collection(`/users/`)
                   .doc(user.uid)
                   .set({ name: user.name, picture: user.picture });
-                await firestore
-                  .collection(`/users/${user.uid}/diaries`)
-                  .doc(`${diary.id}`)
-                  .set({
-                    id: diary.id,
-                    title: diary.title,
-                    body: diary.body,
-                    lastEdited: new Date()
-                  });
+                createDiaryToFirestore({ firestore, userId: user.uid, diary });
                 dispatch(deleteDraft());
                 // TODO ローディング処理
                 router.push(`/user/${user.uid}`);
@@ -94,11 +87,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
       );
     }
 
-    const { diary, user } = store.getState();
+    const { user } = store.getState();
 
     return {
       props: {
-        diary,
         user
       }
     };
