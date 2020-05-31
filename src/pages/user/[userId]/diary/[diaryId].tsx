@@ -11,7 +11,7 @@ import styled from "styled-components";
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
 import UserProfile from "../../../../components/UserProfile";
-import { getUserFromFireStore } from "../../../../lib/firestore";
+import { getUserFromFirestore } from "../../../../lib/firestore";
 import { RootState, wrapper } from "../../../../store";
 import { createDraft, getDiary } from "../../../../store/diary/actions";
 import { Diary } from "../../../../store/diary/types";
@@ -95,11 +95,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
       );
 
       try {
-        const fireStore = req?.firebaseServer.firestore();
-        author = await getUserFromFireStore({ fireStore, userId });
+        const firestore = req?.firebaseServer.firestore();
+        author = await getUserFromFirestore({ firestore, userId });
         store.dispatch(
           getDiary({
-            fireStore,
+            firestore,
             userId,
             diaryId
           })

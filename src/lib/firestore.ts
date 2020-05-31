@@ -9,14 +9,14 @@ import {
 } from "../store/diary/types";
 import { User } from "../store/user/types";
 
-export async function getUserFromFireStore({
-  fireStore,
+export async function getUserFromFirestore({
+  firestore,
   userId
 }: {
-  fireStore: FirebaseFirestore.Firestore;
+  firestore: FirebaseFirestore.Firestore;
   userId: string;
 }): Promise<User> {
-  const user = await fireStore
+  const user = await firestore
     .collection(`users`)
     .doc(userId)
     .get()
@@ -28,12 +28,32 @@ export async function getUserFromFireStore({
   };
 }
 
-export async function getDiaryFromFireStore({
-  fireStore,
+export async function createDiaryToFirestore({
+  firestore,
+  userId,
+  diary
+}: {
+  firestore: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
+  userId: string;
+  diary: Diary;
+}) {
+  firestore
+    .collection(`/users/${userId}/diaries`)
+    .doc(`${diary.id}`)
+    .set({
+      id: diary.id,
+      title: diary.title,
+      body: diary.body,
+      lastEdited: new Date()
+    });
+}
+
+export async function getDiaryFromFirestore({
+  firestore,
   userId,
   diaryId
 }: GetDiaryAction["payload"]): Promise<Diary | undefined> {
-  const diaryData = await fireStore
+  const diaryData = await firestore
     .collection(`users/${userId}/diaries/`)
     .doc(`${diaryId}`)
     .get()
@@ -50,12 +70,12 @@ export async function getDiaryFromFireStore({
   };
 }
 
-export async function getDiariesFromFireStore({
-  fireStore,
+export async function getDiariesFromFirestore({
+  firestore,
   userId
 }: GetDiariesAction["payload"]) {
   const diariesData: any[] = [];
-  await fireStore
+  await firestore
     .collection(`users/${userId}/diaries`)
     .get()
     .then((collections: any) => {
@@ -76,12 +96,12 @@ export async function getDiariesFromFireStore({
   return diariesData;
 }
 
-export async function deleteDiaryFromFireStore({
-  fireStore,
+export async function deleteDiaryFromFirestore({
+  firestore,
   userId,
   diaryId
 }: DeleteDiaryAction["payload"]) {
-  await fireStore
+  await firestore
     .collection(`users/${userId}/diaries/`)
     .doc(diaryId)
     .delete();

@@ -32,7 +32,7 @@ type DeleteDraftAction = {
 export type GetDiaryAction = {
   type: typeof GET_DIARY;
   payload: {
-    fireStore: FirebaseFirestore.Firestore;
+    firestore: FirebaseFirestore.Firestore;
     userId: string;
     diaryId: string;
   };
@@ -41,7 +41,7 @@ export type GetDiaryAction = {
 export type GetDiariesAction = {
   type: typeof GET_DIARIES;
   payload: {
-    fireStore: FirebaseFirestore.Firestore;
+    firestore: FirebaseFirestore.Firestore;
     userId: string;
   };
 };
@@ -59,7 +59,7 @@ export type SetDiariesAction = {
 export type DeleteDiaryAction = {
   type: typeof DELETE_DIARY;
   payload: {
-    fireStore: FirebaseFirestore.Firestore;
+    firestore: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
     userId: string;
     diaryId: string;
   };

@@ -1,9 +1,9 @@
 import { all, call, put, takeEvery } from "redux-saga/effects";
 
 import {
-  deleteDiaryFromFireStore,
-  getDiariesFromFireStore,
-  getDiaryFromFireStore
+  deleteDiaryFromFirestore,
+  getDiariesFromFirestore,
+  getDiaryFromFirestore
 } from "./lib/firestore";
 import { setDiaries, setDiary } from "./store/diary/actions";
 import {
@@ -16,21 +16,21 @@ import {
 } from "./store/diary/types";
 
 function* runGetDiary(action: GetDiaryAction) {
-  const payload = yield call(getDiaryFromFireStore, action.payload);
+  const payload = yield call(getDiaryFromFirestore, action.payload);
   if (payload) {
     yield put(setDiary(payload));
   }
 }
 
 function* runGetDiaries(action: GetDiariesAction) {
-  const payload = yield call(getDiariesFromFireStore, action.payload);
+  const payload = yield call(getDiariesFromFirestore, action.payload);
   if (payload) {
     yield put(setDiaries(payload));
   }
 }
 
 function* runDeleteDiary(action: DeleteDiaryAction) {
-  const payload = yield call(deleteDiaryFromFireStore, action.payload);
+  const payload = yield call(deleteDiaryFromFirestore, action.payload);
   if (payload) {
     yield put(setDiary(payload));
   }

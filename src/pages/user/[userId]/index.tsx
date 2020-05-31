@@ -18,7 +18,7 @@ import PageBottomNotifier, {
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
-import { getUserFromFireStore } from "../../../lib/firestore";
+import { getUserFromFirestore } from "../../../lib/firestore";
 import { RootState, wrapper } from "../../../store";
 import {
   createDraft,
@@ -228,11 +228,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
         })
       );
       try {
-        const fireStore = req?.firebaseServer.firestore();
-        author = await getUserFromFireStore({ fireStore, userId });
+        const fs = req?.firebaseServer.firestore();
+        author = await getUserFromFirestore({ firestore: fs, userId });
         store.dispatch(
           getDiaries({
-            fireStore,
+            firestore: fs,
             userId
           })
         );
