@@ -19,9 +19,7 @@ export const DELETE_DRAFT = "DELETE_DRAFT";
 
 interface UserSignInAction {
   type: typeof USER_SIGN_IN;
-  uid: string;
-  name: string | null;
-  picture: string;
+  payload: User;
 }
 
 interface UserSignOutAction {

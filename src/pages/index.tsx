@@ -1,14 +1,14 @@
-import { MyNextContext, NextPage } from "next";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
+import React from "react";
 import styled from "styled-components";
 
 import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
-import { RootState } from "../store";
+import { wrapper } from "../store";
 import { userSignIn } from "../store/user/actions";
-import { UserState } from "../store/user/types";
+import { User } from "../store/user/types";
 
 const StyledEditButton = styled(EditButton)`
   position: absolute;
@@ -17,19 +17,10 @@ const StyledEditButton = styled(EditButton)`
 `;
 
 type IndexPageProps = {
-  userData: UserState;
+  user: User;
 };
 
-const IndexPage: NextPage<IndexPageProps> = ({ userData }: IndexPageProps) => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (userData) {
-      dispatch(userSignIn(userData));
-    }
-  }, []);
-
-  const user = useSelector((state: RootState) => state.user) || userData;
-
+const IndexPage: NextPage<IndexPageProps> = ({ user }: IndexPageProps) => {
   return (
     <Layout userId={user ? user.uid : null}>
       <SearchBox />
@@ -38,20 +29,27 @@ const IndexPage: NextPage<IndexPageProps> = ({ userData }: IndexPageProps) => {
   );
 };
 
-export async function getServerSideProps({ req }: MyNextContext) {
-  const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps(
+  ({ req, store }: MyNextContext) => {
+    const token = req?.session?.decodedToken;
 
-  const userData: UserState = token
-    ? {
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture
+        })
+      );
+    }
+    const { user } = store.getState();
+
+    return {
+      props: {
+        user
       }
-    : null;
-
-  return {
-    props: { userData }
-  };
-}
+    };
+  }
+);
 
 export default IndexPage;

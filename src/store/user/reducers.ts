@@ -8,11 +8,7 @@ import {
 const user = (state: UserState = null, action: UserActionTypes) => {
   switch (action.type) {
     case USER_SIGN_IN: {
-      return {
-        uid: action.uid,
-        name: action.name,
-        picture: action.picture
-      };
+      return action.payload;
     }
     case USER_SIGN_OUT:
       return null;

@@ -1,40 +1,35 @@
-import { MyNextContext, NextPage } from "next";
+import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import { firestore } from "../../firebase";
 import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
-import { RootState } from "../store";
+import { createDiaryToFirestore } from "../lib/firestore";
+import { RootState, wrapper } from "../store";
 import { deleteDraft } from "../store/diary/actions";
+import { Diary } from "../store/diary/types";
 import { userSignIn } from "../store/user/actions";
-import { UserState } from "../store/user/types";
+import { User } from "../store/user/types";
 
 const BackButton = styled(Button)`
   margin-top: 16px;
 `;
 
 type PreviewPageProps = {
-  userData: UserState;
+  user: User;
 };
 
 const PreviewPage: NextPage<PreviewPageProps> = ({
-  userData
+  user
 }: PreviewPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const diary = useSelector((state: RootState) => state.diary);
 
-  useEffect(() => {
-    if (userData) {
-      dispatch(userSignIn(userData));
-    }
-  }, []);
-
-  const user = useSelector((state: RootState) => state.user) || userData;
+  const diary = useSelector((state: RootState) => state.diary as Diary);
 
   return (
     <Layout userId={user ? user.uid : null}>
@@ -44,20 +39,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
             diary={diary}
             buttons={{
               onSave: async () => {
-                // TODO まとめて
-                await firestore
-                  .collection(`/users/`)
-                  .doc(user.uid)
-                  .set({ name: user.name, picture: user.picture });
-                await firestore
-                  .collection(`/users/${user.uid}/diaries`)
-                  .doc(`${diary.id}`)
-                  .set({
-                    id: diary.id,
-                    title: diary.title,
-                    body: diary.body,
-                    lastEdited: new Date()
-                  });
+                createDiaryToFirestore({ user, diary });
                 dispatch(deleteDraft());
                 // TODO ローディング処理
                 router.push(`/user/${user.uid}`);
@@ -85,17 +67,26 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
 
 export default PreviewPage;
 
-export async function getServerSideProps({ req }: MyNextContext) {
-  const token = req?.session?.decodedToken;
-  const userData: UserState = token
-    ? {
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture
-      }
-    : null;
+export const getServerSideProps = wrapper.getServerSideProps(
+  ({ req, store }: MyNextContext) => {
+    const token = req?.session?.decodedToken;
 
-  return {
-    props: { userData }
-  };
-}
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture
+        })
+      );
+    }
+
+    const { user } = store.getState();
+
+    return {
+      props: {
+        user
+      }
+    };
+  }
+);

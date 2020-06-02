@@ -14,8 +14,10 @@
     "antialiased",
     "devtools",
     "firestore",
+    "healthz",
     "mypage",
     "readonly",
+    "resave",
     "stylelint",
     "viewports"
   ],

@@ -1,4 +1,5 @@
-import { MyNextContext } from "next";
+import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -7,9 +8,9 @@ import firebase from "../../firebase";
 import { handleSignIn, handleSignOut } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
-import { RootState } from "../store";
+import { RootState, wrapper } from "../store";
 import { userSignIn, userSignOut } from "../store/user/actions";
-import { UserState } from "../store/user/types";
+import { User, UserState } from "../store/user/types";
 
 const Text = styled.p`
   margin-top: 24px;
@@ -20,20 +21,14 @@ const StyledButton = styled(Button)`
 `;
 
 type LoginPageProps = {
-  userData: UserState;
+  user: User;
 };
 
-const LoginPage = ({ userData }: LoginPageProps) => {
+const LoginPage: NextPage<LoginPageProps> = () => {
   const dispatch = useDispatch();
-
-  const signedInUser =
-    useSelector((state: RootState) => state.user) || userData;
+  const user = useSelector<RootState, UserState>(state => state.user);
 
   useEffect(() => {
-    if (userData) {
-      dispatch(userSignIn(userData));
-    }
-
     firebase.auth().onAuthStateChanged(async currentUser => {
       if (currentUser) {
         const token = await currentUser.getIdToken();
@@ -64,17 +59,15 @@ const LoginPage = ({ userData }: LoginPageProps) => {
   return (
     <>
       <Layout userId={null}>
-        {signedInUser && (
-          <Text>{`${signedInUser.name} さん としてログインしています`}</Text>
-        )}
+        {user && <Text>{`${user.name} さん としてログインしています`}</Text>}
         {/* TODO ログアウト後レンダーが走らない問題に対処 */}
         {/* 他のページから遷移してきた場合に再レンダリングが無効になる */}
         <StyledButton
-          text={!signedInUser ? "ログインする" : "ログアウトする"}
-          onClick={!signedInUser ? handleSignIn : handleSignOut}
-          theme={!signedInUser ? buttonTheme.primary : buttonTheme.back}
+          text={!user ? "ログインする" : "ログアウトする"}
+          onClick={!user ? handleSignIn : handleSignOut}
+          theme={!user ? buttonTheme.primary : buttonTheme.back}
         />
-        {signedInUser && (
+        {user && (
           <>
             <StyledButton
               text="トップへ"
@@ -85,7 +78,7 @@ const LoginPage = ({ userData }: LoginPageProps) => {
             <StyledButton
               text="あなたの てつどうのきろく をみる"
               onClick={() => {
-                window.location.href = `/user/${signedInUser.uid}`;
+                window.location.href = `/user/${user.uid}`;
               }}
             />
           </>
@@ -95,20 +88,20 @@ const LoginPage = ({ userData }: LoginPageProps) => {
   );
 };
 
-LoginPage.getInitialProps = ({ req }: MyNextContext) => {
-  const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps(
+  ({ req, store }: MyNextContext) => {
+    const token = req?.session?.decodedToken;
 
-  const userData = token
-    ? {
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture
-      }
-    : null;
-
-  return {
-    userData
-  };
-};
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture
+        })
+      );
+    }
+  }
+);
 
 export default LoginPage;

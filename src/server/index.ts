@@ -3,9 +3,11 @@ import session from "express-session";
 import * as admin from "firebase-admin";
 import Next from "next";
 
+import firebaseServer from "./middlewares/firebaseServer";
+
 const FileStore = require("session-file-store")(session);
 
-const port = parseInt(process.env.PORT || "3000", 10);
+const port = parseInt(process.env.PORT || "4000", 10);
 const dev = process.env.NODE_ENV !== "production";
 const app = Next({ dev });
 
@@ -25,7 +27,7 @@ app.prepare().then(() => {
   server.use(express.urlencoded({ extended: true }));
 
   // next.jsのヘルスチェック
-  server.get("/healtz", (_, res) => {
+  server.get("/healthz", (_, res) => {
     res.send("OK");
   });
 
@@ -40,10 +42,7 @@ app.prepare().then(() => {
     })
   );
 
-  server.use((req: any, _, next) => {
-    req.firebaseServer = firebase;
-    next();
-  });
+  server.use(firebaseServer(firebase));
 
   // TODO すべてのページで未ログイン状態ならloginページにリダイレクトさせて、ログイン後は元のリクエストページに戻したい
   // /\/(?!login)/ でログインページ以外のパスに引っ掛けようとしたけど、パスが"/login"の時も引っかかっちゃってうまくいかず

@@ -1,16 +1,18 @@
-import { MyNextContext, NextPage } from "next";
+import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { RootState } from "../store";
+import { RootState, wrapper } from "../store";
 import { createDraft } from "../store/diary/actions";
+import { Diary } from "../store/diary/types";
 import { userSignIn } from "../store/user/actions";
-import { UserState } from "../store/user/types";
+import { User } from "../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -25,21 +27,14 @@ const StyledEditForm = styled(EditForm)`
 `;
 
 type EditPageProps = {
-  userData: UserState;
+  user: User;
 };
 
-const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
+const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const diary = useSelector((state: RootState) => state.diary);
 
-  const user = useSelector((state: RootState) => state.user) || userData;
-
-  useEffect(() => {
-    if (user) {
-      dispatch(userSignIn(user));
-    }
-  }, []);
+  const diary = useSelector((state: RootState) => state.diary as Diary);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
@@ -70,19 +65,27 @@ const EditPage: NextPage<EditPageProps> = ({ userData }: EditPageProps) => {
   );
 };
 
-export async function getServerSideProps({ req }: MyNextContext) {
-  const token = req?.session?.decodedToken;
-  const userData: UserState = token
-    ? {
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture
-      }
-    : null;
+export const getServerSideProps = wrapper.getServerSideProps(
+  ({ req, store }: MyNextContext) => {
+    const token = req?.session?.decodedToken;
 
-  return {
-    props: { userData }
-  };
-}
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture
+        })
+      );
+    }
+    const { user } = store.getState();
+
+    return {
+      props: {
+        user
+      }
+    };
+  }
+);
 
 export default EditPage;

@@ -1,12 +1,12 @@
-import { fromUnixTime } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
-import { MyNextContext, NextPage } from "next";
+import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { END } from "redux-saga";
 import styled from "styled-components";
 
-import { firestore } from "../../../../firebase";
+import firebase from "../../../../firebase";
 import Button, { buttonTheme } from "../../../components/Button";
 import DiaryCard from "../../../components/DiaryCard";
 import EditButton from "../../../components/EditButton";
@@ -18,11 +18,18 @@ import PageBottomNotifier, {
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
-import { Diary } from "../../../server/types";
-import { RootState } from "../../../store";
-import { createDraft } from "../../../store/diary/actions";
-import { userSignIn, userSignOut } from "../../../store/user/actions";
-import { User, UserState } from "../../../store/user/types";
+import { fs as firestore, getUserFromFirestore } from "../../../lib/firestore";
+import { RootState, wrapper } from "../../../store";
+import {
+  createDraft,
+  deleteDiary,
+  getDiaries,
+  setDiaries
+} from "../../../store/diary/actions";
+import { Diary } from "../../../store/diary/types";
+import { userSignIn } from "../../../store/user/actions";
+import { User } from "../../../store/user/types";
+// import { MyNextContext } from "../../../types/next.d";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -60,29 +67,26 @@ const StyledLoginButton = styled(Button)`
 `;
 
 type UserPageProps = {
-  signedInUser: UserState;
   author: User;
-  diariesData: Diary[];
+  user: User;
 };
 
-const UserPage: NextPage<UserPageProps> = ({
-  signedInUser,
-  author,
-  diariesData
-}: UserPageProps) => {
+const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const diaries = useSelector<RootState, Diary[]>(
+    // TODO fix assertion
+    state => state.diary as Diary[]
+  );
 
   const [unsubscribeDb, setUnsubscribeDb] = useState<{
     [key: string]: (() => void) | undefined;
   }>({});
-  const [diaries, setDiaries] = useState<Diary[]>(diariesData);
 
   const [modalId, setModalId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
-
-  const user = useSelector((state: RootState) => state.user) || signedInUser;
 
   const addDbListener = (id: string) => {
     const listener = firestore.collection(`users/${id}/diaries`).onSnapshot(
@@ -92,12 +96,15 @@ const UserPage: NextPage<UserPageProps> = ({
           res.push(doc.data() as Diary);
         });
         if (res.length > 0) {
-          setDiaries(res);
+          dispatch(setDiaries(res));
         }
       },
       err => {
         // eslint-disable-next-line no-console
-        console.error(err);
+        console.error(
+          "Error, could not fetch diary data in client side: ",
+          err
+        );
       }
     );
     setUnsubscribeDb({ listener });
@@ -120,13 +127,13 @@ const UserPage: NextPage<UserPageProps> = ({
   };
 
   useEffect(() => {
-    if (user) {
-      addDbListener(author.uid);
-      dispatch(userSignIn(user));
-    } else {
-      removeDbListener();
-      dispatch(userSignOut());
-    }
+    firebase.auth().onAuthStateChanged(currentUser => {
+      if (currentUser) {
+        addDbListener(author.uid);
+      } else {
+        removeDbListener();
+      }
+    });
   }, [user?.uid]);
 
   return (
@@ -143,7 +150,6 @@ const UserPage: NextPage<UserPageProps> = ({
           />
           {diaries.length > 0 ? (
             <DiaryList>
-              {/* TODO 更新日順に並び替え */}
               {diaries.map(d => (
                 <DiaryCard
                   key={d.id}
@@ -179,11 +185,10 @@ const UserPage: NextPage<UserPageProps> = ({
             isOpen={isModalOpen}
             onRequestClose={() => setIsModalOpen(false)}
             onAfterClose={handleAfterModalClose}
-            onDelete={async () => {
-              await firestore
-                .collection(`users/${author.uid}/diaries/`)
-                .doc(modalId)
-                .delete();
+            onDelete={() => {
+              dispatch(
+                deleteDiary({ firestore, userId: author.uid, diaryId: modalId })
+              );
             }}
           />
           <PageBottomNotifier
@@ -205,70 +210,55 @@ const UserPage: NextPage<UserPageProps> = ({
   );
 };
 
-export async function getServerSideProps({ req, query }: MyNextContext) {
-  const userId = query.userId as string;
-  const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps(
+  async ({ req, res, query, store }: MyNextContext) => {
+    const userId = query.userId as string;
+    const token = req?.session?.decodedToken;
+    let author!: User;
 
-  const signedInUser: UserState = token
-    ? {
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture
+    // TODO 存在しないuserId叩かれた時エラーにしたい
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture
+        })
+      );
+      try {
+        const fs = req?.firebaseServer.firestore();
+        author = await getUserFromFirestore({ firestore: fs, userId });
+        store.dispatch(
+          getDiaries({
+            firestore: fs,
+            userId
+          })
+        );
+        store.dispatch(END);
+        await store.sagaTask?.toPromise();
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Error, could not fetch diary data in server side: ",
+          err
+        );
       }
-    : null;
-
-  const author = {
-    uid: userId,
-    name: "",
-    picture: ""
-  };
-
-  const diariesData: Diary[] = [];
-
-  if (signedInUser) {
-    try {
-      await req?.firebaseServer
-        .firestore()
-        .collection(`users`)
-        .doc(userId)
-        .get()
-        .then(doc => doc.data())
-        .then(res => {
-          author.name = res?.name;
-          author.picture = res?.picture;
-        });
-      await req?.firebaseServer
-        .firestore()
-        .collection(`users/${userId}/diaries`)
-        .get()
-        .then(collections => {
-          collections.forEach(doc => {
-            const data = doc.data();
-            diariesData.push({
-              id: data.id,
-              title: data.title,
-              body: data.body,
-              // eslint-disable-next-line no-underscore-dangle
-              lastEdited: utcToZonedTime(
-                fromUnixTime(data.lastEdited.seconds),
-                "Asia/Tokyo"
-              ).toISOString()
-            });
-          });
-        });
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
     }
+
+    const { diary, user } = store.getState();
+    if (!diary) {
+      // TODO nextの404ページに飛ばしたい
+      // eslint-disable-next-line
+        res?.status(404).send("not found");
+    }
+
+    return {
+      props: {
+        author,
+        user
+      }
+    };
   }
-
-  return {
-    props: {
-      signedInUser,
-      author,
-      diariesData
-    }
-  };
-}
+);
 
 export default UserPage;
