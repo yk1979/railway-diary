@@ -4,7 +4,7 @@ import { NextPage } from "next";
 import { MyNextContext } from "next/dist/next-server/lib/utils";
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { END } from "redux-saga";
 import styled from "styled-components";
 
@@ -12,7 +12,7 @@ import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
 import UserProfile from "../../../../components/UserProfile";
 import { getUserFromFirestore } from "../../../../lib/firestore";
-import { RootState, wrapper } from "../../../../store";
+import { wrapper } from "../../../../store";
 import { createDraft, getDiary } from "../../../../store/diary/actions";
 import { Diary } from "../../../../store/diary/types";
 import { userSignIn } from "../../../../store/user/actions";
@@ -25,16 +25,17 @@ const StyledDiaryViewer = styled(DiaryViewer)`
 type UserDiaryPageProps = {
   author: User;
   diary: Diary;
+  user: User;
 };
 
 // TODO ブラウザバックでauthorのデータがうまく取れない問題を修正
 const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   author,
-  diary
+  diary,
+  user
 }: UserDiaryPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user);
 
   return (
     <Layout userId={user ? user.uid : null}>
@@ -112,7 +113,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
       }
     }
 
-    const diaryData = store.getState().diary;
+    const { diary: diaryData, user } = store.getState();
+
     if (!diaryData) {
       // TODO nextの404ページに飛ばしたい
       // eslint-disable-next-line
@@ -124,7 +126,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
     return {
       props: {
         author,
-        diary
+        diary,
+        user
       }
     };
   }

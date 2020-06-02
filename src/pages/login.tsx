@@ -1,3 +1,4 @@
+import { NextPage } from "next";
 import { MyNextContext } from "next/dist/next-server/lib/utils";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +10,7 @@ import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
 import { RootState, wrapper } from "../store";
 import { userSignIn, userSignOut } from "../store/user/actions";
+import { User, UserState } from "../store/user/types";
 
 const Text = styled.p`
   margin-top: 24px;
@@ -18,10 +20,13 @@ const StyledButton = styled(Button)`
   margin-top: 24px;
 `;
 
-const LoginPage = () => {
-  const dispatch = useDispatch();
+type LoginPageProps = {
+  user: User;
+};
 
-  const user = useSelector((state: RootState) => state.user);
+const LoginPage: NextPage<LoginPageProps> = () => {
+  const dispatch = useDispatch();
+  const user = useSelector<RootState, UserState>(state => state.user);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(async currentUser => {

@@ -68,15 +68,17 @@ const StyledLoginButton = styled(Button)`
 
 type UserPageProps = {
   author: User;
-  diaries: Diary[];
+  user: User;
 };
 
-const UserPage: NextPage<UserPageProps> = ({
-  author,
-  diaries
-}: UserPageProps) => {
+const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const diaries = useSelector<RootState, Diary[]>(
+    // TODO fix assertion
+    state => state.diary as Diary[]
+  );
 
   const [unsubscribeDb, setUnsubscribeDb] = useState<{
     [key: string]: (() => void) | undefined;
@@ -85,8 +87,6 @@ const UserPage: NextPage<UserPageProps> = ({
   const [modalId, setModalId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
-
-  const user = useSelector((state: RootState) => state.user);
 
   const addDbListener = (id: string) => {
     const listener = firestore.collection(`users/${id}/diaries`).onSnapshot(
@@ -214,7 +214,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
   async ({ req, res, query, store }: MyNextContext) => {
     const userId = query.userId as string;
     const token = req?.session?.decodedToken;
-    let diaries: Diary[] = [];
     let author!: User;
 
     // TODO 存在しないuserId叩かれた時エラーにしたい
@@ -246,19 +245,17 @@ export const getServerSideProps = wrapper.getServerSideProps(
       }
     }
 
-    const diariesData = store.getState().diary;
-    if (!diariesData) {
+    const { diary, user } = store.getState();
+    if (!diary) {
       // TODO nextの404ページに飛ばしたい
       // eslint-disable-next-line
         res?.status(404).send("not found");
-    } else {
-      diaries = diariesData;
     }
 
     return {
       props: {
         author,
-        diaries
+        user
       }
     };
   }
