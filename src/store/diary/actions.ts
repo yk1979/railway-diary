@@ -49,7 +49,9 @@ export const setDiaries = (payload: Diary[]): DiaryActionTypes => ({
   payload
 });
 
-export const deleteDiary = (payload: DeleteDiaryAction["payload"]) => ({
+export const deleteDiary = (
+  payload: DeleteDiaryAction["payload"]
+): DiaryActionTypes => ({
   type: DELETE_DIARY,
   payload
 });

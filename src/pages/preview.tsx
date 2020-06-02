@@ -5,14 +5,10 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import { firestore } from "../../firebase";
 import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
-import {
-  createDiaryToFirestore,
-  setDiaryUserToFireStore
-} from "../lib/firestore";
+import { createDiaryToFirestore } from "../lib/firestore";
 import { RootState, wrapper } from "../store";
 import { deleteDraft } from "../store/diary/actions";
 import { Diary } from "../store/diary/types";
@@ -43,7 +39,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
             diary={diary}
             buttons={{
               onSave: async () => {
-                createDiaryToFirestore({ firestore, user, diary });
+                createDiaryToFirestore({ user, diary });
                 dispatch(deleteDraft());
                 // TODO ローディング処理
                 router.push(`/user/${user.uid}`);

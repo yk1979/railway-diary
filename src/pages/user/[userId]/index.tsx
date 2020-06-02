@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { END } from "redux-saga";
 import styled from "styled-components";
 
-import firebase, { firestore } from "../../../../firebase";
+import firebase from "../../../../firebase";
 import Button, { buttonTheme } from "../../../components/Button";
 import DiaryCard from "../../../components/DiaryCard";
 import EditButton from "../../../components/EditButton";
@@ -18,7 +18,7 @@ import PageBottomNotifier, {
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
-import { getUserFromFirestore } from "../../../lib/firestore";
+import { fs as firestore, getUserFromFirestore } from "../../../lib/firestore";
 import { RootState, wrapper } from "../../../store";
 import {
   createDraft,
@@ -185,7 +185,6 @@ const UserPage: NextPage<UserPageProps> = ({
             isOpen={isModalOpen}
             onRequestClose={() => setIsModalOpen(false)}
             onAfterClose={handleAfterModalClose}
-            // TODO: 日記削除時の挙動もstoreで管理
             onDelete={() => {
               dispatch(
                 deleteDiary({ firestore, userId: author.uid, diaryId: modalId })

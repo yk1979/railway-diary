@@ -1,6 +1,7 @@
 import { fromUnixTime } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 
+import firebase from "../../firebase";
 import {
   DeleteDiaryAction,
   Diary,
@@ -8,6 +9,8 @@ import {
   GetDiaryAction
 } from "../store/diary/types";
 import { User } from "../store/user/types";
+
+export const fs = firebase.firestore();
 
 export async function getUserFromFirestore({
   firestore,
@@ -29,10 +32,10 @@ export async function getUserFromFirestore({
 }
 
 async function setDiaryUserToFireStore({
-  firestore,
+  firestore = fs,
   user
 }: {
-  firestore: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
+  firestore?: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
   user: User;
 }) {
   await firestore
@@ -42,11 +45,11 @@ async function setDiaryUserToFireStore({
 }
 
 export async function createDiaryToFirestore({
-  firestore,
+  firestore = fs,
   user,
   diary
 }: {
-  firestore: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
+  firestore?: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
   user: User;
   diary: Diary;
 }) {

@@ -8,7 +8,6 @@ import {
 import { setDiaries, setDiary } from "./store/diary/actions";
 import {
   DELETE_DIARY,
-  DeleteDiaryAction,
   GET_DIARIES,
   GET_DIARY,
   GetDiariesAction,
@@ -29,10 +28,12 @@ function* runGetDiaries(action: GetDiariesAction) {
   }
 }
 
-function* runDeleteDiary(action: DeleteDiaryAction) {
-  const payload = yield call(deleteDiaryFromFirestore, action.payload);
+function* runDeleteDiary(action: any) {
+  yield call(deleteDiaryFromFirestore, action.payload);
+  const { firestore, userId } = action.payload;
+  const payload = yield call(getDiariesFromFirestore, { firestore, userId });
   if (payload) {
-    yield put(setDiary(payload));
+    yield put(setDiaries(payload));
   }
 }
 
@@ -49,5 +50,5 @@ export function* handleDeleteDiary() {
 }
 
 export default function* rootSaga() {
-  yield all([handleGetDiary(), handleGetDiaries()]);
+  yield all([handleGetDiary(), handleGetDiaries(), handleDeleteDiary()]);
 }
