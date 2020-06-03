@@ -15,6 +15,7 @@
     "devtools",
     "firestore",
     "healthz",
+    "middlewares",
     "mypage",
     "readonly",
     "resave",
