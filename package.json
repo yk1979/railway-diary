@@ -7,8 +7,8 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "build": "next build",
-    "start": "next start",
+    "build": "next build && tsc --project tsconfig.server.json",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
@@ -70,6 +70,7 @@
     "babel-loader": "^8.1.0",
     "babel-plugin-styled-components": "^1.10.6",
     "babel-preset-react-app": "^9.1.2",
+    "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-import": "^2.20.1",

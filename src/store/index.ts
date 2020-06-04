@@ -49,10 +49,14 @@ export const rootReducer = (
 
 export const makeStore: MakeStore<RootState> = () => {
   const sagaMiddleware = createSagaMiddleware();
+  const middlewares: any[] = [sagaMiddleware];
+  if (process.env.NODE_ENV !== "production") {
+    middlewares.push(logger);
+  }
 
   const store = createStore(
     rootReducer,
-    composeWithDevTools(applyMiddleware(logger, sagaMiddleware))
+    composeWithDevTools(applyMiddleware(...middlewares))
   );
 
   (store as SagaStore).sagaTask = sagaMiddleware.run(rootSaga);
@@ -60,4 +64,6 @@ export const makeStore: MakeStore<RootState> = () => {
   return store;
 };
 
-export const wrapper = createWrapper<RootState>(makeStore, { debug: true });
+export const wrapper = createWrapper<RootState>(makeStore, {
+  debug: process.env.NODE_ENV !== "production"
+});
