@@ -4,7 +4,7 @@ import {
   Store,
   applyMiddleware,
   combineReducers,
-  createStore
+  createStore,
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import logger from "redux-logger";
@@ -26,7 +26,7 @@ export interface SagaStore extends Store {
 
 const combinedReducer = combineReducers({
   diary,
-  user
+  user,
 });
 
 export const rootReducer = (
@@ -36,7 +36,7 @@ export const rootReducer = (
   if (action.type === HYDRATE) {
     const nextState = {
       ...state,
-      ...action.payload
+      ...action.payload,
     };
     if (state.diary) {
       nextState.diary = state.diary;
@@ -64,5 +64,5 @@ export const makeStore: MakeStore<RootState> = () => {
 };
 
 export const wrapper = createWrapper<RootState>(makeStore, {
-  debug: process.env.NODE_ENV !== "production"
+  debug: process.env.NODE_ENV !== "production",
 });

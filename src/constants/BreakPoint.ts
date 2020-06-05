@@ -1,5 +1,5 @@
 const BreakPoint = {
-  Large: 734
+  Large: 734,
 };
 
 export default BreakPoint;

@@ -8,10 +8,10 @@ export const userSignIn = ({ uid, name, picture }: User): UserActionTypes => ({
   payload: {
     uid,
     name,
-    picture
-  }
+    picture,
+  },
 });
 
 export const userSignOut = (): UserActionTypes => ({
-  type: USER_SIGN_OUT
+  type: USER_SIGN_OUT,
 });

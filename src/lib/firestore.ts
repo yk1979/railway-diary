@@ -6,7 +6,7 @@ import {
   DeleteDiaryAction,
   Diary,
   GetDiariesAction,
-  GetDiaryAction
+  GetDiaryAction,
 } from "../store/diary/types";
 import { User } from "../store/user/types";
 
@@ -14,7 +14,7 @@ export const fs = firebase.firestore();
 
 export async function getUserFromFirestore({
   firestore,
-  userId
+  userId,
 }: {
   firestore: FirebaseFirestore.Firestore;
   userId: string;
@@ -23,17 +23,17 @@ export async function getUserFromFirestore({
     .collection(`users`)
     .doc(userId)
     .get()
-    .then(doc => doc.data() as User);
+    .then((doc) => doc.data() as User);
   return {
     uid: userId,
     name: user.name || "No Name",
-    picture: user.picture
+    picture: user.picture,
   };
 }
 
 async function setDiaryUserToFireStore({
   firestore = fs,
-  user
+  user,
 }: {
   firestore?: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
   user: User;
@@ -47,7 +47,7 @@ async function setDiaryUserToFireStore({
 export async function createDiaryToFirestore({
   firestore = fs,
   user,
-  diary
+  diary,
 }: {
   firestore?: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
   user: User;
@@ -58,20 +58,20 @@ export async function createDiaryToFirestore({
     id: diary.id,
     title: diary.title,
     body: diary.body,
-    lastEdited: new Date()
+    lastEdited: new Date(),
   });
 }
 
 export async function getDiaryFromFirestore({
   firestore,
   userId,
-  diaryId
+  diaryId,
 }: GetDiaryAction["payload"]): Promise<Diary | undefined> {
   const diaryData = await firestore
     .collection(`users/${userId}/diaries/`)
     .doc(`${diaryId}`)
     .get()
-    .then(doc => doc.data());
+    .then((doc) => doc.data());
   if (!diaryData) return undefined;
   return {
     id: diaryData.id,
@@ -80,13 +80,13 @@ export async function getDiaryFromFirestore({
     lastEdited: utcToZonedTime(
       fromUnixTime(diaryData.lastEdited.seconds),
       "Asia/Tokyo"
-    ).toISOString()
+    ).toISOString(),
   };
 }
 
 export async function getDiariesFromFirestore({
   firestore,
-  userId
+  userId,
 }: GetDiariesAction["payload"]) {
   const diariesData: any[] = [];
   await firestore
@@ -103,7 +103,7 @@ export async function getDiariesFromFirestore({
           lastEdited: utcToZonedTime(
             fromUnixTime(data.lastEdited.seconds),
             "Asia/Tokyo"
-          ).toISOString()
+          ).toISOString(),
         });
       });
     });
@@ -113,7 +113,7 @@ export async function getDiariesFromFirestore({
 export async function deleteDiaryFromFirestore({
   firestore,
   userId,
-  diaryId
+  diaryId,
 }: DeleteDiaryAction["payload"]) {
   await firestore.collection(`users/${userId}/diaries/`).doc(diaryId).delete();
 }

@@ -3,7 +3,7 @@ import { all, call, put, takeEvery } from "redux-saga/effects";
 import {
   deleteDiaryFromFirestore,
   getDiariesFromFirestore,
-  getDiaryFromFirestore
+  getDiaryFromFirestore,
 } from "./lib/firestore";
 import { setDiaries, setDiary } from "./store/diary/actions";
 import {
@@ -11,7 +11,7 @@ import {
   GET_DIARIES,
   GET_DIARY,
   GetDiariesAction,
-  GetDiaryAction
+  GetDiaryAction,
 } from "./store/diary/types";
 
 function* runGetDiary(action: GetDiaryAction) {

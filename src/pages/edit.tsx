@@ -51,7 +51,7 @@ const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
                   id: diary.id,
                   title,
                   body,
-                  lastEdited: diary.lastEdited
+                  lastEdited: diary.lastEdited,
                 })
               );
             }
@@ -74,7 +74,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         userSignIn({
           uid: token.uid,
           name: token.name,
-          picture: token.picture
+          picture: token.picture,
         })
       );
     }
@@ -82,8 +82,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     return {
       props: {
-        user
-      }
+        user,
+      },
     };
   }
 );

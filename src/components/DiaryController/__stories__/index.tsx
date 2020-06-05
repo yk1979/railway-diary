@@ -4,7 +4,7 @@ import React from "react";
 import DiaryController from "..";
 
 export default {
-  title: "DiaryController"
+  title: "DiaryController",
 };
 
 export const Default = () => {

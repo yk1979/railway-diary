@@ -6,11 +6,11 @@ import Font from "../../constants/Font";
 
 export const buttonTheme = {
   primary: {
-    background: `${Color.Button.Primary}`
+    background: `${Color.Button.Primary}`,
   },
   back: {
-    background: `${Color.Button.Gray}`
-  }
+    background: `${Color.Button.Gray}`,
+  },
 };
 
 export const Base = styled.button`
@@ -41,7 +41,7 @@ const Button = ({
   text,
   onClick,
   theme = buttonTheme.primary,
-  className
+  className,
 }: Props) => (
   <ThemeProvider theme={theme}>
     <Base className={className} onClick={onClick} theme={theme}>

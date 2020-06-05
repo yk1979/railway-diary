@@ -5,7 +5,7 @@ import React from "react";
 import Heading from "..";
 
 export default {
-  title: "Heading"
+  title: "Heading",
 };
 
 export const Text1 = () => {

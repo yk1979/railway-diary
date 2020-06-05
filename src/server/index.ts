@@ -16,7 +16,7 @@ const handle = app.getRequestHandler();
 const firebase = admin.initializeApp(
   {
     credential: admin.credential.applicationDefault(),
-    databaseURL: "https://railway-diary.firebaseio.com"
+    databaseURL: "https://railway-diary.firebaseio.com",
   },
   "server"
 );
@@ -38,7 +38,7 @@ app.prepare().then(() => {
       saveUninitialized: false,
       rolling: true,
       store: new FileStore({ secret: "keyboard cat" }),
-      cookie: { maxAge: 604800000, httpOnly: true }
+      cookie: { maxAge: 604800000, httpOnly: true },
     })
   );
 

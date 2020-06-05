@@ -8,7 +8,7 @@ Modal.setAppElement("#__next");
 
 const customStyles = {
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)"
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   content: {
     position: "relative" as const,
@@ -19,8 +19,8 @@ const customStyles = {
     width: "300px",
     height: "auto",
     padding: "16px",
-    transform: "translate(-50%, -50%)"
-  }
+    transform: "translate(-50%, -50%)",
+  },
 };
 
 const Text = styled.div`
@@ -50,7 +50,7 @@ const ConfirmDelete = ({
   isOpen,
   onRequestClose,
   onAfterClose,
-  onDelete
+  onDelete,
 }: ConfirmDeleteProps) => {
   const [deleteFlag, setDeleteFlag] = useState(false);
   return (

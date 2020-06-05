@@ -5,7 +5,7 @@ import React from "react";
 import PageBottomNotifier from "..";
 
 export default {
-  title: "PageBottomNotifier"
+  title: "PageBottomNotifier",
 };
 
 export const Default = () => {

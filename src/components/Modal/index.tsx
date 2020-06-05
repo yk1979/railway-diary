@@ -1,7 +1,7 @@
 import ConfirmDelete from "./ConfirmDelete";
 
 const Modal = {
-  ConfirmDelete
+  ConfirmDelete,
 };
 
 export default Modal;

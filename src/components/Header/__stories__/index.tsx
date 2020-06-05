@@ -3,7 +3,7 @@ import React from "react";
 import Header from "..";
 
 export default {
-  title: "Header"
+  title: "Header",
 };
 
 // TODO パターン追加

@@ -26,30 +26,30 @@ type LoginPageProps = {
 
 const LoginPage: NextPage<LoginPageProps> = () => {
   const dispatch = useDispatch();
-  const user = useSelector<RootState, UserState>(state => state.user);
+  const user = useSelector<RootState, UserState>((state) => state.user);
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(async currentUser => {
+    firebase.auth().onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         const token = await currentUser.getIdToken();
         await fetch("/api/login", {
           method: "POST",
           headers: new Headers({ "Content-Type": "application/json" }),
           credentials: "same-origin",
-          body: JSON.stringify({ token })
+          body: JSON.stringify({ token }),
         });
         dispatch(
           userSignIn({
             uid: currentUser.uid,
             name: currentUser.displayName,
-            picture: currentUser.photoURL || ""
+            picture: currentUser.photoURL || "",
           })
         );
         // TODO ログイン後は元いたページに戻したい
       } else {
         await fetch("/api/logout", {
           method: "POST",
-          credentials: "same-origin"
+          credentials: "same-origin",
         });
         dispatch(userSignOut());
       }
@@ -97,7 +97,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         userSignIn({
           uid: token.uid,
           name: token.name,
-          picture: token.picture
+          picture: token.picture,
         })
       );
     }
