@@ -29,7 +29,6 @@ import {
 import { Diary } from "../../../store/diary/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
-// import { MyNextContext } from "../../../types/next.d";
 
 const StyledLayout = styled(Layout)`
   > div {

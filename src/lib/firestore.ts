@@ -54,15 +54,12 @@ export async function createDiaryToFirestore({
   diary: Diary;
 }) {
   setDiaryUserToFireStore({ firestore, user });
-  firestore
-    .collection(`/users/${user.uid}/diaries`)
-    .doc(`${diary.id}`)
-    .set({
-      id: diary.id,
-      title: diary.title,
-      body: diary.body,
-      lastEdited: new Date()
-    });
+  firestore.collection(`/users/${user.uid}/diaries`).doc(`${diary.id}`).set({
+    id: diary.id,
+    title: diary.title,
+    body: diary.body,
+    lastEdited: new Date()
+  });
 }
 
 export async function getDiaryFromFirestore({
@@ -118,8 +115,5 @@ export async function deleteDiaryFromFirestore({
   userId,
   diaryId
 }: DeleteDiaryAction["payload"]) {
-  await firestore
-    .collection(`users/${userId}/diaries/`)
-    .doc(diaryId)
-    .delete();
+  await firestore.collection(`users/${userId}/diaries/`).doc(diaryId).delete();
 }

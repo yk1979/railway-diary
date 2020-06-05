@@ -2,8 +2,8 @@
 import { text } from "@storybook/addon-knobs";
 import React from "react";
 
-import DiaryItem from "..";
 import { Diary } from "../../../store/diary/types";
+import DiaryItem from "..";
 
 const diary: Diary = {
   id: "1",

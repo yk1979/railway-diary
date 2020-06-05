@@ -2,8 +2,8 @@
 import { text } from "@storybook/addon-knobs";
 import React from "react";
 
-import DiaryViewer from "..";
 import { Diary } from "../../../store/diary/types";
+import DiaryViewer from "..";
 
 export default {
   title: "DiaryViewer"

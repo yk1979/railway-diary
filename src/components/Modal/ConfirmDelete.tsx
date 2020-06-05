@@ -11,7 +11,7 @@ const customStyles = {
     backgroundColor: "rgba(0, 0, 0, 0.5)"
   },
   content: {
-    position: "relative" as "relative",
+    position: "relative" as const,
     top: "50%",
     right: "auto",
     bottom: "auto",

@@ -1,10 +1,10 @@
-import { createWrapper, HYDRATE, MakeStore } from "next-redux-wrapper";
+import { HYDRATE, MakeStore, createWrapper } from "next-redux-wrapper";
 import {
   AnyAction,
+  Store,
   applyMiddleware,
   combineReducers,
-  createStore,
-  Store
+  createStore
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import logger from "redux-logger";
@@ -20,7 +20,6 @@ export interface RootState {
   diary: DiaryState;
   user: UserState;
 }
-
 export interface SagaStore extends Store {
   sagaTask?: Task;
 }
