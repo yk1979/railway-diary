@@ -29,7 +29,7 @@ const combinedReducer = combineReducers({
   user,
 });
 
-export const rootReducer = (
+export const rootReducer: typeof combinedReducer = (
   state: RootState = { diary: null, user: null },
   action: AnyAction
 ) => {
@@ -48,6 +48,7 @@ export const rootReducer = (
 
 export const makeStore: MakeStore<RootState> = () => {
   const sagaMiddleware = createSagaMiddleware();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const middlewares: any[] = [sagaMiddleware];
   if (process.env.NODE_ENV !== "production") {
     middlewares.push(logger);

@@ -43,7 +43,7 @@ type Props = EditFormProps & {
   className?: string;
 };
 
-const EditForm = ({ className, diary, onSubmit }: Props) => {
+const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
   const [title, setTitle] = useState(diary?.title || "");
   const [body, setBody] = useState(diary?.body || "");
 

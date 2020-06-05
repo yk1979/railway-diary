@@ -6,4 +6,4 @@ export default {
   title: "EditButton",
 };
 
-export const Default = () => <EditButton />;
+export const Default: React.FC = () => <EditButton />;

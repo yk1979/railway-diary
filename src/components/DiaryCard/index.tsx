@@ -45,7 +45,7 @@ type DiaryCardProps = {
   };
 };
 
-const DiaryCard = ({ diary, url, controller }: DiaryCardProps) => {
+const DiaryCard: React.FC<DiaryCardProps> = ({ diary, url, controller }) => {
   const { title, body } = diary;
 
   return (

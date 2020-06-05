@@ -69,6 +69,8 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
                   );
                   router.push("/edit");
                 },
+                // TODO 修正
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
                 onDelete: () => {},
               }
             : undefined

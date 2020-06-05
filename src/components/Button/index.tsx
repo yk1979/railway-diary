@@ -30,6 +30,7 @@ export const Base = styled.button`
 type ButtonBaseProps = {
   text: string;
   theme?: { [key: string]: string };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onClick?: (arg?: any) => void;
 };
 
@@ -37,12 +38,12 @@ type Props = ButtonBaseProps & {
   className?: string;
 };
 
-const Button = ({
+const Button: React.FC<Props> = ({
   text,
   onClick,
   theme = buttonTheme.primary,
   className,
-}: Props) => (
+}) => (
   <ThemeProvider theme={theme}>
     <Base className={className} onClick={onClick} theme={theme}>
       {text}

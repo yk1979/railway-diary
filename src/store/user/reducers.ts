@@ -5,7 +5,7 @@ import {
   UserState,
 } from "./types";
 
-const user = (state: UserState = null, action: UserActionTypes) => {
+const user = (state: UserState = null, action: UserActionTypes): UserState => {
   switch (action.type) {
     case USER_SIGN_IN: {
       return action.payload;

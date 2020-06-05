@@ -9,7 +9,7 @@ const Root = styled.h1`
   font-family: ${Font.Family.Primary};
 `;
 
-const Text1 = ({ text, as = "h1" }: HeadingProps) => (
+const Text1: React.FC<HeadingProps> = ({ text, as = "h1" }) => (
   <Root as={as}>{text}</Root>
 );
 

@@ -45,13 +45,13 @@ type ConfirmDeleteProps = {
   onDelete: () => void;
 };
 
-const ConfirmDelete = ({
+const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({
   id,
   isOpen,
   onRequestClose,
   onAfterClose,
   onDelete,
-}: ConfirmDeleteProps) => {
+}) => {
   const [deleteFlag, setDeleteFlag] = useState(false);
   return (
     <Modal

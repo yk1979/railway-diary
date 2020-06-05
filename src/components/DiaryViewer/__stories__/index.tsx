@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { text } from "@storybook/addon-knobs";
 import React from "react";
 
@@ -19,11 +19,11 @@ const diary: Diary = {
   lastEdited: "2020-05-21 13:04",
 };
 
-export const Default = () => {
+export const Default: React.FC = () => {
   return <DiaryViewer diary={diary} />;
 };
 
-export const WithButtons = () => (
+export const WithButtons: React.FC = () => (
   <DiaryViewer
     diary={diary}
     buttons={{
@@ -33,7 +33,7 @@ export const WithButtons = () => (
   />
 );
 
-export const WithControllers = () => (
+export const WithControllers: React.FC = () => (
   <DiaryViewer
     diary={diary}
     controller={{

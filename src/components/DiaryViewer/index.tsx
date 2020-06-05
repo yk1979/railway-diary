@@ -39,7 +39,12 @@ type Props = PreviewProps & {
   className?: string;
 };
 
-const DiaryViewer = ({ diary, buttons, controller, className }: Props) => {
+const DiaryViewer: React.FC<Props> = ({
+  diary,
+  buttons,
+  controller,
+  className,
+}) => {
   return (
     <div className={className}>
       <Title>

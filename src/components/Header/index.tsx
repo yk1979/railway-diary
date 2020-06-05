@@ -45,7 +45,7 @@ type HeaderProps = {
   userId: string | null;
 };
 
-const Header = ({ userId }: HeaderProps) => (
+const Header: React.FC<HeaderProps> = ({ userId }) => (
   <Root>
     <Inner>
       <TopLink href="/">てつどうダイアリー</TopLink>

@@ -18,7 +18,7 @@ const SearchButton = styled(Button)`
   margin-top: 8px;
 `;
 
-const SearchBox = () => (
+const SearchBox: React.FC = () => (
   <form>
     <TextInput
       type="text"

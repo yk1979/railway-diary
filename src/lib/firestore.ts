@@ -52,7 +52,7 @@ export async function createDiaryToFirestore({
   firestore?: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
   user: User;
   diary: Diary;
-}) {
+}): Promise<void> {
   setDiaryUserToFireStore({ firestore, user });
   firestore.collection(`/users/${user.uid}/diaries`).doc(`${diary.id}`).set({
     id: diary.id,
@@ -87,13 +87,13 @@ export async function getDiaryFromFirestore({
 export async function getDiariesFromFirestore({
   firestore,
   userId,
-}: GetDiariesAction["payload"]) {
-  const diariesData: any[] = [];
+}: GetDiariesAction["payload"]): Promise<Diary[]> {
+  const diariesData: Diary[] = [];
   await firestore
     .collection(`users/${userId}/diaries`)
     .get()
-    .then((collections: any) => {
-      collections.forEach((doc: any) => {
+    .then((collections) => {
+      collections.forEach((doc) => {
         const data = doc.data();
         diariesData.push({
           id: data.id,
@@ -114,6 +114,6 @@ export async function deleteDiaryFromFirestore({
   firestore,
   userId,
   diaryId,
-}: DeleteDiaryAction["payload"]) {
+}: DeleteDiaryAction["payload"]): Promise<void> {
   await firestore.collection(`users/${userId}/diaries/`).doc(diaryId).delete();
 }

@@ -20,7 +20,7 @@ type Props = {
   className?: string;
 };
 
-const EditButton = ({ className }: Props) => (
+const EditButton: React.FC<Props> = ({ className }) => (
   <Root className={className} href="/edit">
     <MdModeEdit />
   </Root>

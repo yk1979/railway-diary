@@ -6,7 +6,7 @@ export default {
   title: "UserProfile",
 };
 
-export const Default = () => (
+export const Default: React.FC = () => (
   <UserProfile
     user={{
       uid: "1",

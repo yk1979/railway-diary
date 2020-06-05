@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { text } from "@storybook/addon-knobs";
 import React from "react";
 
@@ -20,7 +20,7 @@ export default {
 };
 
 // TODO delete action追加
-export const Default = () => {
+export const Default: React.FC = () => {
   const body = text(
     "body",
     "新潟県魚沼市の小出駅から福島県会津若松市の会津若松駅を結ぶ路線全長約135kmの路線です。"
@@ -37,7 +37,7 @@ export const Default = () => {
   );
 };
 
-export const ClampedBody = () => (
+export const ClampedBody: React.FC = () => (
   <DiaryItem
     diary={diary}
     url=""
@@ -48,4 +48,6 @@ export const ClampedBody = () => (
   />
 );
 
-export const Uncontrollable = () => <DiaryItem diary={diary} url="" />;
+export const Uncontrollable: React.FC = () => (
+  <DiaryItem diary={diary} url="" />
+);

@@ -8,7 +8,10 @@ import {
 } from "./types";
 
 // TODO 一緒に使うことは今のところないけど、下書きと後悔済みの日記が同じdiary stateで管理されているのは微妙な気が
-const diary = (state: DiaryState = null, action: DiaryActionTypes) => {
+const diary = (
+  state: DiaryState = null,
+  action: DiaryActionTypes
+): DiaryState => {
   switch (action.type) {
     case CREATE_DRAFT: {
       return {

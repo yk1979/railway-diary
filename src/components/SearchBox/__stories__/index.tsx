@@ -6,4 +6,4 @@ export default {
   title: "SearchBox",
 };
 
-export const Default = () => <SearchBox />;
+export const Default: React.FC = () => <SearchBox />;

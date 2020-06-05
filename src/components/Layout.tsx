@@ -29,7 +29,7 @@ type Props = LayoutProps & {
   children: React.ReactNode;
 };
 
-const Layout = ({ userId, children, className }: Props) => {
+const Layout: React.FC<Props> = ({ userId, children, className }) => {
   return (
     <StyledMain className={className}>
       <Header userId={userId} />
