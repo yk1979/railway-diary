@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { AnyAction } from "redux";
 import { all, call, put, takeEvery } from "redux-saga/effects";
 
 import {
   deleteDiaryFromFirestore,
   getDiariesFromFirestore,
-  getDiaryFromFirestore
+  getDiaryFromFirestore,
 } from "./lib/firestore";
 import { setDiaries, setDiary } from "./store/diary/actions";
 import {
@@ -11,7 +13,7 @@ import {
   GET_DIARIES,
   GET_DIARY,
   GetDiariesAction,
-  GetDiaryAction
+  GetDiaryAction,
 } from "./store/diary/types";
 
 function* runGetDiary(action: GetDiaryAction) {
@@ -28,7 +30,8 @@ function* runGetDiaries(action: GetDiariesAction) {
   }
 }
 
-function* runDeleteDiary(action: any) {
+// TODO any修正
+function* runDeleteDiary(action: AnyAction) {
   yield call(deleteDiaryFromFirestore, action.payload);
   const { firestore, userId } = action.payload;
   const payload = yield call(getDiariesFromFirestore, { firestore, userId });

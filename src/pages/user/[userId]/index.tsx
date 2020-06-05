@@ -14,7 +14,7 @@ import Heading from "../../../components/Heading";
 import Layout from "../../../components/Layout";
 import Modal from "../../../components/Modal";
 import PageBottomNotifier, {
-  NotifierStatus
+  NotifierStatus,
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
@@ -24,12 +24,11 @@ import {
   createDraft,
   deleteDiary,
   getDiaries,
-  setDiaries
+  setDiaries,
 } from "../../../store/diary/actions";
 import { Diary } from "../../../store/diary/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
-// import { MyNextContext } from "../../../types/next.d";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -77,7 +76,7 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
 
   const diaries = useSelector<RootState, Diary[]>(
     // TODO fix assertion
-    state => state.diary as Diary[]
+    (state) => state.diary as Diary[]
   );
 
   const [unsubscribeDb, setUnsubscribeDb] = useState<{
@@ -90,16 +89,16 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
 
   const addDbListener = (id: string) => {
     const listener = firestore.collection(`users/${id}/diaries`).onSnapshot(
-      querySnapshot => {
+      (querySnapshot) => {
         const res: Diary[] = [];
-        querySnapshot.forEach(doc => {
+        querySnapshot.forEach((doc) => {
           res.push(doc.data() as Diary);
         });
         if (res.length > 0) {
           dispatch(setDiaries(res));
         }
       },
-      err => {
+      (err) => {
         // eslint-disable-next-line no-console
         console.error(
           "Error, could not fetch diary data in client side: ",
@@ -127,7 +126,7 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
   };
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(currentUser => {
+    firebase.auth().onAuthStateChanged((currentUser) => {
       if (currentUser) {
         addDbListener(author.uid);
       } else {
@@ -144,13 +143,13 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
           <StyledUserProfile
             user={{
               uid: author.uid,
-              name: author.name || "unknown"
+              name: author.name || "unknown",
             }}
             thumbnail={author.picture}
           />
           {diaries.length > 0 ? (
             <DiaryList>
-              {diaries.map(d => (
+              {diaries.map((d) => (
                 <DiaryCard
                   key={d.id}
                   diary={d}
@@ -164,12 +163,12 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
                                 id: d.id,
                                 title: d.title,
                                 body: d.body,
-                                lastEdited: ""
+                                lastEdited: "",
                               })
                             );
                             router.push("/edit");
                           },
-                          onDelete: () => handleOpenDeleteModal(String(d.id))
+                          onDelete: () => handleOpenDeleteModal(String(d.id)),
                         }
                       : undefined
                   }
@@ -222,7 +221,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         userSignIn({
           uid: token.uid,
           name: token.name,
-          picture: token.picture
+          picture: token.picture,
         })
       );
       try {
@@ -231,7 +230,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         store.dispatch(
           getDiaries({
             firestore: fs,
-            userId
+            userId,
           })
         );
         store.dispatch(END);
@@ -255,8 +254,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
     return {
       props: {
         author,
-        user
-      }
+        user,
+      },
     };
   }
 );

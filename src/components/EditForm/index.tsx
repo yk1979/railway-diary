@@ -43,13 +43,13 @@ type Props = EditFormProps & {
   className?: string;
 };
 
-const EditForm = ({ className, diary, onSubmit }: Props) => {
+const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
   const [title, setTitle] = useState(diary?.title || "");
   const [body, setBody] = useState(diary?.body || "");
 
   return (
     <StyledForm
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault();
         onSubmit(title, body);
       }}
@@ -58,9 +58,9 @@ const EditForm = ({ className, diary, onSubmit }: Props) => {
       <Title
         placeholder="日記タイトル"
         value={title}
-        onChange={e => setTitle(e.target.value)}
+        onChange={(e) => setTitle(e.target.value)}
       />
-      <Editor value={body} onChange={e => setBody(e.target.value)} />
+      <Editor value={body} onChange={(e) => setBody(e.target.value)} />
       <ToPreviewButton text="かくにんにすすむ" />
     </StyledForm>
   );

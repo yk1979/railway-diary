@@ -32,7 +32,7 @@ type UserDiaryPageProps = {
 const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   author,
   diary,
-  user
+  user,
 }: UserDiaryPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -42,14 +42,14 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
       <UserProfile
         user={{
           uid: author.uid,
-          name: author.name || "unknown"
+          name: author.name || "unknown",
         }}
         thumbnail={author.picture}
         info={{
           text: format(parseISO(diary.lastEdited), "yyyy-MM-dd HH:mm", {
-            timeZone: "Asia/Tokyo"
+            timeZone: "Asia/Tokyo",
           }),
-          date: diary.lastEdited
+          date: diary.lastEdited,
         }}
       />
       <StyledDiaryViewer
@@ -64,12 +64,14 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
                       id: diary.id,
                       title: diary.title,
                       body: diary.body,
-                      lastEdited: ""
+                      lastEdited: "",
                     })
                   );
                   router.push("/edit");
                 },
-                onDelete: () => {}
+                // TODO 修正
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                onDelete: () => {},
               }
             : undefined
         }
@@ -91,7 +93,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         userSignIn({
           uid: token.uid,
           name: token.name,
-          picture: token.picture
+          picture: token.picture,
         })
       );
 
@@ -102,7 +104,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
           getDiary({
             firestore,
             userId,
-            diaryId
+            diaryId,
           })
         );
         store.dispatch(END);
@@ -127,8 +129,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
       props: {
         author,
         diary,
-        user
-      }
+        user,
+      },
     };
   }
 );

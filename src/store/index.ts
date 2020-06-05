@@ -1,10 +1,10 @@
-import { createWrapper, HYDRATE, MakeStore } from "next-redux-wrapper";
+import { HYDRATE, MakeStore, createWrapper } from "next-redux-wrapper";
 import {
   AnyAction,
+  Store,
   applyMiddleware,
   combineReducers,
   createStore,
-  Store
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import logger from "redux-logger";
@@ -20,24 +20,23 @@ export interface RootState {
   diary: DiaryState;
   user: UserState;
 }
-
 export interface SagaStore extends Store {
   sagaTask?: Task;
 }
 
 const combinedReducer = combineReducers({
   diary,
-  user
+  user,
 });
 
-export const rootReducer = (
+export const rootReducer: typeof combinedReducer = (
   state: RootState = { diary: null, user: null },
   action: AnyAction
 ) => {
   if (action.type === HYDRATE) {
     const nextState = {
       ...state,
-      ...action.payload
+      ...action.payload,
     };
     if (state.diary) {
       nextState.diary = state.diary;
@@ -49,6 +48,7 @@ export const rootReducer = (
 
 export const makeStore: MakeStore<RootState> = () => {
   const sagaMiddleware = createSagaMiddleware();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const middlewares: any[] = [sagaMiddleware];
   if (process.env.NODE_ENV !== "production") {
     middlewares.push(logger);
@@ -65,5 +65,5 @@ export const makeStore: MakeStore<RootState> = () => {
 };
 
 export const wrapper = createWrapper<RootState>(makeStore, {
-  debug: process.env.NODE_ENV !== "production"
+  debug: process.env.NODE_ENV !== "production",
 });

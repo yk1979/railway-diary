@@ -38,7 +38,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         userSignIn({
           uid: token.uid,
           name: token.name,
-          picture: token.picture
+          picture: token.picture,
         })
       );
     }
@@ -46,8 +46,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     return {
       props: {
-        user
-      }
+        user,
+      },
     };
   }
 );

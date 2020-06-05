@@ -28,7 +28,7 @@ type Props = DiaryControllerProps & {
   className?: string;
 };
 
-const DiaryController = ({ onEdit, onDelete }: Props) => (
+const DiaryController: React.FC<Props> = ({ onEdit, onDelete }) => (
   <Controller>
     <ActionButton onClick={onEdit}>
       <MdModeEdit />

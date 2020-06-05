@@ -5,6 +5,7 @@ import Next from "next";
 
 import firebaseServer from "./middlewares/firebaseServer";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const FileStore = require("session-file-store")(session);
 
 const port = parseInt(process.env.PORT || "4000", 10);
@@ -16,7 +17,7 @@ const handle = app.getRequestHandler();
 const firebase = admin.initializeApp(
   {
     credential: admin.credential.applicationDefault(),
-    databaseURL: "https://railway-diary.firebaseio.com"
+    databaseURL: "https://railway-diary.firebaseio.com",
   },
   "server"
 );
@@ -38,7 +39,7 @@ app.prepare().then(() => {
       saveUninitialized: false,
       rolling: true,
       store: new FileStore({ secret: "keyboard cat" }),
-      cookie: { maxAge: 604800000, httpOnly: true }
+      cookie: { maxAge: 604800000, httpOnly: true },
     })
   );
 
@@ -60,6 +61,7 @@ app.prepare().then(() => {
     const { token } = req.body;
     try {
       const decodedToken = await firebase.auth().verifyIdToken(token);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       req.session!.decodedToken = decodedToken;
       res.json({ status: true, decodedToken });
     } catch (error) {
@@ -68,6 +70,7 @@ app.prepare().then(() => {
   });
 
   server.post("/api/logout", (req, res) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     req.session!.decodedToken = null;
     res.json({ status: true });
   });
@@ -78,7 +81,6 @@ app.prepare().then(() => {
 
   server.listen(port, (err: Error) => {
     if (err) throw err;
-    // eslint-disable-next-line no-console
     console.log(`> Ready on http://localhost:${port}`);
   });
 });

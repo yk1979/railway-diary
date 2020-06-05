@@ -1,7 +1,7 @@
 import Text1 from "./Text1";
 
 const Heading = {
-  Text1
+  Text1,
 };
 
 export type HeadingProps = {

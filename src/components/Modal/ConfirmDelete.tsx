@@ -8,10 +8,10 @@ Modal.setAppElement("#__next");
 
 const customStyles = {
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)"
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   content: {
-    position: "relative" as "relative",
+    position: "relative" as const,
     top: "50%",
     right: "auto",
     bottom: "auto",
@@ -19,8 +19,8 @@ const customStyles = {
     width: "300px",
     height: "auto",
     padding: "16px",
-    transform: "translate(-50%, -50%)"
-  }
+    transform: "translate(-50%, -50%)",
+  },
 };
 
 const Text = styled.div`
@@ -45,13 +45,13 @@ type ConfirmDeleteProps = {
   onDelete: () => void;
 };
 
-const ConfirmDelete = ({
+const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({
   id,
   isOpen,
   onRequestClose,
   onAfterClose,
-  onDelete
-}: ConfirmDeleteProps) => {
+  onDelete,
+}) => {
   const [deleteFlag, setDeleteFlag] = useState(false);
   return (
     <Modal

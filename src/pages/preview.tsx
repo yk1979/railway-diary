@@ -24,7 +24,7 @@ type PreviewPageProps = {
 };
 
 const PreviewPage: NextPage<PreviewPageProps> = ({
-  user
+  user,
 }: PreviewPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -46,7 +46,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
               },
               onBack: () => {
                 router.push("/edit");
-              }
+              },
             }}
           />
         ) : (
@@ -76,7 +76,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         userSignIn({
           uid: token.uid,
           name: token.name,
-          picture: token.picture
+          picture: token.picture,
         })
       );
     }
@@ -85,8 +85,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     return {
       props: {
-        user
-      }
+        user,
+      },
     };
   }
 );

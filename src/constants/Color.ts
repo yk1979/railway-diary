@@ -1,24 +1,24 @@
 const Color = {
   Primary: {
-    Blue: "#0092ca"
+    Blue: "#0092ca",
   },
   Button: {
     Primary: "#0092ca",
-    Gray: "#999"
+    Gray: "#999",
   },
   Background: {
     Default: "#fff",
-    Navy: "#272343"
+    Navy: "#272343",
   },
   Text: {
     Default: "#333",
     Gray: "#666",
-    White: "#fff"
+    White: "#fff",
   },
   Border: {
     Default: "#bbb",
-    Black: "#333"
-  }
+    Black: "#333",
+  },
 };
 
 export default Color;

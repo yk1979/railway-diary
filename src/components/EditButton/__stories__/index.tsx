@@ -3,7 +3,7 @@ import React from "react";
 import EditButton from "..";
 
 export default {
-  title: "EditButton"
+  title: "EditButton",
 };
 
-export const Default = () => <EditButton />;
+export const Default: React.FC = () => <EditButton />;

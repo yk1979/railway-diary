@@ -22,7 +22,10 @@ type PageBottomNotifierProps = {
   status: NotifierStatus;
 };
 
-const PageBottomNotifier = ({ text, status }: PageBottomNotifierProps) => {
+const PageBottomNotifier: React.FC<PageBottomNotifierProps> = ({
+  text,
+  status,
+}) => {
   return (
     <>
       <Root id="finishDeleting" status={status}>

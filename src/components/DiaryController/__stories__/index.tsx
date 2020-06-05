@@ -1,12 +1,12 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React from "react";
 
 import DiaryController from "..";
 
 export default {
-  title: "DiaryController"
+  title: "DiaryController",
 };
 
-export const Default = () => {
+export const Default: React.FC = () => {
   return <DiaryController onEdit={async () => {}} onDelete={() => {}} />;
 };

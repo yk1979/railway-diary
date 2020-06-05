@@ -53,7 +53,7 @@ type Props = UserProfileProps & {
   className?: string;
 };
 
-const UserProfile = ({ user, thumbnail, info, className }: Props) => (
+const UserProfile: React.FC<Props> = ({ user, thumbnail, info, className }) => (
   <Root className={className}>
     <UserThumbnail href={`/user/${user.uid}`}>
       <img src={thumbnail} alt={user.name} />
