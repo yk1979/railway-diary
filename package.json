@@ -31,7 +31,7 @@
     "express": "4.17.1",
     "express-session": "1.17.0",
     "firebase": "7.14.0",
-    "firebase-admin": "8.10.0",
+    "firebase-admin": "8.12.1",
     "next": "9.4.0",
     "next-redux-wrapper": "6.0.0",
     "now": "17.1.1",
