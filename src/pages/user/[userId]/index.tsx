@@ -7,6 +7,7 @@ import { END } from "redux-saga";
 import styled from "styled-components";
 
 import firebase from "../../../../firebase";
+import { firestore } from "../../../../firebase";
 import Button, { buttonTheme } from "../../../components/Button";
 import DiaryCard from "../../../components/DiaryCard";
 import EditButton from "../../../components/EditButton";
@@ -18,7 +19,7 @@ import PageBottomNotifier, {
 } from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
-import { fs as firestore, getUserFromFirestore } from "../../../lib/firestore";
+import { getUserFromFirestore } from "../../../lib/firestore";
 import { RootState, wrapper } from "../../../store";
 import {
   createDraft,
