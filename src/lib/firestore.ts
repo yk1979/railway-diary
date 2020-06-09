@@ -1,7 +1,7 @@
 import { fromUnixTime } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 
-import firebase from "../../firebase";
+import { firestore as fs } from "../../firebase";
 import {
   DeleteDiaryAction,
   Diary,
@@ -9,8 +9,6 @@ import {
   GetDiaryAction,
 } from "../store/diary/types";
 import { User } from "../store/user/types";
-
-export const fs = firebase.firestore();
 
 export async function getUserFromFirestore({
   firestore,
