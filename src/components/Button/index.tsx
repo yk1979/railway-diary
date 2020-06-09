@@ -6,11 +6,11 @@ import Font from "../../constants/Font";
 
 export const buttonTheme = {
   primary: {
-    background: `${Color.Button.Primary}`
+    background: `${Color.Button.Primary}`,
   },
   back: {
-    background: `${Color.Button.Gray}`
-  }
+    background: `${Color.Button.Gray}`,
+  },
 };
 
 export const Base = styled.button`
@@ -24,25 +24,26 @@ export const Base = styled.button`
   background: ${({ theme }) => theme.background};
   border: none;
   border-radius: 6px;
+  cursor: pointer;
 `;
 
 type ButtonBaseProps = {
   text: string;
   theme?: { [key: string]: string };
-  // TODO any修正
-  onClick?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onClick?: (arg?: any) => void;
 };
 
 type Props = ButtonBaseProps & {
   className?: string;
 };
 
-const Button = ({
+const Button: React.FC<Props> = ({
   text,
   onClick,
   theme = buttonTheme.primary,
-  className
-}: Props) => (
+  className,
+}) => (
   <ThemeProvider theme={theme}>
     <Base className={className} onClick={onClick} theme={theme}>
       {text}

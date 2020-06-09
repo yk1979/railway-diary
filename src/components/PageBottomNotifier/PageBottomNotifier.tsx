@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import Color from "../constants/Color";
+import Color from "../../constants/Color";
 
 export type NotifierStatus = "visible" | "hidden";
 
@@ -22,7 +22,10 @@ type PageBottomNotifierProps = {
   status: NotifierStatus;
 };
 
-const PageBottomNotifier = ({ text, status }: PageBottomNotifierProps) => {
+const PageBottomNotifier: React.FC<PageBottomNotifierProps> = ({
+  text,
+  status,
+}) => {
   return (
     <>
       <Root id="finishDeleting" status={status}>

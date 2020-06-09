@@ -1,11 +1,18 @@
+import { NextPage } from "next";
+import { MyNextContext } from "next/dist/next-server/lib/utils";
+import { useRouter } from "next/router";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { RootState } from "../store";
+import { RootState, wrapper } from "../store";
+import { createDraft } from "../store/diary/actions";
+import { Diary } from "../store/diary/types";
+import { userSignIn } from "../store/user/actions";
+import { User } from "../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -19,15 +26,66 @@ const StyledEditForm = styled(EditForm)`
   margin-top: 24px;
 `;
 
-const EditPage = () => {
-  const diary = useSelector((state: RootState) => state.diary);
+type EditPageProps = {
+  user: User;
+};
+
+const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const diary = useSelector((state: RootState) => state.diary as Diary);
 
   return (
-    <StyledLayout>
+    <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
-      <StyledEditForm diary={diary} />
+      {user && (
+        <StyledEditForm
+          diary={diary}
+          onSubmit={(title, body) => {
+            if (!diary) {
+              dispatch(createDraft({ id: "", title, body, lastEdited: "" }));
+            } else {
+              dispatch(
+                createDraft({
+                  id: diary.id,
+                  title,
+                  body,
+                  lastEdited: diary.lastEdited,
+                })
+              );
+            }
+            if (body.length > 0) {
+              router.push("/preview");
+            }
+          }}
+        />
+      )}
     </StyledLayout>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  ({ req, store }: MyNextContext) => {
+    const token = req?.session?.decodedToken;
+
+    if (token) {
+      store.dispatch(
+        userSignIn({
+          uid: token.uid,
+          name: token.name,
+          picture: token.picture,
+        })
+      );
+    }
+    const { user } = store.getState();
+
+    return {
+      props: {
+        user,
+      },
+    };
+  }
+);
 
 export default EditPage;

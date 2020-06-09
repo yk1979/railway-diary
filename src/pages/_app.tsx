@@ -1,16 +1,13 @@
-import { AppProps } from "next/app";
+import App from "next/app";
 import Head from "next/head";
 import React from "react";
-import { Provider } from "react-redux";
-import { applyMiddleware, createStore } from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
-import logger from "redux-logger";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
-import rootReducer from "../store";
+import Color from "../constants/Color";
+import { wrapper } from "../store";
 
-const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle`
   ${reset}
 
   @font-face {
@@ -44,6 +41,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   a {
+    color: ${Color.Text.Default};
     cursor: pointer;
 
     &:link,
@@ -57,6 +55,7 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     background: none;
     border: 0;
+    cursor: pointer;
   }
 
   h1,
@@ -75,21 +74,19 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const store = createStore(
-  rootReducer,
-  composeWithDevTools(applyMiddleware(logger))
-);
+class WrappedApp extends App {
+  render() {
+    const { Component, pageProps } = this.props;
+    return (
+      <>
+        <GlobalStyle />
+        <Head>
+          <title>てつどうダイアリー</title>
+        </Head>
+        <Component {...pageProps} />
+      </>
+    );
+  }
+}
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
-  return (
-    <Provider store={store}>
-      <GlobalStyle />
-      <Head>
-        <title>てつどうダイアリー</title>
-      </Head>
-      <Component {...pageProps} />
-    </Provider>
-  );
-};
-
-export default MyApp;
+export default wrapper.withRedux(WrappedApp);

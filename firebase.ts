@@ -1,4 +1,5 @@
 import "firebase/firestore";
+import "firebase/auth";
 
 import firebase from "firebase/app";
 
@@ -10,13 +11,13 @@ const firebaseConfig = {
   storageBucket: "railway-diary.appspot.com",
   messagingSenderId: process.env.MESSAGING_SENDER_ID,
   appId: process.env.APP_ID,
-  measurementId: process.env.MEASUREMENT_ID
+  measurementId: process.env.MEASUREMENT_ID,
 };
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const firestore = firebase.firestore();
+export default firebase;
 
-export default firestore;
+export const firestore = firebase.firestore();

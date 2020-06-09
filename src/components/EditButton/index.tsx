@@ -1,9 +1,8 @@
-import Link from "next/link";
 import React from "react";
 import { MdModeEdit } from "react-icons/md";
 import styled from "styled-components";
 
-import Color from "../constants/Color";
+import Color from "../../constants/Color";
 
 const Root = styled.a`
   display: flex;
@@ -21,12 +20,10 @@ type Props = {
   className?: string;
 };
 
-const EditButton = ({ className }: Props) => (
-  <Link href="/edit">
-    <Root className={className}>
-      <MdModeEdit />
-    </Root>
-  </Link>
+const EditButton: React.FC<Props> = ({ className }) => (
+  <Root className={className} href="/edit">
+    <MdModeEdit />
+  </Root>
 );
 
 export default EditButton;

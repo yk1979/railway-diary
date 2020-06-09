@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
+import BreakPoint from "../constants/BreakPoint";
 import Header from "./Header";
 
 const StyledMain = styled.main`
@@ -14,21 +15,27 @@ const Container = styled.div`
   position: relative;
   flex-grow: 1;
   width: 100%;
-  max-width: 960px;
+  max-width: ${BreakPoint.Large}px;
   margin: 0 auto;
   padding: 24px 16px;
 `;
 
-type Props = {
+type LayoutProps = {
+  userId: string | null;
+};
+
+type Props = LayoutProps & {
   className?: string;
   children: React.ReactNode;
 };
 
-const Layout = ({ children, className }: Props) => (
-  <StyledMain className={className}>
-    <Header />
-    <Container>{children}</Container>
-  </StyledMain>
-);
+const Layout: React.FC<Props> = ({ userId, children, className }) => {
+  return (
+    <StyledMain className={className}>
+      <Header userId={userId} />
+      <Container>{children}</Container>
+    </StyledMain>
+  );
+};
 
 export default Layout;

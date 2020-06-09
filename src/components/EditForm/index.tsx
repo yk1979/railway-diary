@@ -1,12 +1,9 @@
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
-import Color from "../constants/Color";
-import { createDraft } from "../store/diary/actions";
-import { DiaryState } from "../store/diary/types";
-import Button from "./Button";
+import Color from "../../constants/Color";
+import { Diary } from "../../store/diary/types";
+import Button from "../Button";
 
 const StyledForm = styled.form`
   display: flex;
@@ -38,41 +35,32 @@ const ToPreviewButton = styled(Button)`
 `;
 
 type EditFormProps = {
-  diary?: DiaryState;
+  diary?: Diary;
+  onSubmit: (title: string, body: string) => void;
 };
 
 type Props = EditFormProps & {
   className?: string;
 };
 
-const EditForm = ({ className, diary }: Props) => {
-  const [title, setTitle] = useState(diary ? diary.title : "");
-  const [body, setBody] = useState(diary ? diary.body : "");
-
-  const dispatch = useDispatch();
-  const router = useRouter();
+const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
+  const [title, setTitle] = useState(diary?.title || "");
+  const [body, setBody] = useState(diary?.body || "");
 
   return (
     <StyledForm
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault();
-        if (!diary) {
-          dispatch(createDraft({ id: undefined, title, body }));
-        } else {
-          dispatch(createDraft({ id: diary.id, title, body }));
-        }
-        if (body.length > 0) {
-          router.push("/preview");
-        }
+        onSubmit(title, body);
       }}
       className={className}
     >
       <Title
         placeholder="日記タイトル"
         value={title}
-        onChange={e => setTitle(e.target.value)}
+        onChange={(e) => setTitle(e.target.value)}
       />
-      <Editor value={body} onChange={e => setBody(e.target.value)} />
+      <Editor value={body} onChange={(e) => setBody(e.target.value)} />
       <ToPreviewButton text="かくにんにすすむ" />
     </StyledForm>
   );

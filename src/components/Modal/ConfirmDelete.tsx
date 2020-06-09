@@ -2,17 +2,16 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import styled from "styled-components";
 
-import firestore from "../../../firebase";
 import Button, { buttonTheme } from "../Button";
 
 Modal.setAppElement("#__next");
 
 const customStyles = {
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)"
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   content: {
-    position: "relative" as "relative",
+    position: "relative" as const,
     top: "50%",
     right: "auto",
     bottom: "auto",
@@ -20,8 +19,8 @@ const customStyles = {
     width: "300px",
     height: "auto",
     padding: "16px",
-    transform: "translate(-50%, -50%)"
-  }
+    transform: "translate(-50%, -50%)",
+  },
 };
 
 const Text = styled.div`
@@ -43,14 +42,16 @@ type ConfirmDeleteProps = {
   isOpen: boolean;
   onRequestClose: () => void;
   onAfterClose: () => void;
+  onDelete: () => void;
 };
 
-const ConfirmDelete = ({
+const ConfirmDelete: React.FC<ConfirmDeleteProps> = ({
   id,
   isOpen,
   onRequestClose,
-  onAfterClose
-}: ConfirmDeleteProps) => {
+  onAfterClose,
+  onDelete,
+}) => {
   const [deleteFlag, setDeleteFlag] = useState(false);
   return (
     <Modal
@@ -68,11 +69,8 @@ const ConfirmDelete = ({
       <ButtonWrapper>
         <StyledButton
           text="削除する"
-          onClick={async () => {
-            await firestore
-              .collection("diaries")
-              .doc(id)
-              .delete();
+          onClick={() => {
+            onDelete();
             setDeleteFlag(true);
             onRequestClose();
           }}

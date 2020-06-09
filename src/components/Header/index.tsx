@@ -3,11 +3,11 @@ import React from "react";
 import { MdAccountCircle } from "react-icons/md";
 import styled from "styled-components";
 
-import Color from "../constants/Color";
+import BreakPoint from "../../constants/BreakPoint";
+import Color from "../../constants/Color";
 
 const Root = styled.header`
   padding: 8px;
-  color: ${Color.Text.White};
   font-weight: bold;
   font-size: 2.4rem;
   font-family: "corporate-logo", sans-serif;
@@ -18,12 +18,13 @@ const Root = styled.header`
 
 const Inner = styled.div`
   position: relative;
-  max-width: 960px;
+  max-width: ${BreakPoint.Large}px;
   margin: 0 auto;
 `;
 
 const TopLink = styled.a`
   display: inline-block;
+  color: ${Color.Text.White};
 `;
 
 const MyPageLink = styled.a`
@@ -36,20 +37,25 @@ const MyPageLink = styled.a`
   > svg {
     width: 100%;
     height: 100%;
+    color: ${Color.Text.White};
   }
 `;
 
-const Header = () => (
+type HeaderProps = {
+  userId: string | null;
+};
+
+const Header: React.FC<HeaderProps> = ({ userId }) => (
   <Root>
     <Inner>
-      <Link href="/">
-        <TopLink>てつどうダイアリー</TopLink>
-      </Link>
-      <Link href="/mypage">
-        <MyPageLink>
-          <MdAccountCircle />
-        </MyPageLink>
-      </Link>
+      <TopLink href="/">てつどうダイアリー</TopLink>
+      {userId && (
+        <Link href={`/user/${userId}`}>
+          <MyPageLink>
+            <MdAccountCircle />
+          </MyPageLink>
+        </Link>
+      )}
     </Inner>
   </Root>
 );

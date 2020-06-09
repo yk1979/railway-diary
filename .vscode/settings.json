@@ -1,21 +1,22 @@
 {
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "cSpell.words": ["stylelint", "devtools", "antialiased", "readonly", "firestore", "mypage"],
   "[json]": {
-      "editor.formatOnSave": true,
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  }
+  "cSpell.words": [
+    "antialiased",
+    "devtools",
+    "firestore",
+    "healthz",
+    "middlewares",
+    "mypage",
+    "readonly",
+    "resave",
+    "stylelint",
+    "viewports"
+  ],
+  "prettier.requireConfig": true
 }
