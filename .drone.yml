@@ -1,10 +1,15 @@
 kind: pipeline
 type: docker
 name: default
+image: node:12.18.0-alpine
 
 steps:
-  - name: build
-    image: node:12.18.0-alpine
+  - name: install
     commands:
       - npm install
+  - name: build
+    commands:
       - npm run build
+  - name: storybook
+    commands:
+      - npm run build-storybook
