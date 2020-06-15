@@ -3,8 +3,19 @@ type: docker
 name: default
 
 steps:
-  - name: build
+  - name: install
     image: node:12.18.0-alpine
     commands:
       - npm install
+  - name: lint
+    image: node:12.18.0-alpine
+    commands:
+      - npm run lint
+  - name: build
+    image: node:12.18.0-alpine
+    commands:
       - npm run build
+  - name: storybook
+    image: node:12.18.0-alpine
+    commands:
+      - npm run build-storybook
