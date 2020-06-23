@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { MyNextContext } from "next/dist/next-server/lib/utils";
+import { GetServerSidePropsContext, MyNextContext } from "next-redux-wrapper";
 import React from "react";
 import styled from "styled-components";
 

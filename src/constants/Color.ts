@@ -8,6 +8,7 @@ const Color = {
   },
   Background: {
     Default: "#fff",
+    Gray: "#cdcdcd",
     Navy: "#272343",
   },
   Text: {
