@@ -50,12 +50,20 @@ export const GlobalStyle = createGlobalStyle`
     }
   }
 
+  input, textarea {
+    font: inherit;
+  }
+
   button {
     margin: 0;
     padding: 0;
     background: none;
     border: 0;
     cursor: pointer;
+  }
+
+  textarea: {
+    font: inherit;
   }
 
   h1,

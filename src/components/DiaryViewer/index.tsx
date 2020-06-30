@@ -47,15 +47,13 @@ const DiaryViewer: React.FC<Props> = ({
 }) => {
   return (
     <div className={className}>
-      <Title>
-        {diary.title}
-        {controller && (
-          <DiaryController
-            onEdit={controller.onEdit}
-            onDelete={controller.onDelete}
-          />
-        )}
-      </Title>
+      <Title>{diary.title}</Title>
+      {controller && (
+        <DiaryController
+          onEdit={controller.onEdit}
+          onDelete={controller.onDelete}
+        />
+      )}
       <Body>{diary.body}</Body>
       {buttons && (
         <>
