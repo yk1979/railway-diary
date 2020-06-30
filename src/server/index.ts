@@ -1,29 +1,30 @@
 import express from "express";
 import session from "express-session";
 import * as admin from "firebase-admin";
-import Next from "next";
+import next from "next";
 
 import firebaseServer from "./middlewares/firebaseServer";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const FileStore = require("session-file-store")(session);
-
 const port = parseInt(process.env.PORT || "4000", 10);
 const dev = process.env.NODE_ENV !== "production";
-const app = Next({ dev });
 
-const handle = app.getRequestHandler();
-
-const firebase = admin.initializeApp(
-  {
-    credential: admin.credential.applicationDefault(),
-    databaseURL: "https://railway-diary.firebaseio.com",
-  },
-  "server"
-);
-
-app.prepare().then(() => {
+(async () => {
   const server = express();
+  const app = next({ dev });
+  const handle = app.getRequestHandler();
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const FileStore = require("session-file-store")(session);
+
+  const firebase = admin.initializeApp(
+    {
+      credential: admin.credential.applicationDefault(),
+      databaseURL: "https://railway-diary.firebaseio.com",
+    },
+    "server"
+  );
+
+  await app.prepare();
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
 
@@ -83,4 +84,4 @@ app.prepare().then(() => {
     if (err) throw err;
     console.log(`> Ready on http://localhost:${port}`);
   });
-});
+})();

@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { MyNextContext } from "next/dist/next-server/lib/utils";
+import { MyNextContext } from "next-redux-wrapper";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";

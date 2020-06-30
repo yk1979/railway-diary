@@ -1,7 +1,7 @@
 import { format } from "date-fns-tz";
 import parseISO from "date-fns/parseISO";
 import { NextPage } from "next";
-import { MyNextContext } from "next/dist/next-server/lib/utils";
+import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -98,7 +98,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
       );
 
       try {
-        const firestore = req?.firebaseServer.firestore();
+        const firestore = req.firebaseServer?.firestore();
+        if (!firestore) {
+          throw new Error("firestore not found");
+        }
+
         author = await getUserFromFirestore({ firestore, userId });
         store.dispatch(
           getDiary({
@@ -120,7 +124,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     if (!diaryData) {
       // TODO nextの404ページに飛ばしたい
       // eslint-disable-next-line
-        res?.status(404).send("not found");
+        // res.status(404).send("not found");
     } else {
       diary = diaryData;
     }
