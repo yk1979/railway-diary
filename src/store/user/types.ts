@@ -4,7 +4,7 @@
 export type User = {
   uid: string;
   name: string | null;
-  picture: string;
+  picture?: string;
 };
 
 export type UserState = User | null;

@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { MyNextContext } from "next/dist/next-server/lib/utils";
+import { MyNextContext } from "next-redux-wrapper";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -12,12 +12,14 @@ import { RootState, wrapper } from "../store";
 import { userSignIn, userSignOut } from "../store/user/actions";
 import { User, UserState } from "../store/user/types";
 
-const Text = styled.p`
-  margin-top: 24px;
+const ButtonWrapper = styled.div`
+  margin-top: 36px;
 `;
 
 const StyledButton = styled(Button)`
-  margin-top: 24px;
+  & + & {
+    margin-top: 12px;
+  }
 `;
 
 type LoginPageProps = {
@@ -59,30 +61,32 @@ const LoginPage: NextPage<LoginPageProps> = () => {
   return (
     <>
       <Layout userId={null}>
-        {user && <Text>{`${user.name} さん としてログインしています`}</Text>}
+        {user && <p>{`${user.name} さん としてログインしています`}</p>}
         {/* TODO ログアウト後レンダーが走らない問題に対処 */}
         {/* 他のページから遷移してきた場合に再レンダリングが無効になる */}
-        <StyledButton
-          text={!user ? "ログインする" : "ログアウトする"}
-          onClick={!user ? handleSignIn : handleSignOut}
-          theme={!user ? buttonTheme.primary : buttonTheme.back}
-        />
-        {user && (
-          <>
-            <StyledButton
-              text="トップへ"
-              onClick={() => {
-                window.location.href = "/";
-              }}
-            />
-            <StyledButton
-              text="あなたの てつどうのきろく をみる"
-              onClick={() => {
-                window.location.href = `/user/${user.uid}`;
-              }}
-            />
-          </>
-        )}
+        <ButtonWrapper>
+          <StyledButton
+            text={!user ? "ログインする" : "ログアウトする"}
+            onClick={!user ? handleSignIn : handleSignOut}
+            theme={!user ? buttonTheme.primary : buttonTheme.back}
+          />
+          {user && (
+            <>
+              <StyledButton
+                text="トップへ"
+                onClick={() => {
+                  window.location.href = "/";
+                }}
+              />
+              <StyledButton
+                text="あなたの てつどうのきろく をみる"
+                onClick={() => {
+                  window.location.href = `/user/${user.uid}`;
+                }}
+              />
+            </>
+          )}
+        </ButtonWrapper>
       </Layout>
     </>
   );

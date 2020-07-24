@@ -13,6 +13,7 @@ const UserThumbnail = styled.a`
   width: 36px;
   height: 36px;
   overflow: hidden;
+  background: ${Color.Background.Gray};
   border-radius: 50%;
 
   > img {
@@ -42,7 +43,7 @@ type UserProfileProps = {
     uid: string;
     name: string;
   };
-  thumbnail: string;
+  thumbnail?: string;
   info?: {
     text: string | Date;
     date?: string;
@@ -56,7 +57,7 @@ type Props = UserProfileProps & {
 const UserProfile: React.FC<Props> = ({ user, thumbnail, info, className }) => (
   <Root className={className}>
     <UserThumbnail href={`/user/${user.uid}`}>
-      <img src={thumbnail} alt={user.name} />
+      {thumbnail && <img src={thumbnail} alt={user.name} />}
     </UserThumbnail>
     <Inner>
       <UserName>{user.name}</UserName>
