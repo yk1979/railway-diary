@@ -43,18 +43,18 @@ const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
         <StyledEditForm
           diary={diary}
           onSubmit={(title, body) => {
-            if (!diary) {
-              dispatch(createDraft({ id: "", title, body, lastEdited: "" }));
-            } else {
-              dispatch(
-                createDraft({
-                  id: diary.id,
-                  title,
-                  body,
-                  lastEdited: diary.lastEdited,
-                })
-              );
-            }
+            dispatch(
+              createDraft(
+                diary
+                  ? {
+                      id: diary.id,
+                      title,
+                      body,
+                      lastEdited: diary.lastEdited,
+                    }
+                  : { id: "", title, body, lastEdited: "" }
+              )
+            );
             if (body.length > 0) {
               router.push("/preview");
             }
