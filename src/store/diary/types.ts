@@ -5,6 +5,7 @@ export type Diary = {
   id: string;
   title: string;
   body: string;
+  files?: File[];
   lastEdited: string;
 };
 export type DiaryState = Diary | Diary[] | null;

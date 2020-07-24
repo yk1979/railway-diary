@@ -42,7 +42,7 @@ const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
       {user && (
         <StyledEditForm
           diary={diary}
-          onSubmit={(title, body) => {
+          onSubmit={({ title, body, files }) => {
             dispatch(
               createDraft(
                 diary
@@ -50,6 +50,7 @@ const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
                       id: diary.id,
                       title,
                       body,
+                      files,
                       lastEdited: diary.lastEdited,
                     }
                   : { id: "", title, body, lastEdited: "" }

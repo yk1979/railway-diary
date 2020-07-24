@@ -19,7 +19,6 @@ const Title = styled.input`
   appearance: none;
 `;
 
-// TODO マークダウンエディタに変更する
 const Editor = styled.textarea`
   display: block;
   flex-grow: 1;
@@ -34,9 +33,36 @@ const ToPreviewButton = styled(Button)`
   margin-top: 24px;
 `;
 
+const ImgContainer = styled.div`
+  display: flex;
+  margin-top: 24px;
+`;
+
+const ImgWrapper = styled.div`
+  flex: 1 1 200px;
+
+  & + & {
+    margin-left: 8px;
+  }
+
+  > img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+`;
+
 type EditFormProps = {
   diary?: Diary;
-  onSubmit: (title: string, body: string) => void;
+  onSubmit: ({
+    title,
+    body,
+    files,
+  }: {
+    title: string;
+    body: string;
+    files: File[];
+  }) => void;
 };
 
 type Props = EditFormProps & {
@@ -46,12 +72,13 @@ type Props = EditFormProps & {
 const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
   const [title, setTitle] = useState(diary?.title || "");
   const [body, setBody] = useState(diary?.body || "");
+  const [imgs, setImgs] = useState<File[]>([]);
 
   return (
     <StyledForm
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit(title, body);
+        onSubmit({ title, body, files: imgs });
       }}
       className={className}
     >
@@ -61,6 +88,33 @@ const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
         onChange={(e) => setTitle(e.target.value)}
       />
       <Editor value={body} onChange={(e) => setBody(e.target.value)} />
+      {/* TODO スタイル */}
+      <label htmlFor="file">画像アップロード</label>
+      <input
+        type="file"
+        id="file"
+        name="file"
+        accept="image/png, image/jpeg"
+        multiple
+        onChange={(e) => {
+          const files = e.target.files;
+          if (files && files.length > 0) {
+            for (const file of files) {
+              setImgs([...imgs, file]);
+            }
+          }
+        }}
+        disabled={imgs.length === 3}
+      />
+      {imgs.length > 0 && (
+        <ImgContainer>
+          {imgs.map((img, i) => (
+            <ImgWrapper key={i}>
+              <img src={URL.createObjectURL(img)} />
+            </ImgWrapper>
+          ))}
+        </ImgContainer>
+      )}
       <ToPreviewButton text="かくにんにすすむ" />
     </StyledForm>
   );

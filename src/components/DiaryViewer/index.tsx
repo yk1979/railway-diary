@@ -10,6 +10,25 @@ const Title = styled.div`
   font-size: 3.2rem;
 `;
 
+const ImgContainer = styled.div`
+  display: flex;
+  margin-top: 24px;
+`;
+
+const ImgWrapper = styled.div`
+  flex: 1 1 200px;
+
+  & + & {
+    margin-left: 8px;
+  }
+
+  > img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+`;
+
 const Body = styled.div`
   margin-top: 16px;
   white-space: pre-wrap;
@@ -53,6 +72,15 @@ const DiaryViewer: React.FC<Props> = ({
           onEdit={controller.onEdit}
           onDelete={controller.onDelete}
         />
+      )}
+      {diary.files?.length && (
+        <ImgContainer>
+          {diary.files.map((file, i) => (
+            <ImgWrapper key={i}>
+              <img src={URL.createObjectURL(file)} />
+            </ImgWrapper>
+          ))}
+        </ImgContainer>
       )}
       <Body>{diary.body}</Body>
       {buttons && (
