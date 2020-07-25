@@ -5,6 +5,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
+import { storage } from "../../firebase";
 import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
@@ -22,6 +23,8 @@ const BackButton = styled(Button)`
 type PreviewPageProps = {
   user: User;
 };
+
+const storageRef = storage.ref();
 
 const PreviewPage: NextPage<PreviewPageProps> = ({
   user,
@@ -41,6 +44,10 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
               onSave: async () => {
                 createDiaryToFirestore({ user, diary });
                 dispatch(deleteDraft());
+                // TODO パス等を見直す
+                diary.files?.forEach((file) => {
+                  storageRef.child(`${user.uid}/${file.name}`).put(file);
+                });
                 // TODO ローディング処理
                 router.push(`/user/${user.uid}`);
               },
