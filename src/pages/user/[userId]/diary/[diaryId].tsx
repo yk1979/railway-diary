@@ -81,7 +81,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
 };
 
 export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ req, res, query, store }: MyNextContext) => {
+  async ({ req, query, store }: MyNextContext) => {
     const userId = query.userId as string;
     const diaryId = query.diaryId as string;
     const token = req?.session?.decodedToken;

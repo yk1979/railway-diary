@@ -11,6 +11,7 @@
     "devtools",
     "firestore",
     "healthz",
+    "ikeda",
     "middlewares",
     "mypage",
     "readonly",
@@ -18,5 +19,6 @@
     "stylelint",
     "viewports"
   ],
-  "prettier.requireConfig": true
+  "prettier.requireConfig": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
