@@ -45,6 +45,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
                 createDiaryToFirestore({ user, diary });
                 dispatch(deleteDraft());
                 // TODO パス等を見直す
+                // アップロード時点でファイル名をuuidなどに置き換える
                 diary.files?.forEach((file) => {
                   storageRef.child(`${user.uid}/${file.name}`).put(file);
                 });
