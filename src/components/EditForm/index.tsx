@@ -62,16 +62,29 @@ const ImgWrapper = styled.div`
   }
 `;
 
+const convertFileToBase64Text = (file: File): Promise<string> => {
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onerror = () => {
+      reject(reader.result as string);
+    };
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 type EditFormProps = {
   diary?: Diary;
   onSubmit: ({
     title,
     body,
-    files,
+    images,
   }: {
     title: string;
     body: string;
-    files: File[];
+    images: string[];
   }) => void;
 };
 
@@ -82,13 +95,13 @@ type Props = EditFormProps & {
 const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
   const [title, setTitle] = useState(diary?.title || "");
   const [body, setBody] = useState(diary?.body || "");
-  const [imgs, setImgs] = useState<File[]>([]);
+  const [images, setImages] = useState<string[]>([]);
 
   return (
     <StyledForm
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit({ title, body, files: imgs });
+        onSubmit({ title, body, images });
       }}
       className={className}
     >
@@ -105,22 +118,22 @@ const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
         id="file"
         name="file"
         accept="image/png, image/jpeg"
-        multiple
-        onChange={(e) => {
+        onChange={async (e) => {
           const files = e.target.files;
           if (files && files.length > 0) {
             for (const file of files) {
-              setImgs([...imgs, file]);
+              const base64Image = await convertFileToBase64Text(file);
+              setImages([...images, base64Image]);
             }
           }
         }}
-        disabled={imgs.length === 3}
+        disabled={images.length === 3}
       />
-      {imgs.length > 0 && (
+      {images.length > 0 && (
         <ImgContainer>
-          {imgs.map((img, i) => (
+          {images.map((image, i) => (
             <ImgWrapper key={i}>
-              <img src={URL.createObjectURL(img)} />
+              <img src={image} />
             </ImgWrapper>
           ))}
         </ImgContainer>

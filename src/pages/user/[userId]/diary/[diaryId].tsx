@@ -42,6 +42,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   useEffect(() => {
     const storageRef = storage.ref();
     storageRef
+      // TODO 画像ファイル名ベタ書きの部分を修正する
       .child(`${user.uid}/${diary.id}/IMG_20191110_021337.jpg`)
       .getDownloadURL()
       .then((url) => {
@@ -89,7 +90,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
           date: diary.lastEdited,
         }}
       />
-      {/* TODo 以下は表示確認なので正しいUIに落とし込む */}
+      {/* TODO 以下は表示確認なので正しいUIに落とし込む */}
       <img src={imageUrl} width="100" />
       <StyledDiaryViewer
         diary={diary}

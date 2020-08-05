@@ -56,6 +56,7 @@ export async function createDiaryToFirestore({
     id: diary.id,
     title: diary.title,
     body: diary.body,
+    imageUrls: diary.imageUrls,
     lastEdited: new Date(),
   });
 }

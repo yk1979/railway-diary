@@ -53,7 +53,7 @@ const BackButton = styled(Button)`
 `;
 
 export type PreviewProps = {
-  diary: Omit<Diary, "lastEdited">;
+  diary: Diary;
   buttons?: {
     onSave: () => Promise<void>;
     onBack: () => void;
@@ -83,11 +83,11 @@ const DiaryViewer: React.FC<Props> = ({
           onDelete={controller.onDelete}
         />
       )}
-      {diary.files?.length && (
+      {diary.imageUrls?.length && (
         <ImgContainer>
-          {diary.files.map((file, i) => (
+          {diary.imageUrls.map((image, i) => (
             <ImgWrapper key={i}>
-              <img src={URL.createObjectURL(file)} />
+              <img src={image} />
             </ImgWrapper>
           ))}
         </ImgContainer>
