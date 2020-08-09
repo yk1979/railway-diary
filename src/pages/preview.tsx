@@ -38,8 +38,6 @@ type PreviewPageProps = {
   user: User;
 };
 
-const storageRef = storage.ref();
-
 const PreviewPage: NextPage<PreviewPageProps> = ({
   user,
 }: PreviewPageProps) => {
@@ -56,14 +54,14 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
             diary={diary}
             buttons={{
               onSave: async () => {
+                const storageRef = storage.ref(`${user.uid}/${diary.id}`);
+                // TODO アップロード後、画像を日記データと紐づけて管理したい
+                // TODO アップロード済みの画像は再度アップロードしない
+                diary.imageUrls?.forEach((image) => {
+                  storageRef.child(uuid()).put(convertBase64ToBlob(image));
+                });
                 createDiaryToFirestore({ user, diary });
                 dispatch(deleteDraft());
-                // TODO アップロード後、画像を日記データと紐づけて管理したい
-                diary.imageUrls?.forEach((image) => {
-                  storageRef
-                    .child(`${user.uid}/${uuid()}`)
-                    .put(convertBase64ToBlob(image));
-                });
                 // TODO ローディング処理
                 router.push(`/user/${user.uid}`);
               },

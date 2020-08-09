@@ -5,8 +5,7 @@ export type Diary = {
   id: string;
   title: string;
   body: string;
-  // TODO optionalじゃなくて、画像がない場合は空配列にしておきたい
-  imageUrls?: string[];
+  imageUrls: string[];
   lastEdited: string;
 };
 export type DiaryState = Diary | Diary[] | null;

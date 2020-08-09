@@ -95,7 +95,7 @@ type Props = EditFormProps & {
 const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
   const [title, setTitle] = useState(diary?.title || "");
   const [body, setBody] = useState(diary?.body || "");
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState(diary?.imageUrls || []);
 
   return (
     <StyledForm

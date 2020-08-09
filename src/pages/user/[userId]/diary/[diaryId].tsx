@@ -3,12 +3,11 @@ import parseISO from "date-fns/parseISO";
 import { NextPage } from "next";
 import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 import { END } from "redux-saga";
 import styled from "styled-components";
 
-import { storage } from "../../../../../firebase";
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
 import UserProfile from "../../../../components/UserProfile";
@@ -37,43 +36,6 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
 }: UserDiaryPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [imageUrl, setImageUrl] = useState("");
-
-  useEffect(() => {
-    const storageRef = storage.ref();
-    storageRef
-      // TODO 画像ファイル名ベタ書きの部分を修正する
-      .child(`${user.uid}/${diary.id}/IMG_20191110_021337.jpg`)
-      .getDownloadURL()
-      .then((url) => {
-        setImageUrl(url);
-      })
-      // TODO エラー処理正しく
-      .catch(function (error) {
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        switch (error.code) {
-          case "storage/object-not-found":
-            console.log(error.code);
-            // File doesn't exist
-            break;
-
-          case "storage/unauthorized":
-            console.log(error.code);
-            // User doesn't have permission to access the object
-            break;
-
-          case "storage/canceled":
-            console.log(error.code);
-            // User canceled the upload
-            break;
-          case "storage/unknown":
-            console.log(error.code);
-            // Unknown error occurred, inspect the server response
-            break;
-        }
-      });
-  }, [user.uid, diary.id]);
 
   return (
     <Layout userId={user ? user.uid : null}>
@@ -90,8 +52,6 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
           date: diary.lastEdited,
         }}
       />
-      {/* TODO 以下は表示確認なので正しいUIに落とし込む */}
-      <img src={imageUrl} width="100" />
       <StyledDiaryViewer
         diary={diary}
         // TODO fix
@@ -104,6 +64,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
                       id: diary.id,
                       title: diary.title,
                       body: diary.body,
+                      imageUrls: diary.imageUrls,
                       lastEdited: "",
                     })
                   );

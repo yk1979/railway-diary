@@ -76,6 +76,7 @@ export async function getDiaryFromFirestore({
     id: diaryData.id,
     title: diaryData.title,
     body: diaryData.body,
+    imageUrls: diaryData.imageUrls,
     lastEdited: utcToZonedTime(
       fromUnixTime(diaryData.lastEdited.seconds),
       "Asia/Tokyo"
@@ -98,6 +99,7 @@ export async function getDiariesFromFirestore({
           id: data.id,
           title: data.title,
           body: data.body,
+          imageUrls: data.imageUrls || [], // TODO imageUrlsをそのまま反映できるようにする
           // eslint-disable-next-line no-underscore-dangle
           lastEdited: utcToZonedTime(
             fromUnixTime(data.lastEdited.seconds),

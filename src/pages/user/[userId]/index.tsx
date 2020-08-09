@@ -164,6 +164,7 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
                                 id: d.id,
                                 title: d.title,
                                 body: d.body,
+                                imageUrls: d.imageUrls,
                                 lastEdited: "",
                               })
                             );
