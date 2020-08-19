@@ -57,36 +57,30 @@ type DiaryCardProps = {
   url: string;
 };
 
-const DiaryCard: React.FC<DiaryCardProps> = ({ diary, url }) => {
-  const { title, body } = diary;
-  console.log("test", diary.lastEdited, typeof diary.lastEdited);
-  const formattedDate = format(new Date(), "yyyy-MM-dd");
-
-  return (
-    <Root>
-      <Link href={url} withThumbnail={diary.imageUrls.length > 0}>
-        <>
-          {diary.imageUrls.length > 0 ? (
-            <>
-              <Thumbnail src={diary.imageUrls[0]} />
-              <TextWrapper>
-                {/* TODO dateTime */}
-                <StyledTime>{formattedDate}</StyledTime>
-                <Title>{title}</Title>
-                <Body>{body}</Body>
-              </TextWrapper>
-            </>
-          ) : (
-            <>
-              <StyledTime>{formattedDate}</StyledTime>
-              <Title>{title}</Title>
-              <Body>{body}</Body>
-            </>
-          )}
-        </>
-      </Link>
-    </Root>
-  );
-};
-
+const DiaryCard: React.FC<DiaryCardProps> = ({ diary, url }) => (
+  <Root>
+    <Link href={url} withThumbnail={diary.imageUrls.length > 0}>
+      <>
+        {diary.imageUrls.length > 0 ? (
+          <>
+            <Thumbnail src={diary.imageUrls[0]} />
+            <TextWrapper>
+              <StyledTime dateTime={diary.lastEdited}>
+                {format(new Date(), "yyyy-MM-dd")}
+              </StyledTime>
+              <Title>{diary.title}</Title>
+              <Body>{diary.body}</Body>
+            </TextWrapper>
+          </>
+        ) : (
+          <>
+            <StyledTime>{format(new Date(), "yyyy-MM-dd")}</StyledTime>
+            <Title>{diary.title}</Title>
+            <Body>{diary.body}</Body>
+          </>
+        )}
+      </>
+    </Link>
+  </Root>
+);
 export default DiaryCard;
