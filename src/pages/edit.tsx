@@ -53,7 +53,7 @@ const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
                       imageUrls: images,
                       lastEdited: diary.lastEdited,
                     }
-                  : { id: "", title, body, lastEdited: "" }
+                  : { id: "", title, body, imageUrls: images, lastEdited: "" }
               )
             );
             if (body.length > 0) {
