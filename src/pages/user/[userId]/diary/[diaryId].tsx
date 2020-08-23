@@ -64,6 +64,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
                       id: diary.id,
                       title: diary.title,
                       body: diary.body,
+                      imageUrls: diary.imageUrls,
                       lastEdited: "",
                     })
                   );

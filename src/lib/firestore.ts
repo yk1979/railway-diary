@@ -1,6 +1,3 @@
-import { fromUnixTime } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
-
 import { firestore as fs } from "../../firebase";
 import {
   DeleteDiaryAction,
@@ -9,6 +6,16 @@ import {
   GetDiaryAction,
 } from "../store/diary/types";
 import { User } from "../store/user/types";
+
+// TODO 型見直し
+
+type FSDiary = {
+  id: string;
+  title: string;
+  body: string;
+  imageUrls: string[];
+  lastEdited: firebase.firestore.Timestamp;
+};
 
 export async function getUserFromFirestore({
   firestore,
@@ -56,6 +63,7 @@ export async function createDiaryToFirestore({
     id: diary.id,
     title: diary.title,
     body: diary.body,
+    imageUrls: diary.imageUrls,
     lastEdited: new Date(),
   });
 }
@@ -65,20 +73,18 @@ export async function getDiaryFromFirestore({
   userId,
   diaryId,
 }: GetDiaryAction["payload"]): Promise<Diary | undefined> {
-  const diaryData = await firestore
+  const diaryData = (await firestore
     .collection(`users/${userId}/diaries/`)
     .doc(`${diaryId}`)
     .get()
-    .then((doc) => doc.data());
+    .then((doc) => doc.data())) as FSDiary | undefined;
   if (!diaryData) return undefined;
   return {
     id: diaryData.id,
     title: diaryData.title,
     body: diaryData.body,
-    lastEdited: utcToZonedTime(
-      fromUnixTime(diaryData.lastEdited.seconds),
-      "Asia/Tokyo"
-    ).toISOString(),
+    imageUrls: diaryData.imageUrls,
+    lastEdited: diaryData.lastEdited.toDate().toISOString(),
   };
 }
 
@@ -92,16 +98,13 @@ export async function getDiariesFromFirestore({
     .get()
     .then((collections) => {
       collections.forEach((doc) => {
-        const data = doc.data();
+        const data = doc.data() as FSDiary;
         diariesData.push({
           id: data.id,
           title: data.title,
           body: data.body,
-          // eslint-disable-next-line no-underscore-dangle
-          lastEdited: utcToZonedTime(
-            fromUnixTime(data.lastEdited.seconds),
-            "Asia/Tokyo"
-          ).toISOString(),
+          imageUrls: data.imageUrls,
+          lastEdited: data.lastEdited.toDate().toISOString(),
         });
       });
     });
