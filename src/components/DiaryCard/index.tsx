@@ -46,7 +46,7 @@ const Body = styled.p`
   flex-grow: 1;
   margin-top: 4px;
   overflow: hidden;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   white-space: pre-wrap;
