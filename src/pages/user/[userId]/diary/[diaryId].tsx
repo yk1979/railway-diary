@@ -3,17 +3,26 @@ import parseISO from "date-fns/parseISO";
 import { NextPage } from "next";
 import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { END } from "redux-saga";
 import styled from "styled-components";
 
+import { firestore } from "../../../../../firebase";
 import DiaryViewer from "../../../../components/DiaryViewer";
 import Layout from "../../../../components/Layout";
+import Modal from "../../../../components/Modal";
+import PageBottomNotifier, {
+  NotifierStatus,
+} from "../../../../components/PageBottomNotifier/PageBottomNotifier";
 import UserProfile from "../../../../components/UserProfile";
 import { getUserFromFirestore } from "../../../../lib/firestore";
 import { wrapper } from "../../../../store";
-import { createDraft, getDiary } from "../../../../store/diary/actions";
+import {
+  createDraft,
+  deleteDiary,
+  getDiary,
+} from "../../../../store/diary/actions";
 import { Diary } from "../../../../store/diary/types";
 import { userSignIn } from "../../../../store/user/actions";
 import { User } from "../../../../store/user/types";
@@ -37,6 +46,33 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notifierStatus, setNotifierStatus] = useState("hidden");
+
+  const handleEditDiary = () => {
+    dispatch(
+      createDraft({
+        id: diary.id,
+        title: diary.title,
+        body: diary.body,
+        imageUrls: diary.imageUrls,
+        lastEdited: "",
+      })
+    );
+    router.push("/edit");
+  };
+
+  const handleAfterModalClose = async () => {
+    setNotifierStatus("visible" as NotifierStatus);
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        setNotifierStatus("hidden" as NotifierStatus);
+        resolve();
+      }, 1000);
+    });
+    router.push(`/user/${user.uid}`);
+  };
+
   return (
     <Layout userId={user ? user.uid : null}>
       <UserProfile
@@ -54,28 +90,29 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
       />
       <StyledDiaryViewer
         diary={diary}
-        // TODO fix
         controller={
           user?.uid === author.uid
             ? {
-                onEdit: () => {
-                  dispatch(
-                    createDraft({
-                      id: diary.id,
-                      title: diary.title,
-                      body: diary.body,
-                      imageUrls: diary.imageUrls,
-                      lastEdited: "",
-                    })
-                  );
-                  router.push("/edit");
-                },
-                // TODO 修正
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                onDelete: () => {},
+                onEdit: handleEditDiary,
+                onDelete: () => setIsModalOpen(true),
               }
             : undefined
         }
+      />
+      <Modal.ConfirmDelete
+        id={diary.id}
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        onAfterClose={handleAfterModalClose}
+        onDelete={() => {
+          dispatch(
+            deleteDiary({ firestore, userId: author.uid, diaryId: diary.id })
+          );
+        }}
+      />
+      <PageBottomNotifier
+        text="日記を削除しました"
+        status={notifierStatus as NotifierStatus}
       />
     </Layout>
   );
