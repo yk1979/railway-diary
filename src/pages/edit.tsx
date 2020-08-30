@@ -34,34 +34,20 @@ const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  // TODO fix
   const diary = useSelector((state: RootState) => state.diary as Diary);
+
+  const handleSubmit = (diary: Diary) => {
+    dispatch(createDraft(diary));
+    if (diary.body.length > 0) {
+      router.push("/preview");
+    }
+  };
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
-      {user && (
-        <StyledEditForm
-          diary={diary}
-          onSubmit={({ title, body, images }) => {
-            dispatch(
-              createDraft(
-                diary
-                  ? {
-                      id: diary.id,
-                      title,
-                      body,
-                      imageUrls: images,
-                      lastEdited: diary.lastEdited,
-                    }
-                  : { id: "", title, body, imageUrls: images, lastEdited: "" }
-              )
-            );
-            if (body.length > 0) {
-              router.push("/preview");
-            }
-          }}
-        />
-      )}
+      {user && <StyledEditForm diary={diary} handleSubmit={handleSubmit} />}
     </StyledLayout>
   );
 };

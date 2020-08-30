@@ -130,45 +130,43 @@ const convertFileToBase64Text = (file: File): Promise<string> => {
 
 type EditFormProps = {
   diary?: Diary;
-  onSubmit: ({
-    title,
-    body,
-    images,
-  }: {
-    title: string;
-    body: string;
-    images: string[];
-  }) => void;
+  handleSubmit: (diary: Diary) => void;
 };
 
 type Props = EditFormProps & {
   className?: string;
 };
 
-const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
+const EditForm: React.FC<Props> = ({ className, diary, handleSubmit }) => {
   const [title, setTitle] = useState(diary?.title || "");
   const [body, setBody] = useState(diary?.body || "");
-  const [images, setImages] = useState(diary?.imageUrls || []);
+  const [imageUrls, setImageUrls] = useState(diary?.imageUrls || []);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       for (const file of files) {
         const base64Image = await convertFileToBase64Text(file);
-        setImages([...images, base64Image]);
+        setImageUrls([...imageUrls, base64Image]);
       }
     }
   };
 
   const handleRemoveFile = (index: number) => {
-    setImages(images.filter((image) => image !== images[index]));
+    setImageUrls(imageUrls.filter((image) => image !== imageUrls[index]));
   };
 
   return (
     <StyledForm
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit({ title, body, images });
+        handleSubmit({
+          id: diary?.id || "",
+          title: diary?.title || title,
+          body: diary?.body || body,
+          imageUrls: diary?.imageUrls || imageUrls,
+          lastEdited: diary?.lastEdited || "",
+        });
       }}
       className={className}
     >
@@ -188,12 +186,12 @@ const EditForm: React.FC<Props> = ({ className, diary, onSubmit }) => {
         name="file"
         accept="image/png, image/jpeg"
         onChange={handleInputChange}
-        disabled={images.length === 3}
+        disabled={imageUrls.length === 3}
         hidden
       />
-      {images.length > 0 && (
+      {imageUrls.length > 0 && (
         <ImgContainer>
-          {images.map((image, i) => (
+          {imageUrls.map((image, i) => (
             <ImgWrapper key={i}>
               <DeleteButton onClick={() => handleRemoveFile(i)} />
               <img src={image} />
