@@ -83,7 +83,7 @@ const DiaryViewer: React.FC<Props> = ({
           onDelete={controller.onDelete}
         />
       )}
-      {diary.imageUrls?.length && (
+      {diary.imageUrls?.length > 0 && (
         <ImgContainer>
           {diary.imageUrls.map((image, i) => (
             <ImgWrapper key={i}>
