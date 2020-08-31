@@ -18,11 +18,7 @@ import PageBottomNotifier, {
 import UserProfile from "../../../../components/UserProfile";
 import { getUserFromFirestore } from "../../../../lib/firestore";
 import { wrapper } from "../../../../store";
-import {
-  createDraft,
-  deleteDiary,
-  getDiary,
-} from "../../../../store/diary/actions";
+import { deleteDiary, getDiary } from "../../../../store/diary/actions";
 import { Diary } from "../../../../store/diary/types";
 import { userSignIn } from "../../../../store/user/actions";
 import { User } from "../../../../store/user/types";
@@ -42,7 +38,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   author,
   diary,
   user,
-}: UserDiaryPageProps) => {
+}) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -50,17 +46,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   const [notifierStatus, setNotifierStatus] = useState("hidden");
 
   const handleEditDiary = () => {
-    dispatch(
-      createDraft({
-        id: diary.id,
-        title: diary.title,
-        body: diary.body,
-        imageUrls: diary.imageUrls,
-        lastEdited: "",
-      })
-    );
-    // TODO fix
-    router.push("/create");
+    router.push(`/user/${user.uid}/diary/${diary.id}/edit`);
   };
 
   const handleAfterModalClose = async () => {
@@ -119,63 +105,48 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ req, query, store }: MyNextContext) => {
-    const userId = query.userId as string;
-    const diaryId = query.diaryId as string;
-    const token = req?.session?.decodedToken;
-    let diary!: Diary;
-    let author!: User;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: UserDiaryPageProps;
+}>(async ({ req, query, store }: MyNextContext) => {
+  const { userId, diaryId } = query as { userId: string; diaryId: string };
+  const token = req?.session?.decodedToken;
+  let author!: User;
 
-    if (token) {
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
+    try {
+      const firestore = req.firebaseServer.firestore();
+      author = await getUserFromFirestore({ firestore, userId });
       store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
+        getDiary({
+          firestore,
+          userId,
+          diaryId,
         })
       );
-
-      try {
-        const firestore = req.firebaseServer?.firestore();
-        if (!firestore) {
-          throw new Error("firestore not found");
-        }
-
-        author = await getUserFromFirestore({ firestore, userId });
-        store.dispatch(
-          getDiary({
-            firestore,
-            userId,
-            diaryId,
-          })
-        );
-        store.dispatch(END);
-        await store.sagaTask?.toPromise();
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-      }
+      store.dispatch(END);
+      await store.sagaTask?.toPromise();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
     }
-
-    const { diary: diaryData, user } = store.getState();
-
-    if (!diaryData) {
-      // TODO nextの404ページに飛ばしたい
-      // eslint-disable-next-line
-        // res.status(404).send("not found");
-    } else {
-      diary = diaryData;
-    }
-
-    return {
-      props: {
-        author,
-        diary,
-        user,
-      },
-    };
   }
-);
+
+  const { diary, user } = store.getState();
+
+  return {
+    props: {
+      author,
+      diary,
+      user,
+    },
+  };
+});
 
 export default UserDiaryPage;

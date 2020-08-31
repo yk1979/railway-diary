@@ -2,14 +2,15 @@ import { NextPage } from "next";
 import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { END } from "redux-saga";
 import styled from "styled-components";
 
 import EditForm from "../../../../../components/EditForm";
 import Heading from "../../../../../components/Heading";
 import Layout from "../../../../../components/Layout";
-import { RootState, wrapper } from "../../../../../store";
-import { createDraft } from "../../../../../store/diary/actions";
+import { wrapper } from "../../../../../store";
+import { createDraft, getDiary } from "../../../../../store/diary/actions";
 import { Diary } from "../../../../../store/diary/types";
 import { userSignIn } from "../../../../../store/user/actions";
 import { User } from "../../../../../store/user/types";
@@ -28,14 +29,12 @@ const StyledEditForm = styled(EditForm)`
 
 type DiaryEditPageProps = {
   user: User;
+  diary: Diary;
 };
 
-const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user }) => {
+const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-
-  // TODO fix
-  const diary = useSelector((state: RootState) => state.diary as Diary);
 
   const handleSubmit = (diary: Diary) => {
     dispatch(createDraft(diary));
@@ -52,27 +51,45 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user }) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  ({ req, store }: MyNextContext) => {
-    const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: DiaryEditPageProps;
+}>(async ({ req, query, store }: MyNextContext) => {
+  const { userId, diaryId } = query as { userId: string; diaryId: string };
+  const token = req?.session?.decodedToken;
 
-    if (token) {
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
+    try {
+      const firestore = req.firebaseServer.firestore();
       store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
+        getDiary({
+          firestore,
+          userId,
+          diaryId,
         })
       );
+      // TODO このコードなんだっけ
+      store.dispatch(END);
+      await store.sagaTask?.toPromise();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
     }
-    const { user } = store.getState();
-
-    return {
-      props: {
-        user,
-      },
-    };
   }
-);
+  const { user, diary } = store.getState();
+
+  return {
+    props: {
+      user,
+      diary,
+    },
+  };
+});
 
 export default DiaryEditPage;
