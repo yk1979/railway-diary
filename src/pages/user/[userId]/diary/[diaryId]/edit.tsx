@@ -53,7 +53,7 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
 
 export const getServerSideProps = wrapper.getServerSideProps<{
   props: DiaryEditPageProps;
-}>(async ({ req, query, store }: MyNextContext) => {
+}>(async ({ req, query, store }) => {
   const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;
 

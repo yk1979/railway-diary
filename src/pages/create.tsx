@@ -49,27 +49,27 @@ const CreatePage: NextPage<CreatePageProps> = ({ user }) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  ({ req, store }: MyNextContext) => {
-    const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: CreatePageProps;
+}>(({ req, store }) => {
+  const token = req?.session?.decodedToken;
 
-    if (token) {
-      store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
-        })
-      );
-    }
-    const { user } = store.getState();
-
-    return {
-      props: {
-        user,
-      },
-    };
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
   }
-);
+  const { user } = store.getState();
+
+  return {
+    props: {
+      user,
+    },
+  };
+});
 
 export default CreatePage;

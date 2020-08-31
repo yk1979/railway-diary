@@ -38,9 +38,7 @@ type PreviewPageProps = {
   user: User;
 };
 
-const PreviewPage: NextPage<PreviewPageProps> = ({
-  user,
-}: PreviewPageProps) => {
+const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -94,26 +92,26 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
 
 export default PreviewPage;
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  ({ req, store }: MyNextContext) => {
-    const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: PreviewPageProps;
+}>(({ req, store }) => {
+  const token = req?.session?.decodedToken;
 
-    if (token) {
-      store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
-        })
-      );
-    }
-
-    const { user } = store.getState();
-
-    return {
-      props: {
-        user,
-      },
-    };
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
   }
-);
+
+  const { user } = store.getState();
+
+  return {
+    props: {
+      user,
+    },
+  };
+});

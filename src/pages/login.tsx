@@ -92,20 +92,20 @@ const LoginPage: NextPage<LoginPageProps> = () => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  ({ req, store }: MyNextContext) => {
-    const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: LoginPageProps;
+}>(({ req, store }) => {
+  const token = req?.session?.decodedToken;
 
-    if (token) {
-      store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
-        })
-      );
-    }
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
   }
-);
+});
 
 export default LoginPage;

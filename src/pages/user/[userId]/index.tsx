@@ -61,7 +61,7 @@ type UserPageProps = {
   user: User;
 };
 
-const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
+const UserPage: NextPage<UserPageProps> = ({ author, user }) => {
   const dispatch = useDispatch();
 
   const diaries = useSelector<RootState, Diary[]>(
@@ -152,55 +152,52 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ req, res, query, store }: MyNextContext) => {
-    const userId = query.userId as string;
-    const token = req?.session?.decodedToken;
-    let author!: User;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: UserPageProps;
+}>(async ({ req, res, query, store }) => {
+  const userId = query.userId as string;
+  const token = req?.session?.decodedToken;
+  let author!: User;
 
-    // TODO 存在しないuserId叩かれた時エラーにしたい
-    if (token) {
+  // TODO 存在しないuserId叩かれた時エラーにしたい
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
+    try {
+      const firestore = req?.firebaseServer.firestore();
+      author = await getUserFromFirestore({ firestore, userId });
       store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
+        getDiaries({
+          firestore,
+          userId,
         })
       );
-      try {
-        const firestore = req?.firebaseServer.firestore();
-        author = await getUserFromFirestore({ firestore, userId });
-        store.dispatch(
-          getDiaries({
-            firestore,
-            userId,
-          })
-        );
-        store.dispatch(END);
-        await store.sagaTask?.toPromise();
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(
-          "Error, could not fetch diary data in server side: ",
-          err
-        );
-      }
+      store.dispatch(END);
+      await store.sagaTask?.toPromise();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error, could not fetch diary data in server side: ", err);
     }
-
-    const { diary, user } = store.getState();
-    if (!diary) {
-      // TODO nextの404ページに飛ばしたい
-      // eslint-disable-next-line
-        res?.status(404).send("not found");
-    }
-
-    return {
-      props: {
-        author,
-        user,
-      },
-    };
   }
-);
+
+  const { diary, user } = store.getState();
+  if (!diary) {
+    // TODO nextの404ページに飛ばしたい
+    // eslint-disable-next-line
+    res?.status(404).send("not found");
+  }
+
+  return {
+    props: {
+      author,
+      user,
+    },
+  };
+});
 
 export default UserPage;
