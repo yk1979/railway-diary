@@ -26,42 +26,25 @@ const StyledEditForm = styled(EditForm)`
   margin-top: 24px;
 `;
 
-type EditPageProps = {
+type CreatePageProps = {
   user: User;
 };
 
-const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
+const CreatePage: NextPage<CreatePageProps> = ({ user }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const diary = useSelector((state: RootState) => state.diary as Diary);
+  const handleSubmit = (diary: Diary) => {
+    dispatch(createDraft(diary));
+    if (diary.body.length > 0) {
+      router.push("/preview");
+    }
+  };
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
-      {user && (
-        <StyledEditForm
-          diary={diary}
-          onSubmit={({ title, body, images }) => {
-            dispatch(
-              createDraft(
-                diary
-                  ? {
-                      id: diary.id,
-                      title,
-                      body,
-                      imageUrls: images,
-                      lastEdited: diary.lastEdited,
-                    }
-                  : { id: "", title, body, imageUrls: images, lastEdited: "" }
-              )
-            );
-            if (body.length > 0) {
-              router.push("/preview");
-            }
-          }}
-        />
-      )}
+      {user && <StyledEditForm handleSubmit={handleSubmit} />}
     </StyledLayout>
   );
 };
@@ -89,4 +72,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default EditPage;
+export default CreatePage;

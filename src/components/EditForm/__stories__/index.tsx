@@ -7,4 +7,4 @@ export default {
   title: "EditForm",
 };
 
-export const Default: React.FC = () => <EditForm onSubmit={() => {}} />;
+export const Default: React.FC = () => <EditForm handleSubmit={() => {}} />;

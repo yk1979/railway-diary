@@ -44,7 +44,26 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
   const router = useRouter();
   const dispatch = useDispatch();
 
+  // TODO fix
   const diary = useSelector((state: RootState) => state.diary as Diary);
+
+  const handleOnSave = async () => {
+    const storageRef = storage.ref(`${user.uid}/${diary.id}`);
+    // TODO アップロード後、画像を日記データと紐づけて管理したい
+    // TODO アップロード済みの画像は再度アップロードしない
+    diary.imageUrls?.forEach((image) => {
+      storageRef.child(uuid()).put(convertBase64ToBlob(image));
+    });
+    createDiaryToFirestore({ user, diary });
+    dispatch(deleteDraft());
+    // TODO ローディング処理
+    router.push(`/user/${user.uid}`);
+  };
+
+  // TODO 新規作成か修正かでパスを分ける
+  const handleOnBack = () => {
+    router.push("/create");
+  };
 
   return (
     <Layout userId={user ? user.uid : null}>
@@ -53,21 +72,8 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
           <DiaryViewer
             diary={diary}
             buttons={{
-              onSave: async () => {
-                const storageRef = storage.ref(`${user.uid}/${diary.id}`);
-                // TODO アップロード後、画像を日記データと紐づけて管理したい
-                // TODO アップロード済みの画像は再度アップロードしない
-                diary.imageUrls?.forEach((image) => {
-                  storageRef.child(uuid()).put(convertBase64ToBlob(image));
-                });
-                createDiaryToFirestore({ user, diary });
-                dispatch(deleteDraft());
-                // TODO ローディング処理
-                router.push(`/user/${user.uid}`);
-              },
-              onBack: () => {
-                router.push("/edit");
-              },
+              onSave: handleOnSave,
+              onBack: handleOnBack,
             }}
           />
         ) : (
@@ -77,7 +83,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
               text="日記を書く"
               onClick={(e: Event) => {
                 e.preventDefault();
-                window.location.href = "/edit";
+                window.location.href = "/create";
               }}
             />
           </>

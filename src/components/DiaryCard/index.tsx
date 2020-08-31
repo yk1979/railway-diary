@@ -14,6 +14,7 @@ const Root = styled.div`
 
 const Link = styled.a<{ withThumbnail: boolean }>`
   display: ${({ withThumbnail }) => (withThumbnail ? "flex" : "block")};
+  height: 100%;
 `;
 
 const Thumbnail = styled.img`
@@ -30,6 +31,7 @@ const TextWrapper = styled.div`
 `;
 
 const StyledTime = styled.time`
+  display: block;
   color: ${Color.Text.Gray};
   font-size: 1.2rem;
 `;

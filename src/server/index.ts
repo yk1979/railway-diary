@@ -48,13 +48,16 @@ const dev = process.env.NODE_ENV !== "production";
 
   // TODO すべてのページで未ログイン状態ならloginページにリダイレクトさせて、ログイン後は元のリクエストページに戻したい
   // /\/(?!login)/ でログインページ以外のパスに引っ掛けようとしたけど、パスが"/login"の時も引っかかっちゃってうまくいかず
-  server.get(["/", "/edit", "/preview", "/user/:userId"], (req, res, next) => {
-    if (req?.session?.decodedToken) {
-      next();
-    } else {
-      res.redirect("/login");
+  server.get(
+    ["/", "/create", "/preview", "/user/:userId"],
+    (req, res, next) => {
+      if (req?.session?.decodedToken) {
+        next();
+      } else {
+        res.redirect("/login");
+      }
     }
-  });
+  );
 
   server.post("/api/login", async (req, res) => {
     if (!req.body) res.sendStatus(400);
