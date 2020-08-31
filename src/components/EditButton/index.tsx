@@ -21,7 +21,7 @@ type Props = {
 };
 
 const EditButton: React.FC<Props> = ({ className }) => (
-  <Root className={className} href="/edit">
+  <Root className={className} href="/create">
     <MdModeEdit />
   </Root>
 );

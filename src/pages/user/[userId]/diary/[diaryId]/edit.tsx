@@ -5,14 +5,14 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import EditForm from "../components/EditForm";
-import Heading from "../components/Heading";
-import Layout from "../components/Layout";
-import { RootState, wrapper } from "../store";
-import { createDraft } from "../store/diary/actions";
-import { Diary } from "../store/diary/types";
-import { userSignIn } from "../store/user/actions";
-import { User } from "../store/user/types";
+import EditForm from "../../../../../components/EditForm";
+import Heading from "../../../../../components/Heading";
+import Layout from "../../../../../components/Layout";
+import { RootState, wrapper } from "../../../../../store";
+import { createDraft } from "../../../../../store/diary/actions";
+import { Diary } from "../../../../../store/diary/types";
+import { userSignIn } from "../../../../../store/user/actions";
+import { User } from "../../../../../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -26,11 +26,11 @@ const StyledEditForm = styled(EditForm)`
   margin-top: 24px;
 `;
 
-type EditPageProps = {
+type DiaryEditPageProps = {
   user: User;
 };
 
-const EditPage: NextPage<EditPageProps> = ({ user }: EditPageProps) => {
+const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -75,4 +75,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default EditPage;
+export default DiaryEditPage;

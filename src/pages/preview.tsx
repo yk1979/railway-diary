@@ -60,8 +60,9 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
     router.push(`/user/${user.uid}`);
   };
 
+  // TODO 新規作成か修正かでパスを分ける
   const handleOnBack = () => {
-    router.push("/edit");
+    router.push("/create");
   };
 
   return (
@@ -82,7 +83,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
               text="日記を書く"
               onClick={(e: Event) => {
                 e.preventDefault();
-                window.location.href = "/edit";
+                window.location.href = "/create";
               }}
             />
           </>

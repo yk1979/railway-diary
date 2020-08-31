@@ -59,7 +59,8 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
         lastEdited: "",
       })
     );
-    router.push("/edit");
+    // TODO fix
+    router.push("/create");
   };
 
   const handleAfterModalClose = async () => {
