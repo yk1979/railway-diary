@@ -8,22 +8,24 @@ import {
 } from "./types";
 
 // TODO 一緒に使うことは今のところないけど、下書きと後悔済みの日記が同じdiary stateで管理されているのは微妙な気が
-const diary = (
-  state: DiaryState = null,
+const diaries = (
+  state: DiaryState = [],
   action: DiaryActionTypes
 ): DiaryState => {
   switch (action.type) {
     case CREATE_DRAFT: {
-      return {
-        ...action.payload,
-        id: action.payload.id || String(new Date().getTime()),
-        title: action.payload.title || "タイトルなし",
-      };
+      return [
+        {
+          ...action.payload,
+          id: action.payload.id || String(new Date().getTime()),
+          title: action.payload.title || "タイトルなし",
+        },
+      ];
     }
     case DELETE_DRAFT:
-      return null;
+      return [];
     case SET_DIARY:
-      return { ...action.payload };
+      return [{ ...action.payload }];
     case SET_DIARIES:
       return [...action.payload];
     default:
@@ -31,4 +33,4 @@ const diary = (
   }
 };
 
-export default diary;
+export default diaries;

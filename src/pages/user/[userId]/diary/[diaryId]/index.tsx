@@ -1,27 +1,26 @@
 import { format } from "date-fns-tz";
 import parseISO from "date-fns/parseISO";
 import { NextPage } from "next";
-import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { END } from "redux-saga";
 import styled from "styled-components";
 
-import { firestore } from "../../../../../firebase";
-import DiaryViewer from "../../../../components/DiaryViewer";
-import Layout from "../../../../components/Layout";
-import Modal from "../../../../components/Modal";
+import { firestore } from "../../../../../../firebase";
+import DiaryViewer from "../../../../../components/DiaryViewer";
+import Layout from "../../../../../components/Layout";
+import Modal from "../../../../../components/Modal";
 import PageBottomNotifier, {
   NotifierStatus,
-} from "../../../../components/PageBottomNotifier/PageBottomNotifier";
-import UserProfile from "../../../../components/UserProfile";
-import { getUserFromFirestore } from "../../../../lib/firestore";
-import { wrapper } from "../../../../store";
-import { deleteDiary, getDiary } from "../../../../store/diary/actions";
-import { Diary } from "../../../../store/diary/types";
-import { userSignIn } from "../../../../store/user/actions";
-import { User } from "../../../../store/user/types";
+} from "../../../../../components/PageBottomNotifier/PageBottomNotifier";
+import UserProfile from "../../../../../components/UserProfile";
+import { getUserFromFirestore } from "../../../../../lib/firestore";
+import { wrapper } from "../../../../../store";
+import { deleteDiary, getDiary } from "../../../../../store/diaries/actions";
+import { Diary } from "../../../../../store/diaries/types";
+import { userSignIn } from "../../../../../store/user/actions";
+import { User } from "../../../../../store/user/types";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
   margin-top: 24px;
@@ -87,7 +86,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
         }
       />
       <Modal.ConfirmDelete
-        id={diary.id}
+        id={String(diary.id)}
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         onAfterClose={handleAfterModalClose}
@@ -138,12 +137,12 @@ export const getServerSideProps = wrapper.getServerSideProps<{
     }
   }
 
-  const { diary, user } = store.getState();
+  const { diaries, user } = store.getState();
 
   return {
     props: {
       author,
-      diary,
+      diary: diaries[0],
       user,
     },
   };

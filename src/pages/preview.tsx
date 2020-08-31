@@ -12,8 +12,7 @@ import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
 import { createDiaryToFirestore } from "../lib/firestore";
 import { RootState, wrapper } from "../store";
-import { deleteDraft } from "../store/diary/actions";
-import { Diary } from "../store/diary/types";
+import { deleteDraft } from "../store/diaries/actions";
 import { userSignIn } from "../store/user/actions";
 import { User } from "../store/user/types";
 
@@ -42,8 +41,8 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // TODO fix
-  const diary = useSelector((state: RootState) => state.diary as Diary);
+  // TODO SSRで取得する
+  const diary = useSelector((state: RootState) => state.diaries[0]);
 
   const handleOnSave = async () => {
     const storageRef = storage.ref(`${user.uid}/${diary.id}`);
@@ -58,7 +57,6 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
     router.push(`/user/${user.uid}`);
   };
 
-  // TODO 新規作成か修正かでパスを分ける
   const handleOnBack = () => {
     router.push("/create");
   };

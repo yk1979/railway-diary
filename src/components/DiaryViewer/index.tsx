@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import BreakPoint from "../../constants/BreakPoint";
-import { Diary } from "../../store/diary/types";
+import { Diary } from "../../store/diaries/types";
 import Button, { buttonTheme } from "../Button";
 import DiaryController from "../DiaryController";
 

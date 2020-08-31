@@ -1,5 +1,4 @@
 import { NextPage } from "next";
-import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -10,8 +9,8 @@ import EditForm from "../../../../../components/EditForm";
 import Heading from "../../../../../components/Heading";
 import Layout from "../../../../../components/Layout";
 import { wrapper } from "../../../../../store";
-import { createDraft, getDiary } from "../../../../../store/diary/actions";
-import { Diary } from "../../../../../store/diary/types";
+import { createDraft, getDiary } from "../../../../../store/diaries/actions";
+import { Diary } from "../../../../../store/diaries/types";
 import { userSignIn } from "../../../../../store/user/actions";
 import { User } from "../../../../../store/user/types";
 
@@ -82,12 +81,12 @@ export const getServerSideProps = wrapper.getServerSideProps<{
       console.error(err);
     }
   }
-  const { user, diary } = store.getState();
+  const { user, diaries } = store.getState();
 
   return {
     props: {
       user,
-      diary,
+      diary: diaries[0],
     },
   };
 });

@@ -19,13 +19,13 @@ import logger from "redux-logger";
 import createSagaMiddleware, { Task } from "redux-saga";
 
 import rootSaga from "../saga";
-import diary from "./diary/reducers";
-import { DiaryState } from "./diary/types";
+import diaries from "./diaries/reducers";
+import { DiaryState } from "./diaries/types";
 import user from "./user/reducers";
 import { UserState } from "./user/types";
 
 export interface RootState {
-  diary: DiaryState;
+  diaries: DiaryState;
   user: UserState;
 }
 export interface SagaStore extends Store {
@@ -33,12 +33,12 @@ export interface SagaStore extends Store {
 }
 
 const combinedReducer = combineReducers({
-  diary,
+  diaries,
   user,
 });
 
 export const rootReducer: typeof combinedReducer = (
-  state: RootState = { diary: null, user: null },
+  state: RootState = { diaries: [], user: null },
   action: AnyAction
 ) => {
   if (action.type === HYDRATE) {
@@ -46,8 +46,8 @@ export const rootReducer: typeof combinedReducer = (
       ...state,
       ...action.payload,
     };
-    if (state.diary) {
-      nextState.diary = state.diary;
+    if (state.diaries) {
+      nextState.diaries = state.diaries;
     }
     return nextState;
   }
