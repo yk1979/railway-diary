@@ -168,11 +168,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
         })
       );
       try {
-        const fs = req?.firebaseServer.firestore();
-        author = await getUserFromFirestore({ firestore: fs, userId });
+        const firestore = req?.firebaseServer.firestore();
+        author = await getUserFromFirestore({ firestore, userId });
         store.dispatch(
           getDiaries({
-            firestore: fs,
+            firestore,
             userId,
           })
         );
