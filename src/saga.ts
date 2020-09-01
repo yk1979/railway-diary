@@ -30,8 +30,7 @@ function* runGetDiaries(action: GetDiariesAction) {
   }
 }
 
-// TODO any修正
-function* runDeleteDiary(action: AnyAction) {
+function* runDeleteDiary(action: DeleteDiaryAction) {
   yield call(deleteDiaryFromFirestore, action.payload);
   const { firestore, userId } = action.payload;
   const payload = yield call(getDiariesFromFirestore, { firestore, userId });

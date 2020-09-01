@@ -73,7 +73,6 @@ export const getServerSideProps = wrapper.getServerSideProps<{
           diaryId,
         })
       );
-      // TODO このコードなんだっけ
       store.dispatch(END);
       await store.sagaTask?.toPromise();
     } catch (err) {

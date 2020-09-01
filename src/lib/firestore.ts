@@ -7,8 +7,10 @@ import {
 } from "../store/diaries/types";
 import { User } from "../store/user/types";
 
-// TODO 型見直し
+// TODO DataConverter使えるか検討
+// https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter?hl=en
 
+// firestoreに格納されているDiaryはlastEditedの型がtimestamp型なので別で定義する
 type FSDiary = {
   id: string;
   title: string;
