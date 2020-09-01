@@ -1,16 +1,15 @@
 import { NextPage } from "next";
-import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { RootState, wrapper } from "../store";
-import { createDraft } from "../store/diary/actions";
-import { Diary } from "../store/diary/types";
+import { wrapper } from "../store";
+import { createDraft } from "../store/diaries/actions";
+import { Diary } from "../store/diaries/types";
 import { userSignIn } from "../store/user/actions";
 import { User } from "../store/user/types";
 
@@ -49,27 +48,27 @@ const CreatePage: NextPage<CreatePageProps> = ({ user }) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  ({ req, store }: MyNextContext) => {
-    const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: CreatePageProps;
+}>(({ req, store }) => {
+  const token = req?.session?.decodedToken;
 
-    if (token) {
-      store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
-        })
-      );
-    }
-    const { user } = store.getState();
-
-    return {
-      props: {
-        user,
-      },
-    };
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
   }
-);
+  const { user } = store.getState();
+
+  return {
+    props: {
+      user,
+    },
+  };
+});
 
 export default CreatePage;

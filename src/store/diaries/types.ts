@@ -8,7 +8,7 @@ export type Diary = {
   imageUrls: string[];
   lastEdited: string;
 };
-export type DiaryState = Diary | Diary[] | null;
+export type DiaryState = Diary[];
 
 /**
  * action types

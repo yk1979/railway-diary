@@ -1,7 +1,6 @@
 import { NextPage } from "next";
-import { MyNextContext } from "next-redux-wrapper";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { END } from "redux-saga";
 import styled from "styled-components";
 
@@ -15,9 +14,9 @@ import Layout from "../../../components/Layout";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
 import { getUserFromFirestore } from "../../../lib/firestore";
-import { RootState, wrapper } from "../../../store";
-import { getDiaries, setDiaries } from "../../../store/diary/actions";
-import { Diary } from "../../../store/diary/types";
+import { wrapper } from "../../../store";
+import { getDiaries, setDiaries } from "../../../store/diaries/actions";
+import { Diary } from "../../../store/diaries/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
 
@@ -59,15 +58,11 @@ const StyledLoginButton = styled(Button)`
 type UserPageProps = {
   author: User;
   user: User;
+  diaries: Diary[];
 };
 
-const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
+const UserPage: NextPage<UserPageProps> = ({ author, user, diaries }) => {
   const dispatch = useDispatch();
-
-  const diaries = useSelector<RootState, Diary[]>(
-    // TODO fix assertion
-    (state) => state.diary as Diary[]
-  );
 
   const [unsubscribeDb, setUnsubscribeDb] = useState<{
     [key: string]: (() => void) | undefined;
@@ -152,55 +147,48 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ req, res, query, store }: MyNextContext) => {
-    const userId = query.userId as string;
-    const token = req?.session?.decodedToken;
-    let author!: User;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: UserPageProps;
+}>(async ({ req, query, store }) => {
+  const userId = query.userId as string;
+  const token = req?.session?.decodedToken;
+  let author!: User;
 
-    // TODO 存在しないuserId叩かれた時エラーにしたい
-    if (token) {
+  // TODO 存在しないuserId叩かれた時エラーにしたい
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
+    try {
+      const firestore = req?.firebaseServer.firestore();
+      author = await getUserFromFirestore({ firestore, userId });
       store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
+        getDiaries({
+          firestore,
+          userId,
         })
       );
-      try {
-        const firestore = req?.firebaseServer.firestore();
-        author = await getUserFromFirestore({ firestore, userId });
-        store.dispatch(
-          getDiaries({
-            firestore,
-            userId,
-          })
-        );
-        store.dispatch(END);
-        await store.sagaTask?.toPromise();
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(
-          "Error, could not fetch diary data in server side: ",
-          err
-        );
-      }
+      store.dispatch(END);
+      await store.sagaTask?.toPromise();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error, could not fetch diary data in server side: ", err);
     }
-
-    const { diary, user } = store.getState();
-    if (!diary) {
-      // TODO nextの404ページに飛ばしたい
-      // eslint-disable-next-line
-        res?.status(404).send("not found");
-    }
-
-    return {
-      props: {
-        author,
-        user,
-      },
-    };
   }
-);
+
+  const { diaries, user } = store.getState();
+
+  return {
+    props: {
+      author,
+      user,
+      diaries,
+    },
+  };
+});
 
 export default UserPage;

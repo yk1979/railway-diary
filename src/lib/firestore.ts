@@ -4,11 +4,13 @@ import {
   Diary,
   GetDiariesAction,
   GetDiaryAction,
-} from "../store/diary/types";
+} from "../store/diaries/types";
 import { User } from "../store/user/types";
 
-// TODO 型見直し
+// TODO DataConverter使えるか検討
+// https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter?hl=en
 
+// firestoreに格納されているDiaryはlastEditedの型がtimestamp型なので別で定義する
 type FSDiary = {
   id: string;
   title: string;
@@ -78,14 +80,15 @@ export async function getDiaryFromFirestore({
     .doc(`${diaryId}`)
     .get()
     .then((doc) => doc.data())) as FSDiary | undefined;
-  if (!diaryData) return undefined;
-  return {
-    id: diaryData.id,
-    title: diaryData.title,
-    body: diaryData.body,
-    imageUrls: diaryData.imageUrls,
-    lastEdited: diaryData.lastEdited.toDate().toISOString(),
-  };
+  return diaryData
+    ? {
+        id: diaryData.id,
+        title: diaryData.title,
+        body: diaryData.body,
+        imageUrls: diaryData.imageUrls,
+        lastEdited: diaryData.lastEdited.toDate().toISOString(),
+      }
+    : undefined;
 }
 
 export async function getDiariesFromFirestore({

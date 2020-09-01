@@ -12,8 +12,7 @@ import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
 import { createDiaryToFirestore } from "../lib/firestore";
 import { RootState, wrapper } from "../store";
-import { deleteDraft } from "../store/diary/actions";
-import { Diary } from "../store/diary/types";
+import { deleteDraft } from "../store/diaries/actions";
 import { userSignIn } from "../store/user/actions";
 import { User } from "../store/user/types";
 
@@ -38,14 +37,12 @@ type PreviewPageProps = {
   user: User;
 };
 
-const PreviewPage: NextPage<PreviewPageProps> = ({
-  user,
-}: PreviewPageProps) => {
+const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // TODO fix
-  const diary = useSelector((state: RootState) => state.diary as Diary);
+  // TODO SSRで取得する
+  const diary = useSelector((state: RootState) => state.diaries[0]);
 
   const handleOnSave = async () => {
     const storageRef = storage.ref(`${user.uid}/${diary.id}`);
@@ -60,7 +57,6 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
     router.push(`/user/${user.uid}`);
   };
 
-  // TODO 新規作成か修正かでパスを分ける
   const handleOnBack = () => {
     router.push("/create");
   };
@@ -94,26 +90,26 @@ const PreviewPage: NextPage<PreviewPageProps> = ({
 
 export default PreviewPage;
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  ({ req, store }: MyNextContext) => {
-    const token = req?.session?.decodedToken;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: PreviewPageProps;
+}>(({ req, store }) => {
+  const token = req?.session?.decodedToken;
 
-    if (token) {
-      store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
-        })
-      );
-    }
-
-    const { user } = store.getState();
-
-    return {
-      props: {
-        user,
-      },
-    };
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
   }
-);
+
+  const { user } = store.getState();
+
+  return {
+    props: {
+      user,
+    },
+  };
+});
