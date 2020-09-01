@@ -46,9 +46,6 @@ export const rootReducer: typeof combinedReducer = (
       ...state,
       ...action.payload,
     };
-    if (state.diaries) {
-      nextState.diaries = state.diaries;
-    }
     return nextState;
   }
   return combinedReducer(state, action);
