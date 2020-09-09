@@ -1,8 +1,6 @@
 import { NextPage } from "next";
-import { MyNextContext } from "next-redux-wrapper";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { END } from "redux-saga";
 import styled from "styled-components";
 
@@ -13,21 +11,12 @@ import DiaryCard from "../../../components/DiaryCard";
 import EditButton from "../../../components/EditButton";
 import Heading from "../../../components/Heading";
 import Layout from "../../../components/Layout";
-import Modal from "../../../components/Modal";
-import PageBottomNotifier, {
-  NotifierStatus,
-} from "../../../components/PageBottomNotifier";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
 import { getUserFromFirestore } from "../../../lib/firestore";
-import { RootState, wrapper } from "../../../store";
-import {
-  createDraft,
-  deleteDiary,
-  getDiaries,
-  setDiaries,
-} from "../../../store/diary/actions";
-import { Diary } from "../../../store/diary/types";
+import { wrapper } from "../../../store";
+import { getDiaries, setDiaries } from "../../../store/diaries/actions";
+import { Diary } from "../../../store/diaries/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
 
@@ -69,24 +58,15 @@ const StyledLoginButton = styled(Button)`
 type UserPageProps = {
   author: User;
   user: User;
+  diaries: Diary[];
 };
 
-const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
-  const router = useRouter();
+const UserPage: NextPage<UserPageProps> = ({ author, user, diaries }) => {
   const dispatch = useDispatch();
-
-  const diaries = useSelector<RootState, Diary[]>(
-    // TODO fix assertion
-    (state) => state.diary as Diary[]
-  );
 
   const [unsubscribeDb, setUnsubscribeDb] = useState<{
     [key: string]: (() => void) | undefined;
   }>({});
-
-  const [modalId, setModalId] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notifierStatus, setNotifierStatus] = useState("hidden");
 
   const addDbListener = (id: string) => {
     const listener = firestore.collection(`users/${id}/diaries`).onSnapshot(
@@ -114,16 +94,6 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
     if (unsubscribeDb.listener) {
       unsubscribeDb.listener();
     }
-  };
-
-  const handleOpenDeleteModal = (id: string) => {
-    setModalId(id);
-    setIsModalOpen(true);
-  };
-
-  const handleAfterModalClose = async () => {
-    setNotifierStatus("visible" as NotifierStatus);
-    setTimeout(() => setNotifierStatus("hidden" as NotifierStatus), 1000);
   };
 
   useEffect(() => {
@@ -155,24 +125,6 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
                   key={d.id}
                   diary={d}
                   url={`/user/${author.uid}/diary/${d.id}`}
-                  controller={
-                    user?.uid === author.uid
-                      ? {
-                          onEdit: () => {
-                            dispatch(
-                              createDraft({
-                                id: d.id,
-                                title: d.title,
-                                body: d.body,
-                                lastEdited: "",
-                              })
-                            );
-                            router.push("/edit");
-                          },
-                          onDelete: () => handleOpenDeleteModal(String(d.id)),
-                        }
-                      : undefined
-                  }
                 />
               ))}
             </DiaryList>
@@ -180,21 +132,6 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
             <NoDiaryText>まだ日記はありません</NoDiaryText>
           )}
           <StyledEditButton />
-          <Modal.ConfirmDelete
-            id={modalId}
-            isOpen={isModalOpen}
-            onRequestClose={() => setIsModalOpen(false)}
-            onAfterClose={handleAfterModalClose}
-            onDelete={() => {
-              dispatch(
-                deleteDiary({ firestore, userId: author.uid, diaryId: modalId })
-              );
-            }}
-          />
-          <PageBottomNotifier
-            text="日記を削除しました"
-            status={notifierStatus as NotifierStatus}
-          />
         </>
       )}
       {user?.uid === author.uid && (
@@ -210,55 +147,48 @@ const UserPage: NextPage<UserPageProps> = ({ author, user }: UserPageProps) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  async ({ req, res, query, store }: MyNextContext) => {
-    const userId = query.userId as string;
-    const token = req?.session?.decodedToken;
-    let author!: User;
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: UserPageProps;
+}>(async ({ req, query, store }) => {
+  const userId = query.userId as string;
+  const token = req?.session?.decodedToken;
+  let author!: User;
 
-    // TODO 存在しないuserId叩かれた時エラーにしたい
-    if (token) {
+  // TODO 存在しないuserId叩かれた時エラーにしたい
+  if (token) {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
+    try {
+      const firestore = req?.firebaseServer.firestore();
+      author = await getUserFromFirestore({ firestore, userId });
       store.dispatch(
-        userSignIn({
-          uid: token.uid,
-          name: token.name,
-          picture: token.picture,
+        getDiaries({
+          firestore,
+          userId,
         })
       );
-      try {
-        const fs = req?.firebaseServer.firestore();
-        author = await getUserFromFirestore({ firestore: fs, userId });
-        store.dispatch(
-          getDiaries({
-            firestore: fs,
-            userId,
-          })
-        );
-        store.dispatch(END);
-        await store.sagaTask?.toPromise();
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(
-          "Error, could not fetch diary data in server side: ",
-          err
-        );
-      }
+      store.dispatch(END);
+      await store.sagaTask?.toPromise();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error, could not fetch diary data in server side: ", err);
     }
-
-    const { diary, user } = store.getState();
-    if (!diary) {
-      // TODO nextの404ページに飛ばしたい
-      // eslint-disable-next-line
-        res?.status(404).send("not found");
-    }
-
-    return {
-      props: {
-        author,
-        user,
-      },
-    };
   }
-);
+
+  const { diaries, user } = store.getState();
+
+  return {
+    props: {
+      author,
+      user,
+      diaries,
+    },
+  };
+});
 
 export default UserPage;

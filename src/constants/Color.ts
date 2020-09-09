@@ -10,6 +10,7 @@ const Color = {
     Default: "#fff",
     Gray: "#cdcdcd",
     Navy: "#272343",
+    Black: "#333",
   },
   Text: {
     Default: "#333",

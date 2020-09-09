@@ -5,9 +5,10 @@ export type Diary = {
   id: string;
   title: string;
   body: string;
+  imageUrls: string[];
   lastEdited: string;
 };
-export type DiaryState = Diary | Diary[] | null;
+export type DiaryState = Diary[];
 
 /**
  * action types

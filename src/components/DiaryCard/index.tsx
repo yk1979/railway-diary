@@ -1,21 +1,39 @@
+import { format } from "date-fns";
 import React from "react";
 import styled from "styled-components";
 
-import { Diary } from "../../store/diary/types";
-import DiaryController from "../DiaryController";
+import Color from "../../constants/Color";
+import { Diary } from "../../store/diaries/types";
 
 const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 143px;
+  height: 112px;
   padding: 8px;
   border-radius: 4px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
 `;
 
-const Link = styled.a`
+const Link = styled.a<{ withThumbnail: boolean }>`
+  display: ${({ withThumbnail }) => (withThumbnail ? "flex" : "block")};
+  height: 100%;
+`;
+
+const Thumbnail = styled.img`
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+`;
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 16px;
+`;
+
+const StyledTime = styled.time`
   display: block;
-  flex: 1 0 0%;
+  color: ${Color.Text.Gray};
+  font-size: 1.2rem;
 `;
 
 const Title = styled.div`
@@ -30,38 +48,41 @@ const Body = styled.p`
   flex-grow: 1;
   margin-top: 4px;
   overflow: hidden;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   white-space: pre-wrap;
 `;
 
 type DiaryCardProps = {
   diary: Diary;
   url: string;
-  controller?: {
-    onEdit: () => void;
-    onDelete: () => void;
-  };
 };
 
-const DiaryCard: React.FC<DiaryCardProps> = ({ diary, url, controller }) => {
-  const { title, body } = diary;
-
-  return (
-    <Root>
-      <Link href={url}>
-        <Title>{title}</Title>
-        <Body>{body}</Body>
-      </Link>
-      {controller && (
-        <DiaryController
-          onEdit={controller.onEdit}
-          onDelete={controller.onDelete}
-        />
-      )}
-    </Root>
-  );
-};
-
+const DiaryCard: React.FC<DiaryCardProps> = ({ diary, url }) => (
+  <Root>
+    <Link href={url} withThumbnail={diary.imageUrls.length > 0}>
+      <>
+        {diary.imageUrls.length > 0 ? (
+          <>
+            <Thumbnail src={diary.imageUrls[0]} />
+            <TextWrapper>
+              <StyledTime dateTime={diary.lastEdited}>
+                {format(new Date(), "yyyy-MM-dd")}
+              </StyledTime>
+              <Title>{diary.title}</Title>
+              <Body>{diary.body}</Body>
+            </TextWrapper>
+          </>
+        ) : (
+          <>
+            <StyledTime>{format(new Date(), "yyyy-MM-dd")}</StyledTime>
+            <Title>{diary.title}</Title>
+            <Body>{diary.body}</Body>
+          </>
+        )}
+      </>
+    </Link>
+  </Root>
+);
 export default DiaryCard;
