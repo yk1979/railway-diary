@@ -13,9 +13,14 @@ import Heading from "../../../components/Heading";
 import Layout from "../../../components/Layout";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
+import { specterRead } from "../../../lib/client";
 import { getUserFromFirestore } from "../../../lib/firestore";
+import {
+  IndexDiariesServiceBody,
+  IndexDiariesServiceQuery,
+} from "../../../server/services/diaries/IndexDiariesService";
 import { wrapper } from "../../../store";
-import { getDiaries, setDiaries } from "../../../store/diaries/actions";
+import { setDiaries } from "../../../store/diaries/actions";
 import { Diary } from "../../../store/diaries/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
@@ -149,44 +154,54 @@ const UserPage: NextPage<UserPageProps> = ({ author, user, diaries }) => {
 
 export const getServerSideProps = wrapper.getServerSideProps<{
   props: UserPageProps;
-}>(async ({ req, query, store }) => {
+}>(async ({ req, res, query, store }) => {
   const userId = query.userId as string;
   const token = req?.session?.decodedToken;
   let author!: User;
+  const firestore = req?.firebaseServer.firestore();
 
-  // TODO 存在しないuserId叩かれた時エラーにしたい
-  if (token) {
-    store.dispatch(
-      userSignIn({
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture,
-      })
-    );
-    try {
-      const firestore = req?.firebaseServer.firestore();
-      author = await getUserFromFirestore({ firestore, userId });
-      store.dispatch(
-        getDiaries({
-          firestore,
-          userId,
-        })
-      );
-      store.dispatch(END);
-      await store.sagaTask?.toPromise();
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Error, could not fetch diary data in server side: ", err);
-    }
+  if (!token) {
+    res.redirect("/login");
   }
 
-  const { diaries, user } = store.getState();
+  // TODO 存在しないuserId叩かれた時エラーにしたい
+  store.dispatch(
+    userSignIn({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      uid: token!.uid,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      name: token!.name,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      picture: token!.picture,
+    })
+  );
+  try {
+    // const firestore = req?.firebaseServer.firestore();
+    author = await getUserFromFirestore({ firestore, userId });
+    store.dispatch(END);
+    await store.sagaTask?.toPromise();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("Error, could not fetch diary data in server side: ", err);
+  }
+  const diaries = await specterRead<
+    Record<string, any>,
+    IndexDiariesServiceQuery,
+    IndexDiariesServiceBody
+  >({
+    serviceName: "index_diaries",
+    query: {
+      firestore,
+      userId,
+    },
+  });
+  const { user } = store.getState();
 
   return {
     props: {
       author,
       user,
-      diaries,
+      diaries: diaries.body,
     },
   };
 });
