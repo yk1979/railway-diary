@@ -10,12 +10,14 @@ export const getClient = (): Client => {
   return client;
 };
 
+type ServiceName = "index_diaries" | "show_diary";
+
 export const specterRead = <H, Q, B>({
   serviceName,
   headers,
   query,
 }: {
-  serviceName: string;
+  serviceName: ServiceName;
   headers?: H;
   query?: Q;
 }): Promise<Response<Record<string, any>, B>> => {
@@ -27,7 +29,3 @@ export const specterRead = <H, Q, B>({
     })
   );
 };
-// export const client = new Client({
-//   base: "/xhr",
-//   fetchOption: {},
-// });
