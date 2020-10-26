@@ -9,7 +9,7 @@ import EditForm from "../../../../../components/EditForm";
 import Heading from "../../../../../components/Heading";
 import Layout from "../../../../../components/Layout";
 import { wrapper } from "../../../../../store";
-import { createDraft, getDiary } from "../../../../../store/diaries/actions";
+import { createDraft, getDiary } from "../../../../../store/diaries/reducers";
 import { Diary } from "../../../../../store/diaries/types";
 import { userSignIn } from "../../../../../store/user/actions";
 import { User } from "../../../../../store/user/types";

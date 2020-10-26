@@ -22,7 +22,7 @@ import {
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { wrapper } from "../../../../../store";
-import { deleteDiary } from "../../../../../store/diaries/actions";
+import { deleteDiary } from "../../../../../store/diaries/reducers";
 import { Diary } from "../../../../../store/diaries/types";
 import { userSignIn } from "../../../../../store/user/actions";
 import { User } from "../../../../../store/user/types";

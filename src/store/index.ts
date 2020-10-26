@@ -9,17 +9,14 @@ import {
 } from "next-redux-wrapper";
 import {
   AnyAction,
-  Store,
   applyMiddleware,
   combineReducers,
   createStore,
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import logger from "redux-logger";
-import createSagaMiddleware, { Task } from "redux-saga";
 
-import rootSaga from "../saga";
-import diaries from "./diaries/reducers";
+import { default as diaries } from "./diaries/reducers";
 import { DiaryState } from "./diaries/types";
 import user from "./user/reducers";
 import { UserState } from "./user/types";
@@ -27,9 +24,6 @@ import { UserState } from "./user/types";
 export interface RootState {
   diaries: DiaryState;
   user: UserState;
-}
-export interface SagaStore extends Store {
-  sagaTask?: Task;
 }
 
 const combinedReducer = combineReducers({
@@ -52,9 +46,7 @@ export const rootReducer: typeof combinedReducer = (
 };
 
 export const makeStore: MakeStore<RootState> = () => {
-  const sagaMiddleware = createSagaMiddleware();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const middlewares: any[] = [sagaMiddleware];
+  const middlewares: any[] = [];
   if (process.env.NODE_ENV !== "production") {
     middlewares.push(logger);
   }
@@ -63,8 +55,6 @@ export const makeStore: MakeStore<RootState> = () => {
     rootReducer,
     composeWithDevTools(applyMiddleware(...middlewares))
   );
-
-  (store as SagaStore).sagaTask = sagaMiddleware.run(rootSaga);
 
   return store;
 };

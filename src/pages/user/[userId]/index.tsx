@@ -20,7 +20,7 @@ import {
   IndexDiariesServiceQuery,
 } from "../../../server/services/diaries/IndexDiariesService";
 import { wrapper } from "../../../store";
-import { setDiaries } from "../../../store/diaries/actions";
+import { setDiaries } from "../../../store/diaries/reducers";
 import { Diary } from "../../../store/diaries/types";
 import { userSignIn } from "../../../store/user/actions";
 import { User } from "../../../store/user/types";
@@ -176,7 +176,6 @@ export const getServerSideProps = wrapper.getServerSideProps<{
     })
   );
   try {
-    // const firestore = req?.firebaseServer.firestore();
     author = await getUserFromFirestore({ firestore, userId });
     store.dispatch(END);
     await store.sagaTask?.toPromise();

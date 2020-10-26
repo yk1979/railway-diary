@@ -12,7 +12,7 @@ import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
 import { createDiaryToFirestore } from "../lib/firestore";
 import { RootState, wrapper } from "../store";
-import { deleteDraft } from "../store/diaries/actions";
+import { deleteDraft } from "../store/diaries/reducers";
 import { userSignIn } from "../store/user/actions";
 import { User } from "../store/user/types";
 
