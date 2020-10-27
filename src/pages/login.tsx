@@ -8,8 +8,12 @@ import { handleSignIn, handleSignOut } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
 import { RootState, wrapper } from "../store";
-import { userSignIn, userSignOut } from "../store/user/actions";
-import { User, UserState } from "../store/user/types";
+import {
+  User,
+  UserState,
+  userSignIn,
+  userSignOut,
+} from "../store/user/reducers";
 
 const ButtonWrapper = styled.div`
   margin-top: 36px;

@@ -18,7 +18,7 @@ import logger from "redux-logger";
 
 import { Diary, default as diaries } from "./diaries/reducers";
 import user from "./user/reducers";
-import { UserState } from "./user/types";
+import { UserState } from "./user/reducers";
 
 export interface RootState {
   diaries: Diary[];

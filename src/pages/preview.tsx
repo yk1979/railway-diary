@@ -13,8 +13,8 @@ import Layout from "../components/Layout";
 import { createDiaryToFirestore } from "../lib/firestore";
 import { RootState, wrapper } from "../store";
 import { deleteDraft } from "../store/diaries/reducers";
-import { userSignIn } from "../store/user/actions";
-import { User } from "../store/user/types";
+import { userSignIn } from "../store/user/reducers";
+import { User } from "../store/user/reducers";
 
 const BackButton = styled(Button)`
   margin-top: 16px;

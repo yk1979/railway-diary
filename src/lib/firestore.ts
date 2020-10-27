@@ -5,7 +5,7 @@ import {
   GetDiaryPayload,
   deleteDiaryPayload,
 } from "../store/diaries/reducers";
-import { User } from "../store/user/types";
+import { User, UserState } from "../store/user/reducers";
 
 // TODO DataConverter使えるか検討
 // https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter?hl=en
@@ -25,17 +25,22 @@ export async function getUserFromFirestore({
 }: {
   firestore: FirebaseFirestore.Firestore;
   userId: string;
-}): Promise<User> {
-  const user = await firestore
-    .collection(`users`)
-    .doc(userId)
-    .get()
-    .then((doc) => doc.data() as User);
-  return {
-    uid: userId,
-    name: user.name || "No Name",
-    picture: user.picture,
-  };
+}): Promise<UserState> {
+  try {
+    const user = await firestore
+      .collection(`users`)
+      .doc(userId)
+      .get()
+      .then((doc) => doc.data() as User);
+    return {
+      uid: userId,
+      name: user.name || "No Name",
+      picture: user.picture,
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }
 
 async function setDiaryUserToFireStore({

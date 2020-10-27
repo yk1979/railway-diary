@@ -20,7 +20,7 @@ export const specterRead = <H, Q, B>({
   serviceName: ServiceName;
   headers?: H;
   query?: Q;
-}): Promise<Response<Record<string, any>, B>> => {
+}): Promise<Response<Record<string, unknown>, B>> => {
   return getClient().read(
     new Request(serviceName, {
       headers: headers || {},

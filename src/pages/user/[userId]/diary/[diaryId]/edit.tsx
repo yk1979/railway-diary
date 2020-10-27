@@ -15,8 +15,8 @@ import {
 import { wrapper } from "../../../../../store";
 import { createDraft, getDiary } from "../../../../../store/diaries/reducers";
 import { Diary } from "../../../../../store/diaries/reducers";
-import { userSignIn } from "../../../../../store/user/actions";
-import { User } from "../../../../../store/user/types";
+import { userSignIn } from "../../../../../store/user/reducers";
+import { User } from "../../../../../store/user/reducers";
 
 const StyledLayout = styled(Layout)`
   > div {

@@ -4,7 +4,6 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { END } from "redux-saga";
 import styled from "styled-components";
 
 import { firestore } from "../../../../../../firebase";
@@ -24,8 +23,8 @@ import {
 import { wrapper } from "../../../../../store";
 import { deleteDiary, getDiary } from "../../../../../store/diaries/reducers";
 import { Diary } from "../../../../../store/diaries/reducers";
-import { userSignIn } from "../../../../../store/user/actions";
-import { User } from "../../../../../store/user/types";
+import { userSignIn } from "../../../../../store/user/reducers";
+import { User } from "../../../../../store/user/reducers";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
   margin-top: 24px;
@@ -114,7 +113,6 @@ export const getServerSideProps = wrapper.getServerSideProps<{
 }>(async ({ req, res, query, store }) => {
   const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;
-  let author!: User;
 
   const firestore = req.firebaseServer.firestore();
 
@@ -132,14 +130,9 @@ export const getServerSideProps = wrapper.getServerSideProps<{
       picture: token!.picture,
     })
   );
-  try {
-    author = await getUserFromFirestore({ firestore, userId });
-    store.dispatch(END);
-    await store.sagaTask?.toPromise();
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error(err);
-  }
+
+  // TODO author が null だった場合の処理はサービスで吸収する
+  const author = (await getUserFromFirestore({ firestore, userId })) as User;
 
   const params = {
     firestore,
@@ -148,7 +141,7 @@ export const getServerSideProps = wrapper.getServerSideProps<{
   };
   store.dispatch(getDiary.started(params));
   const diary = await specterRead<
-    Record<string, any>,
+    Record<string, unknown>,
     ShowDiaryServiceQuery,
     ShowDiaryServiceBody
   >({

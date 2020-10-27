@@ -1,11 +1,7 @@
 import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { END } from "redux-saga";
+import React from "react";
 import styled from "styled-components";
 
-import firebase from "../../../../firebase";
-import { firestore } from "../../../../firebase";
 import Button, { buttonTheme } from "../../../components/Button";
 import DiaryCard from "../../../components/DiaryCard";
 import EditButton from "../../../components/EditButton";
@@ -20,10 +16,10 @@ import {
   IndexDiariesServiceQuery,
 } from "../../../server/services/diaries/IndexDiariesService";
 import { wrapper } from "../../../store";
-import { getDiaries, setDiaries } from "../../../store/diaries/reducers";
+import { getDiaries } from "../../../store/diaries/reducers";
 import { Diary } from "../../../store/diaries/reducers";
-import { userSignIn } from "../../../store/user/actions";
-import { User } from "../../../store/user/types";
+import { userSignIn } from "../../../store/user/reducers";
+import { User } from "../../../store/user/reducers";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -111,7 +107,6 @@ export const getServerSideProps = wrapper.getServerSideProps<{
 }>(async ({ req, res, query, store }) => {
   const userId = query.userId as string;
   const token = req?.session?.decodedToken;
-  let author!: User;
   const firestore = req?.firebaseServer.firestore();
 
   if (!token) {
@@ -129,14 +124,8 @@ export const getServerSideProps = wrapper.getServerSideProps<{
       picture: token!.picture,
     })
   );
-  try {
-    author = await getUserFromFirestore({ firestore, userId });
-    store.dispatch(END);
-    await store.sagaTask?.toPromise();
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("Error, could not fetch diary data in server side: ", err);
-  }
+  // TODO author が null だった場合の処理はサービスで吸収する
+  const author = (await getUserFromFirestore({ firestore, userId })) as User;
   const params = {
     firestore,
     userId,
