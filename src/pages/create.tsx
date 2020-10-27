@@ -9,7 +9,7 @@ import Heading from "../components/Heading";
 import Layout from "../components/Layout";
 import { wrapper } from "../store";
 import { createDraft } from "../store/diaries/reducers";
-import { Diary } from "../store/diaries/types";
+import { Diary } from "../store/diaries/reducers";
 import { userSignIn } from "../store/user/actions";
 import { User } from "../store/user/types";
 

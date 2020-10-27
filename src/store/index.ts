@@ -16,13 +16,12 @@ import {
 import { composeWithDevTools } from "redux-devtools-extension";
 import logger from "redux-logger";
 
-import { default as diaries } from "./diaries/reducers";
-import { DiaryState } from "./diaries/types";
+import { Diary, default as diaries } from "./diaries/reducers";
 import user from "./user/reducers";
 import { UserState } from "./user/types";
 
 export interface RootState {
-  diaries: DiaryState;
+  diaries: Diary[];
   user: UserState;
 }
 

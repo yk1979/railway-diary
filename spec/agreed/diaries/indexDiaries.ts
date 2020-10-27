@@ -1,6 +1,6 @@
 import { APIDef, GET, ResponseDef, Success200 } from "@agreed/typed";
 
-import { Diary } from "../../../src/store/diaries/types";
+import { Diary } from "../../../src/store/diaries/reducers";
 
 type HelloGetApi = APIDef<
   GET, // HTTP method

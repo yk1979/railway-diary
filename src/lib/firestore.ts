@@ -1,10 +1,10 @@
 import { firestore as fs } from "../../firebase";
 import {
-  DeleteDiaryAction,
   Diary,
-  GetDiariesAction,
-  GetDiaryAction,
-} from "../store/diaries/types";
+  GetDiariesPayload,
+  GetDiaryPayload,
+  deleteDiaryPayload,
+} from "../store/diaries/reducers";
 import { User } from "../store/user/types";
 
 // TODO DataConverter使えるか検討
@@ -74,7 +74,7 @@ export async function getDiaryFromFirestore({
   firestore,
   userId,
   diaryId,
-}: GetDiaryAction["payload"]): Promise<Diary | undefined> {
+}: GetDiaryPayload): Promise<Diary | undefined> {
   const diaryData = (await firestore
     .collection(`users/${userId}/diaries/`)
     .doc(`${diaryId}`)
@@ -94,7 +94,7 @@ export async function getDiaryFromFirestore({
 export async function getDiariesFromFirestore({
   firestore,
   userId,
-}: GetDiariesAction["payload"]): Promise<Diary[]> {
+}: GetDiariesPayload): Promise<Diary[]> {
   const diariesData: Diary[] = [];
   await firestore
     .collection(`users/${userId}/diaries`)
@@ -118,6 +118,6 @@ export async function deleteDiaryFromFirestore({
   firestore,
   userId,
   diaryId,
-}: DeleteDiaryAction["payload"]): Promise<void> {
+}: deleteDiaryPayload): Promise<void> {
   await firestore.collection(`users/${userId}/diaries/`).doc(diaryId).delete();
 }

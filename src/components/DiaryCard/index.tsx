@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import Color from "../../constants/Color";
-import { Diary } from "../../store/diaries/types";
+import { Diary } from "../../store/diaries/reducers";
 
 const Root = styled.div`
   height: 112px;

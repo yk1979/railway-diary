@@ -2,7 +2,7 @@
 import { text } from "@storybook/addon-knobs";
 import React from "react";
 
-import { Diary } from "../../../store/diaries/types";
+import { Diary } from "../../../store/diaries/reducers";
 import DiaryViewer from "..";
 
 export default {

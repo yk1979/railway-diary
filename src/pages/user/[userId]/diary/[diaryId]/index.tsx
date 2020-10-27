@@ -22,8 +22,8 @@ import {
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { wrapper } from "../../../../../store";
-import { deleteDiary } from "../../../../../store/diaries/reducers";
-import { Diary } from "../../../../../store/diaries/types";
+import { deleteDiary, getDiary } from "../../../../../store/diaries/reducers";
+import { Diary } from "../../../../../store/diaries/reducers";
 import { userSignIn } from "../../../../../store/user/actions";
 import { User } from "../../../../../store/user/types";
 
@@ -141,6 +141,12 @@ export const getServerSideProps = wrapper.getServerSideProps<{
     console.error(err);
   }
 
+  const params = {
+    firestore,
+    userId,
+    diaryId,
+  };
+  store.dispatch(getDiary.started(params));
   const diary = await specterRead<
     Record<string, any>,
     ShowDiaryServiceQuery,
@@ -153,6 +159,7 @@ export const getServerSideProps = wrapper.getServerSideProps<{
       diaryId,
     },
   });
+  store.dispatch(getDiary.done({ params, result: diary.body }));
 
   const { user } = store.getState();
 

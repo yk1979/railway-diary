@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import BreakPoint from "../../constants/BreakPoint";
 import Color from "../../constants/Color";
-import { Diary } from "../../store/diaries/types";
+import { Diary } from "../../store/diaries/reducers";
 import Button from "../Button";
 
 const StyledForm = styled.form`

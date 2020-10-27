@@ -2,7 +2,7 @@ import { Request, Response } from "@specter/client";
 import { Service } from "@specter/specter";
 
 import { getDiariesFromFirestore } from "../../../lib/firestore";
-import { Diary } from "../../../store/diaries/types";
+import { Diary } from "../../../store/diaries/reducers";
 
 type RequestHeader = Record<string, any>;
 type RequestBody = Record<string, any>;

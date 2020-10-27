@@ -2,15 +2,19 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { END } from "redux-saga";
 import styled from "styled-components";
 
 import EditForm from "../../../../../components/EditForm";
 import Heading from "../../../../../components/Heading";
 import Layout from "../../../../../components/Layout";
+import { specterRead } from "../../../../../lib/client";
+import {
+  ShowDiaryServiceBody,
+  ShowDiaryServiceQuery,
+} from "../../../../../server/services/diaries/ShowDiaryService";
 import { wrapper } from "../../../../../store";
 import { createDraft, getDiary } from "../../../../../store/diaries/reducers";
-import { Diary } from "../../../../../store/diaries/types";
+import { Diary } from "../../../../../store/diaries/reducers";
 import { userSignIn } from "../../../../../store/user/actions";
 import { User } from "../../../../../store/user/types";
 
@@ -52,40 +56,46 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
 
 export const getServerSideProps = wrapper.getServerSideProps<{
   props: DiaryEditPageProps;
-}>(async ({ req, query, store }) => {
+}>(async ({ req, res, query, store }) => {
   const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;
 
-  if (token) {
-    store.dispatch(
-      userSignIn({
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture,
-      })
-    );
-    try {
-      const firestore = req.firebaseServer.firestore();
-      store.dispatch(
-        getDiary({
-          firestore,
-          userId,
-          diaryId,
-        })
-      );
-      store.dispatch(END);
-      await store.sagaTask?.toPromise();
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-    }
+  if (!token) {
+    res.redirect("/login");
   }
-  const { user, diaries } = store.getState();
+
+  store.dispatch(
+    userSignIn({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,
+      uid: token!.uid,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,
+      name: token!.name,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,
+      picture: token!.picture,
+    })
+  );
+  const firestore = req.firebaseServer.firestore();
+  const params = {
+    firestore,
+    userId,
+    diaryId,
+  };
+  store.dispatch(getDiary.started(params));
+  const diary = await specterRead<
+    Record<string, unknown>,
+    ShowDiaryServiceQuery,
+    ShowDiaryServiceBody
+  >({
+    serviceName: "show_diary",
+    query: params,
+  });
+  store.dispatch(getDiary.done({ params, result: diary.body }));
+  const { user } = store.getState();
 
   return {
     props: {
       user,
-      diary: diaries[0],
+      diary: diary.body,
     },
   };
 });
