@@ -2,15 +2,15 @@ import { Request, Response } from "@specter/client";
 import { Service } from "@specter/specter";
 
 import { getDiariesFromFirestore } from "../../../lib/firestore";
-import { Diary } from "../../../store/diaries/reducers";
+import { Diary } from "./types";
 
-type RequestHeader = Record<string, any>;
-type RequestBody = Record<string, any>;
+type RequestHeader = Record<string, string | string[]>;
+type RequestBody = Record<string, unknown>;
 export type IndexDiariesServiceQuery = {
   firestore: FirebaseFirestore.Firestore;
   userId: string;
 };
-type ResponseHeader = Record<string, any>;
+type ResponseHeader = Record<string, unknown>;
 export type IndexDiariesServiceBody = Diary[];
 
 export default class IndexDiariesService extends Service {

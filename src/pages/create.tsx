@@ -7,9 +7,9 @@ import styled from "styled-components";
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
+import { Diary } from "../server/services/diaries/types";
 import { wrapper } from "../store";
 import { createDraft } from "../store/diaries/reducers";
-import { Diary } from "../store/diaries/reducers";
 import { userSignIn } from "../store/user/reducers";
 import { User } from "../store/user/reducers";
 

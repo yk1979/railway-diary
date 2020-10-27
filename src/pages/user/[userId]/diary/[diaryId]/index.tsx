@@ -20,11 +20,10 @@ import {
   ShowDiaryServiceBody,
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
+import { Diary } from "../../../../../server/services/diaries/types";
 import { wrapper } from "../../../../../store";
 import { deleteDiary, getDiary } from "../../../../../store/diaries/reducers";
-import { Diary } from "../../../../../store/diaries/reducers";
-import { userSignIn } from "../../../../../store/user/reducers";
-import { User } from "../../../../../store/user/reducers";
+import { User, userSignIn } from "../../../../../store/user/reducers";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
   margin-top: 24px;

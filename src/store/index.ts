@@ -16,7 +16,8 @@ import {
 import { composeWithDevTools } from "redux-devtools-extension";
 import logger from "redux-logger";
 
-import { Diary, default as diaries } from "./diaries/reducers";
+import { Diary } from "../server/services/diaries/types";
+import { reducer as diaries } from "./diaries/reducers";
 import user from "./user/reducers";
 import { UserState } from "./user/reducers";
 

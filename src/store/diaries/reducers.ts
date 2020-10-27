@@ -1,16 +1,7 @@
 import actionCreatorFactory from "typescript-fsa";
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 
-/**
- * types
- */
-export type Diary = {
-  id: string;
-  title: string;
-  body: string;
-  imageUrls: string[];
-  lastEdited: string;
-};
+import { Diary } from "../../server/services/diaries/types";
 
 export type GetDiaryPayload = {
   firestore: FirebaseFirestore.Firestore;
@@ -55,7 +46,7 @@ export const deleteDiary = actionCreator<deleteDiaryPayload>("DELETE_DIARY");
  */
 // TODO 一緒に使うことは今のところないけど、下書きと後悔済みの日記が同じdiary stateで管理されているのは微妙な気が
 const INITIAL_STATE: Diary[] = [];
-const reducer = reducerWithInitialState(INITIAL_STATE)
+export const reducer = reducerWithInitialState(INITIAL_STATE)
   .case(createDraft, (_, payload) => [
     {
       ...payload,
@@ -76,5 +67,3 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
   })
   .case(setDiary, (_, payload) => [payload])
   .case(setDiaries, (_, payload) => payload);
-
-export default reducer;

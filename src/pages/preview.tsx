@@ -1,5 +1,4 @@
 import { NextPage } from "next";
-import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -48,7 +47,8 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
     const storageRef = storage.ref(`${user.uid}/${diary.id}`);
     // TODO アップロード後、画像を日記データと紐づけて管理したい
     // TODO アップロード済みの画像は再度アップロードしない
-    diary.imageUrls?.forEach((image) => {
+    // TODO 型fix
+    diary.imageUrls?.forEach((image: any) => {
       storageRef.child(uuid()).put(convertBase64ToBlob(image));
     });
     createDiaryToFirestore({ user, diary });

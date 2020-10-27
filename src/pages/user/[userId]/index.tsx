@@ -15,11 +15,10 @@ import {
   IndexDiariesServiceBody,
   IndexDiariesServiceQuery,
 } from "../../../server/services/diaries/IndexDiariesService";
+import { Diary } from "../../../server/services/diaries/types";
 import { wrapper } from "../../../store";
 import { getDiaries } from "../../../store/diaries/reducers";
-import { Diary } from "../../../store/diaries/reducers";
-import { userSignIn } from "../../../store/user/reducers";
-import { User } from "../../../store/user/reducers";
+import { User, userSignIn } from "../../../store/user/reducers";
 
 const StyledLayout = styled(Layout)`
   > div {

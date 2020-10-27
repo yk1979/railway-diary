@@ -1,6 +1,6 @@
 import { firestore as fs } from "../../firebase";
+import { Diary } from "../server/services/diaries/types";
 import {
-  Diary,
   GetDiariesPayload,
   GetDiaryPayload,
   deleteDiaryPayload,
@@ -79,44 +79,47 @@ export async function getDiaryFromFirestore({
   firestore,
   userId,
   diaryId,
-}: GetDiaryPayload): Promise<Diary | undefined> {
-  const diaryData = (await firestore
-    .collection(`users/${userId}/diaries/`)
-    .doc(`${diaryId}`)
-    .get()
-    .then((doc) => doc.data())) as FSDiary | undefined;
-  return diaryData
-    ? {
-        id: diaryData.id,
-        title: diaryData.title,
-        body: diaryData.body,
-        imageUrls: diaryData.imageUrls,
-        lastEdited: diaryData.lastEdited.toDate().toISOString(),
-      }
-    : undefined;
+}: GetDiaryPayload): Promise<Diary> {
+  try {
+    const diaryData = (await firestore
+      .collection(`users/${userId}/diaries/`)
+      .doc(`${diaryId}`)
+      .get()
+      .then((doc) => doc.data())) as FSDiary;
+    return {
+      ...diaryData,
+      lastEdited: diaryData.lastEdited.toDate().toISOString(),
+    };
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 export async function getDiariesFromFirestore({
   firestore,
   userId,
 }: GetDiariesPayload): Promise<Diary[]> {
-  const diariesData: Diary[] = [];
-  await firestore
-    .collection(`users/${userId}/diaries`)
-    .get()
-    .then((collections) => {
-      collections.forEach((doc) => {
-        const data = doc.data() as FSDiary;
-        diariesData.push({
-          id: data.id,
-          title: data.title,
-          body: data.body,
-          imageUrls: data.imageUrls,
-          lastEdited: data.lastEdited.toDate().toISOString(),
+  try {
+    const diariesData: Diary[] = [];
+    await firestore
+      .collection(`users/${userId}/diaries`)
+      .get()
+      .then((collections) => {
+        collections.forEach((doc) => {
+          const data = doc.data() as FSDiary;
+          diariesData.push({
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            imageUrls: data.imageUrls,
+            lastEdited: data.lastEdited.toDate().toISOString(),
+          });
         });
       });
-    });
-  return diariesData;
+    return diariesData;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 export async function deleteDiaryFromFirestore({

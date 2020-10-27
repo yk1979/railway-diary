@@ -1,8 +1,8 @@
 import { APIDef, GET, ResponseDef, Success200 } from "@agreed/typed";
 
-import { Diary } from "../../../src/store/diaries/reducers";
+import { Diary } from "../../../src/server/services/diaries/types";
 
-type HelloGetApi = APIDef<
+type Api = APIDef<
   GET, // HTTP method
   ["diaries"], // path
   Record<string, unknown>, // request header
@@ -18,7 +18,7 @@ type HelloGetApi = APIDef<
   >
 >;
 
-export const api: HelloGetApi = {
+export const api: Api = {
   request: {
     path: ["diaries"],
     method: "GET",

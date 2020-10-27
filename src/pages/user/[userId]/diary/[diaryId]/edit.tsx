@@ -12,11 +12,10 @@ import {
   ShowDiaryServiceBody,
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
+import { Diary } from "../../../../../server/services/diaries/types";
 import { wrapper } from "../../../../../store";
 import { createDraft, getDiary } from "../../../../../store/diaries/reducers";
-import { Diary } from "../../../../../store/diaries/reducers";
-import { userSignIn } from "../../../../../store/user/reducers";
-import { User } from "../../../../../store/user/reducers";
+import { User, userSignIn } from "../../../../../store/user/reducers";
 
 const StyledLayout = styled(Layout)`
   > div {
