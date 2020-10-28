@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -48,7 +49,12 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
   return (
     <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
-      {user && <StyledEditForm diary={diary} handleSubmit={handleSubmit} />}
+      {user && (
+        <StyledEditForm
+          diary={diary}
+          handleSubmit={(diary) => handleSubmit(diary)}
+        />
+      )}
     </StyledLayout>
   );
 };

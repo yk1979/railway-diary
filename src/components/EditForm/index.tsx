@@ -162,9 +162,9 @@ const EditForm: React.FC<Props> = ({ className, diary, handleSubmit }) => {
         e.preventDefault();
         handleSubmit({
           id: diary?.id || "",
-          title: diary?.title || title,
-          body: diary?.body || body,
-          imageUrls: diary?.imageUrls || imageUrls,
+          title: title,
+          body: body,
+          imageUrls: imageUrls,
           lastEdited: diary?.lastEdited || "",
         });
       }}
@@ -199,7 +199,7 @@ const EditForm: React.FC<Props> = ({ className, diary, handleSubmit }) => {
           ))}
         </ImgContainer>
       )}
-      <ToPreviewButton text="かくにんにすすむ" />
+      <ToPreviewButton type="submit" text="かくにんにすすむ" />
     </StyledForm>
   );
 };
