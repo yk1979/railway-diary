@@ -6,8 +6,7 @@ import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
 import { wrapper } from "../store";
-import { userSignIn } from "../store/user/actions";
-import { User } from "../store/user/types";
+import { User, userSignIn } from "../store/user/reducers";
 
 const StyledEditButton = styled(EditButton)`
   position: absolute;

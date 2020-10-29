@@ -1,20 +1,31 @@
-import {
-  USER_SIGN_IN,
-  USER_SIGN_OUT,
-  UserActionTypes,
-  UserState,
-} from "./types";
+import actionCreatorFactory from "typescript-fsa";
+import { reducerWithInitialState } from "typescript-fsa-reducers";
 
-const user = (state: UserState = null, action: UserActionTypes): UserState => {
-  switch (action.type) {
-    case USER_SIGN_IN: {
-      return action.payload;
-    }
-    case USER_SIGN_OUT:
-      return null;
-    default:
-      return state;
-  }
+/**
+ * types
+ */
+export type User = {
+  uid: string;
+  name: string | null;
+  picture?: string;
 };
 
-export default user;
+export type UserState = User | null;
+
+/**
+ * actions
+ */
+const actionCreator = actionCreatorFactory();
+
+export const userSignIn = actionCreator<User>("USER_SIGN_IN");
+export const userSignOut = actionCreator("USER_SIGN_OUT");
+
+/**
+ * reducers
+ */
+const INITIAL_STATE = null;
+const reducer = reducerWithInitialState<UserState>(INITIAL_STATE)
+  .case(userSignIn, (_, payload) => payload)
+  .case(userSignOut, () => null);
+
+export default reducer;
