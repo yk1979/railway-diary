@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import { GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,10 +10,11 @@ import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
 import { createDiaryToFirestore } from "../lib/firestore";
-import { RootState, wrapper } from "../store";
+import { RootState, initStore } from "../store";
 import { deleteDraft } from "../store/diaries/reducers";
 import { userSignIn } from "../store/user/reducers";
 import { User } from "../store/user/reducers";
+import { MyNextContext } from "../types/next";
 
 const BackButton = styled(Button)`
   margin-top: 16px;
@@ -48,7 +49,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
     // TODO アップロード後、画像を日記データと紐づけて管理したい
     // TODO アップロード済みの画像は再度アップロードしない
     // TODO 型fix
-    diary.imageUrls?.forEach((image: any) => {
+    diary.imageUrls?.forEach((image) => {
       storageRef.child(uuid()).put(convertBase64ToBlob(image));
     });
     createDiaryToFirestore({ user, diary });
@@ -90,12 +91,16 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
 
 export default PreviewPage;
 
-export const getServerSideProps = wrapper.getServerSideProps<{
-  props: PreviewPageProps;
-}>(({ req, store }) => {
+export const getServerSideProps = ({
+  req,
+  res,
+}: MyNextContext): GetServerSidePropsResult<PreviewPageProps> | undefined => {
+  const store = initStore();
   const token = req?.session?.decodedToken;
 
-  if (token) {
+  if (!token) {
+    res.redirect("/login");
+  } else {
     store.dispatch(
       userSignIn({
         uid: token.uid,
@@ -103,13 +108,14 @@ export const getServerSideProps = wrapper.getServerSideProps<{
         picture: token.picture,
       })
     );
+
+    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
+    const { user } = store.getState() as { user: User };
+
+    return {
+      props: {
+        user,
+      },
+    };
   }
-
-  const { user } = store.getState();
-
-  return {
-    props: {
-      user,
-    },
-  };
-});
+};

@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import { GetServerSidePropsResult, NextPage } from "next";
 import React from "react";
 import styled from "styled-components";
 
@@ -16,9 +16,10 @@ import {
   IndexDiariesServiceQuery,
 } from "../../../server/services/diaries/IndexDiariesService";
 import { Diary } from "../../../server/services/diaries/types";
-import { wrapper } from "../../../store";
+import { initializeStore } from "../../../store";
 import { getDiaries } from "../../../store/diaries/reducers";
 import { User, userSignIn } from "../../../store/user/reducers";
+import { MyNextContext } from "../../../types/next";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -101,53 +102,58 @@ const UserPage: NextPage<UserPageProps> = ({ author, user, diaries }) => (
   </StyledLayout>
 );
 
-export const getServerSideProps = wrapper.getServerSideProps<{
-  props: UserPageProps;
-}>(async ({ req, res, query, store }) => {
+export const getServerSideProps = async ({
+  req,
+  res,
+  query,
+}: MyNextContext): Promise<GetServerSidePropsResult<UserPageProps>> => {
+  const store = initializeStore();
+
   const userId = query.userId as string;
   const token = req?.session?.decodedToken;
-  const firestore = req?.firebaseServer.firestore();
 
   if (!token) {
     res.redirect("/login");
+    // TODO return 型再考
+    return Promise.reject();
+  } else {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
+    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
+    const { user } = store.getState() as { user: User };
+
+    const firestore = req?.firebaseServer.firestore();
+    // TODO author が null だった場合の処理はサービスで吸収する
+    const author = (await getUserFromFirestore({ firestore, userId })) as User;
+
+    const params = {
+      firestore,
+      userId,
+    };
+    store.dispatch(getDiaries.started(params));
+    const diaries = await specterRead<
+      Record<string, unknown>,
+      IndexDiariesServiceQuery,
+      IndexDiariesServiceBody
+    >({
+      serviceName: "index_diaries",
+      query: params,
+    });
+    store.dispatch(getDiaries.done({ params, result: diaries.body }));
+
+    return {
+      props: {
+        author,
+        user,
+        diaries: diaries.body,
+      },
+    };
   }
-
-  // TODO 存在しないuserId叩かれた時エラーにしたい
-  store.dispatch(
-    userSignIn({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      uid: token!.uid,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      name: token!.name,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      picture: token!.picture,
-    })
-  );
-  // TODO author が null だった場合の処理はサービスで吸収する
-  const author = (await getUserFromFirestore({ firestore, userId })) as User;
-  const params = {
-    firestore,
-    userId,
-  };
-  store.dispatch(getDiaries.started(params));
-  const diaries = await specterRead<
-    Record<string, unknown>,
-    IndexDiariesServiceQuery,
-    IndexDiariesServiceBody
-  >({
-    serviceName: "index_diaries",
-    query: params,
-  });
-  store.dispatch(getDiaries.done({ params, result: diaries.body }));
-  const { user } = store.getState();
-
-  return {
-    props: {
-      author,
-      user,
-      diaries: diaries.body,
-    },
-  };
-});
+};
 
 export default UserPage;
