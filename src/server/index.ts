@@ -91,8 +91,7 @@ const dev = process.env.NODE_ENV !== "production";
     handle(req, res);
   });
 
-  server.listen(port, (err: Error) => {
-    if (err) throw err;
+  server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`);
   });
 })();
