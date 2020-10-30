@@ -1,12 +1,13 @@
-import { NextPage } from "next";
+import { GetServerSidePropsResult, NextPage } from "next";
 import React from "react";
 import styled from "styled-components";
 
 import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
-import { wrapper } from "../store";
+import { initializeStore } from "../store";
 import { User, userSignIn } from "../store/user/reducers";
+import { MyNextContext } from "../types/next";
 
 const StyledEditButton = styled(EditButton)`
   position: absolute;
@@ -27,12 +28,18 @@ const IndexPage: NextPage<IndexPageProps> = ({ user }) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps<{
-  props: IndexPageProps;
-}>(({ req, store }) => {
+export const getServerSideProps = ({
+  req,
+  res,
+}: // TODO return 型再考
+MyNextContext): GetServerSidePropsResult<IndexPageProps> | undefined => {
+  const store = initializeStore();
   const token = req?.session?.decodedToken;
 
-  if (token) {
+  if (!token) {
+    res.redirect("/login");
+    return;
+  } else {
     store.dispatch(
       userSignIn({
         uid: token.uid,
@@ -40,14 +47,15 @@ export const getServerSideProps = wrapper.getServerSideProps<{
         picture: token.picture,
       })
     );
-  }
-  const { user } = store.getState();
+    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
+    const { user } = store.getState() as { user: User };
 
-  return {
-    props: {
-      user,
-    },
-  };
-});
+    return {
+      props: {
+        user,
+      },
+    };
+  }
+};
 
 export default IndexPage;

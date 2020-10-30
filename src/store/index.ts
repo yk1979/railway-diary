@@ -1,14 +1,7 @@
-import { ParsedUrlQuery } from "querystring";
-
-import { GetServerSideProps } from "next";
-import {
-  HYDRATE,
-  MakeStore,
-  MyNextContext,
-  createWrapper,
-} from "next-redux-wrapper";
+import { useMemo } from "react";
 import {
   AnyAction,
+  Store,
   applyMiddleware,
   combineReducers,
   createStore,
@@ -26,50 +19,58 @@ export interface RootState {
   user: UserState;
 }
 
+type MyStore = Store<RootState>;
+
+let store: MyStore | undefined;
+
+export const initialState: RootState = { diaries: [], user: null };
+
 const combinedReducer = combineReducers({
   diaries,
   user,
 });
 
 export const rootReducer: typeof combinedReducer = (
-  state: RootState = { diaries: [], user: null },
+  state: RootState = initialState,
   action: AnyAction
 ) => {
-  if (action.type === HYDRATE) {
-    const nextState = {
-      ...state,
-      ...action.payload,
-    };
-    return nextState;
-  }
   return combinedReducer(state, action);
 };
 
-export const makeStore: MakeStore<RootState> = () => {
-  const middlewares: any[] = [];
+export const initStore = (preloadedState = initialState): MyStore => {
+  const middlewares = [];
   if (process.env.NODE_ENV !== "production") {
     middlewares.push(logger);
   }
 
-  const store = createStore(
+  return createStore(
     rootReducer,
+    preloadedState,
     composeWithDevTools(applyMiddleware(...middlewares))
   );
+};
 
+export const initializeStore = (preloadedState?: RootState): MyStore => {
+  let _store = store ?? initStore(preloadedState);
+
+  if (preloadedState && store) {
+    _store = initStore({
+      ...store.getState(),
+      ...preloadedState,
+    });
+    // Reset the current store
+    store = undefined;
+  }
+
+  // For SSG and SSR always create a new store
+  if (typeof window === "undefined") return _store;
+  // Create the store once in the client
+  if (!store) store = _store;
+
+  return _store;
+};
+
+export function useStore(initialState: RootState): MyStore {
+  const store = useMemo(() => initializeStore(initialState), [initialState]);
   return store;
-};
-
-const originalWrapper = createWrapper<RootState>(makeStore, {
-  debug: process.env.NODE_ENV !== "production",
-});
-
-// typescript3.9以降で、next-redux-wrapper側で定義されているgetServerSideProps型が独自に拡張できなくなってしまった
-// contextをexpressに対応した独自の型に拡張するために以下のようにしている
-// next-redux-wrapperのアップデート状況に応じて見直す必要がある (thanks to @ics-ikeda)
-type MyWrapper = Omit<typeof originalWrapper, "getServerSideProps"> & {
-  getServerSideProps: <P extends Record<string, unknown> = any>(
-    callback: (context: MyNextContext) => void | P | Promise<P>
-  ) => GetServerSideProps<P, ParsedUrlQuery>;
-};
-
-export const wrapper = originalWrapper as MyWrapper;
+}

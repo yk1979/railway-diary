@@ -1,6 +1,6 @@
 import { format } from "date-fns-tz";
 import parseISO from "date-fns/parseISO";
-import { NextPage } from "next";
+import { GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -21,9 +21,10 @@ import {
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { Diary } from "../../../../../server/services/diaries/types";
-import { wrapper } from "../../../../../store";
+import { initializeStore } from "../../../../../store";
 import { deleteDiary, getDiary } from "../../../../../store/diaries/reducers";
 import { User, userSignIn } from "../../../../../store/user/reducers";
+import { MyNextContext } from "../../../../../types/next";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
   margin-top: 24px;
@@ -107,61 +108,63 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps<{
-  props: UserDiaryPageProps;
-}>(async ({ req, res, query, store }) => {
+export const getServerSideProps = async ({
+  req,
+  res,
+  query,
+}: MyNextContext): Promise<GetServerSidePropsResult<UserDiaryPageProps>> => {
+  const store = initializeStore();
+
   const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;
 
-  const firestore = req.firebaseServer.firestore();
-
   if (!token) {
     res.redirect("/login");
-  }
+    // TODO return 型再考
+    return Promise.reject();
+  } else {
+    store.dispatch(
+      userSignIn({
+        uid: token.uid,
+        name: token.name,
+        picture: token.picture,
+      })
+    );
+    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
+    const { user } = store.getState() as { user: User };
 
-  store.dispatch(
-    userSignIn({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      uid: token!.uid,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      name: token!.name,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      picture: token!.picture,
-    })
-  );
+    const firestore = req.firebaseServer.firestore();
+    // TODO author が null だった場合の処理はサービスで吸収する
+    const author = (await getUserFromFirestore({ firestore, userId })) as User;
 
-  // TODO author が null だった場合の処理はサービスで吸収する
-  const author = (await getUserFromFirestore({ firestore, userId })) as User;
-
-  const params = {
-    firestore,
-    userId,
-    diaryId,
-  };
-  store.dispatch(getDiary.started(params));
-  const diary = await specterRead<
-    Record<string, unknown>,
-    ShowDiaryServiceQuery,
-    ShowDiaryServiceBody
-  >({
-    serviceName: "show_diary",
-    query: {
+    const params = {
       firestore,
       userId,
       diaryId,
-    },
-  });
-  store.dispatch(getDiary.done({ params, result: diary.body }));
+    };
+    store.dispatch(getDiary.started(params));
+    const diary = await specterRead<
+      Record<string, unknown>,
+      ShowDiaryServiceQuery,
+      ShowDiaryServiceBody
+    >({
+      serviceName: "show_diary",
+      query: {
+        firestore,
+        userId,
+        diaryId,
+      },
+    });
+    store.dispatch(getDiary.done({ params, result: diary.body }));
 
-  const { user } = store.getState();
-
-  return {
-    props: {
-      author,
-      diary: diary.body,
-      user,
-    },
-  };
-});
+    return {
+      props: {
+        author,
+        diary: diary.body,
+        user,
+      },
+    };
+  }
+};
 
 export default UserDiaryPage;
