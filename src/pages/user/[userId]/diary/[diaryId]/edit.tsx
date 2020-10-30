@@ -13,7 +13,7 @@ import {
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { Diary } from "../../../../../server/services/diaries/types";
-import { initStore } from "../../../../../store";
+import { initializeStore } from "../../../../../store";
 import { createDraft, getDiary } from "../../../../../store/diaries/reducers";
 import { User, userSignIn } from "../../../../../store/user/reducers";
 import { MyNextContext } from "../../../../../types/next";
@@ -64,7 +64,7 @@ export const getServerSideProps = async ({
   res,
   query,
 }: MyNextContext): Promise<GetServerSidePropsResult<DiaryEditPageProps>> => {
-  const store = initStore();
+  const store = initializeStore();
 
   const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;

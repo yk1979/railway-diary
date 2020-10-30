@@ -10,7 +10,7 @@ import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
 import { createDiaryToFirestore } from "../lib/firestore";
-import { RootState, initStore } from "../store";
+import { RootState, initializeStore } from "../store";
 import { deleteDraft } from "../store/diaries/reducers";
 import { userSignIn } from "../store/user/reducers";
 import { User } from "../store/user/reducers";
@@ -95,7 +95,7 @@ export const getServerSideProps = ({
   req,
   res,
 }: MyNextContext): GetServerSidePropsResult<PreviewPageProps> | undefined => {
-  const store = initStore();
+  const store = initializeStore();
   const token = req?.session?.decodedToken;
 
   if (!token) {

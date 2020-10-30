@@ -7,7 +7,7 @@ import firebase from "../../firebase";
 import { handleSignIn, handleSignOut } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
-import { RootState, initStore } from "../store";
+import { RootState, initializeStore } from "../store";
 import {
   User,
   UserState,
@@ -100,7 +100,7 @@ export const getServerSideProps = ({
   req,
 }: // TODO return 型再考
 MyNextContext): GetServerSidePropsResult<LoginPageProps> | void => {
-  const store = initStore();
+  const store = initializeStore();
   const token = req?.session?.decodedToken;
 
   if (token) {

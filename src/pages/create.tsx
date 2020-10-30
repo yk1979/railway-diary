@@ -8,7 +8,7 @@ import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
 import { Diary } from "../server/services/diaries/types";
-import { initStore } from "../store";
+import { initializeStore } from "../store";
 import { createDraft } from "../store/diaries/reducers";
 import { userSignIn } from "../store/user/reducers";
 import { User } from "../store/user/reducers";
@@ -53,7 +53,7 @@ export const getServerSideProps = ({
   req,
   res,
 }: MyNextContext): GetServerSidePropsResult<CreatePageProps> | undefined => {
-  const store = initStore();
+  const store = initializeStore();
   const token = req?.session?.decodedToken;
 
   if (!token) {
