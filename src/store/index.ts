@@ -23,7 +23,7 @@ type MyStore = Store<RootState>;
 
 let store: MyStore | undefined;
 
-const initialState: RootState = { diaries: [], user: null };
+export const initialState: RootState = { diaries: [], user: null };
 
 const combinedReducer = combineReducers({
   diaries,

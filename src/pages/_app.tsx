@@ -6,7 +6,7 @@ import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
 import Color from "../constants/Color";
-import { useStore } from "../store";
+import { initialState, useStore } from "../store";
 
 export const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -84,7 +84,8 @@ export const GlobalStyle = createGlobalStyle`
 `;
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
-  const store = useStore(pageProps.initialReduxState);
+  // TODO 多分 initialState じゃダメだとおもうので fix
+  const store = useStore(initialState);
   return (
     <Provider store={store}>
       <GlobalStyle />
