@@ -7,11 +7,11 @@ import styled from "styled-components";
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
+import { createDraft } from "../redux/modules/diaries";
+import { userSignIn } from "../redux/modules/user";
+import { User } from "../redux/modules/user";
+import { initializeStore } from "../redux/store";
 import { Diary } from "../server/services/diaries/types";
-import { initializeStore } from "../store";
-import { createDraft } from "../store/diaries/reducers";
-import { userSignIn } from "../store/user/reducers";
-import { User } from "../store/user/reducers";
 import { MyNextContext } from "../types/next";
 
 const StyledLayout = styled(Layout)`

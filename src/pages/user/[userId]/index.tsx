@@ -11,14 +11,14 @@ import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
 import { specterRead } from "../../../lib/client";
 import { getUserFromFirestore } from "../../../lib/firestore";
+import { getDiaries } from "../../../redux/modules/diaries";
+import { User, userSignIn } from "../../../redux/modules/user";
+import { initializeStore } from "../../../redux/store";
 import {
   IndexDiariesServiceBody,
   IndexDiariesServiceQuery,
 } from "../../../server/services/diaries/IndexDiariesService";
 import { Diary } from "../../../server/services/diaries/types";
-import { initializeStore } from "../../../store";
-import { getDiaries } from "../../../store/diaries/reducers";
-import { User, userSignIn } from "../../../store/user/reducers";
 import { MyNextContext } from "../../../types/next";
 
 const StyledLayout = styled(Layout)`

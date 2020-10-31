@@ -10,10 +10,10 @@ import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
 import { createDiaryToFirestore } from "../lib/firestore";
-import { RootState, initializeStore } from "../store";
-import { deleteDraft } from "../store/diaries/reducers";
-import { userSignIn } from "../store/user/reducers";
-import { User } from "../store/user/reducers";
+import { deleteDraft } from "../redux/modules/diaries";
+import { userSignIn } from "../redux/modules/user";
+import { User } from "../redux/modules/user";
+import { RootState, initializeStore } from "../redux/store";
 import { MyNextContext } from "../types/next";
 
 const BackButton = styled(Button)`

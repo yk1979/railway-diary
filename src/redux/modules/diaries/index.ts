@@ -1,7 +1,7 @@
 import actionCreatorFactory from "typescript-fsa";
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 
-import { Diary } from "../../server/services/diaries/types";
+import { Diary } from "../../../server/services/diaries/types";
 
 export type GetDiaryPayload = {
   firestore: FirebaseFirestore.Firestore;

@@ -5,8 +5,8 @@ import styled from "styled-components";
 import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
-import { initializeStore } from "../store";
-import { User, userSignIn } from "../store/user/reducers";
+import { User, userSignIn } from "../redux/modules/user";
+import { initializeStore } from "../redux/store";
 import { MyNextContext } from "../types/next";
 
 const StyledEditButton = styled(EditButton)`
