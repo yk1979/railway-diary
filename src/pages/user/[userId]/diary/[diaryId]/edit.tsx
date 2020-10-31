@@ -8,14 +8,14 @@ import EditForm from "../../../../../components/EditForm";
 import Heading from "../../../../../components/Heading";
 import Layout from "../../../../../components/Layout";
 import { specterRead } from "../../../../../lib/client";
+import { createDraft, getDiary } from "../../../../../redux/modules/diaries";
+import { User, userSignIn } from "../../../../../redux/modules/user";
+import { initializeStore } from "../../../../../redux/store";
 import {
   ShowDiaryServiceBody,
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { Diary } from "../../../../../server/services/diaries/types";
-import { initializeStore } from "../../../../../store";
-import { createDraft, getDiary } from "../../../../../store/diaries/reducers";
-import { User, userSignIn } from "../../../../../store/user/reducers";
 import { MyNextContext } from "../../../../../types/next";
 
 const StyledLayout = styled(Layout)`

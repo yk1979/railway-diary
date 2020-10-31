@@ -7,13 +7,13 @@ import firebase from "../../firebase";
 import { handleSignIn, handleSignOut } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
-import { RootState, initializeStore } from "../store";
 import {
   User,
   UserState,
   userSignIn,
   userSignOut,
-} from "../store/user/reducers";
+} from "../redux/modules/user";
+import { RootState, initializeStore } from "../redux/store";
 import { MyNextContext } from "../types/next";
 
 const ButtonWrapper = styled.div`

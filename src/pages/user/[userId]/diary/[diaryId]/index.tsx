@@ -16,14 +16,14 @@ import PageBottomNotifier, {
 import UserProfile from "../../../../../components/UserProfile";
 import { specterRead } from "../../../../../lib/client";
 import { getUserFromFirestore } from "../../../../../lib/firestore";
+import { deleteDiary, getDiary } from "../../../../../redux/modules/diaries";
+import { User, userSignIn } from "../../../../../redux/modules/user";
+import { initializeStore } from "../../../../../redux/store";
 import {
   ShowDiaryServiceBody,
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { Diary } from "../../../../../server/services/diaries/types";
-import { initializeStore } from "../../../../../store";
-import { deleteDiary, getDiary } from "../../../../../store/diaries/reducers";
-import { User, userSignIn } from "../../../../../store/user/reducers";
 import { MyNextContext } from "../../../../../types/next";
 
 const StyledDiaryViewer = styled(DiaryViewer)`

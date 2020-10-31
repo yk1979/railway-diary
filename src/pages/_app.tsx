@@ -6,7 +6,7 @@ import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
 import Color from "../constants/Color";
-import { initialState, useStore } from "../store";
+import { initialState, useStore } from "../redux/store";
 
 export const GlobalStyle = createGlobalStyle`
   ${reset}

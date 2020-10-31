@@ -10,9 +10,9 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import logger from "redux-logger";
 
 import { Diary } from "../server/services/diaries/types";
-import { reducer as diaries } from "./diaries/reducers";
-import user from "./user/reducers";
-import { UserState } from "./user/reducers";
+import { reducer as diaries } from "./modules/diaries";
+import user from "./modules/user";
+import { UserState } from "./modules/user";
 
 export interface RootState {
   diaries: Diary[];

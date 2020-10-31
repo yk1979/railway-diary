@@ -1,11 +1,11 @@
 import { firestore as fs } from "../../firebase";
-import { Diary } from "../server/services/diaries/types";
 import {
   GetDiariesPayload,
   GetDiaryPayload,
   deleteDiaryPayload,
-} from "../store/diaries/reducers";
-import { User, UserState } from "../store/user/reducers";
+} from "../redux/modules/diaries";
+import { User } from "../redux/modules/user";
+import { Diary } from "../server/services/diaries/types";
 
 // TODO DataConverter使えるか検討
 // https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter?hl=en
@@ -25,7 +25,7 @@ export async function getUserFromFirestore({
 }: {
   firestore: FirebaseFirestore.Firestore;
   userId: string;
-}): Promise<UserState> {
+}): Promise<User> {
   try {
     const user = await firestore
       .collection(`users`)
@@ -38,8 +38,7 @@ export async function getUserFromFirestore({
       picture: user.picture,
     };
   } catch (err) {
-    console.error(err);
-    return null;
+    throw new Error(err);
   }
 }
 
@@ -52,10 +51,14 @@ async function setDiaryUserToFireStore({
     | firebase.default.firestore.Firestore;
   user: User;
 }) {
-  await firestore
-    .collection(`/users/`)
-    .doc(user.uid)
-    .set({ name: user.name, picture: user.picture });
+  try {
+    await firestore
+      .collection(`/users/`)
+      .doc(user.uid)
+      .set({ name: user.name, picture: user.picture });
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 export async function createDiaryToFirestore({
@@ -69,14 +72,18 @@ export async function createDiaryToFirestore({
   user: User;
   diary: Diary;
 }): Promise<void> {
-  setDiaryUserToFireStore({ firestore, user });
-  firestore.collection(`/users/${user.uid}/diaries`).doc(`${diary.id}`).set({
-    id: diary.id,
-    title: diary.title,
-    body: diary.body,
-    imageUrls: diary.imageUrls,
-    lastEdited: new Date(),
-  });
+  try {
+    await setDiaryUserToFireStore({ firestore, user });
+    firestore.collection(`/users/${user.uid}/diaries`).doc(`${diary.id}`).set({
+      id: diary.id,
+      title: diary.title,
+      body: diary.body,
+      imageUrls: diary.imageUrls,
+      lastEdited: new Date(),
+    });
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 export async function getDiaryFromFirestore({
@@ -131,5 +138,12 @@ export async function deleteDiaryFromFirestore({
   userId,
   diaryId,
 }: deleteDiaryPayload): Promise<void> {
-  await firestore.collection(`users/${userId}/diaries/`).doc(diaryId).delete();
+  try {
+    await firestore
+      .collection(`users/${userId}/diaries/`)
+      .doc(diaryId)
+      .delete();
+  } catch (err) {
+    throw new Error(err);
+  }
 }
