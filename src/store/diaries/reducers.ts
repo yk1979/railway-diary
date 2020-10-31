@@ -15,7 +15,7 @@ export type GetDiariesPayload = {
 };
 
 export type deleteDiaryPayload = {
-  firestore: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
+  firestore: FirebaseFirestore.Firestore | firebase.default.firestore.Firestore;
   userId: string;
   diaryId: string;
 };

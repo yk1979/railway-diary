@@ -16,7 +16,7 @@ type FSDiary = {
   title: string;
   body: string;
   imageUrls: string[];
-  lastEdited: firebase.firestore.Timestamp;
+  lastEdited: firebase.default.firestore.Timestamp;
 };
 
 export async function getUserFromFirestore({
@@ -47,7 +47,9 @@ async function setDiaryUserToFireStore({
   firestore = fs,
   user,
 }: {
-  firestore?: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
+  firestore?:
+    | FirebaseFirestore.Firestore
+    | firebase.default.firestore.Firestore;
   user: User;
 }) {
   await firestore
@@ -61,7 +63,9 @@ export async function createDiaryToFirestore({
   user,
   diary,
 }: {
-  firestore?: FirebaseFirestore.Firestore | firebase.firestore.Firestore;
+  firestore?:
+    | FirebaseFirestore.Firestore
+    | firebase.default.firestore.Firestore;
   user: User;
   diary: Diary;
 }): Promise<void> {
