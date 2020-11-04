@@ -1,7 +1,7 @@
 import { GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../../../../../components/EditForm";
@@ -10,7 +10,7 @@ import Layout from "../../../../../components/Layout";
 import { specterRead } from "../../../../../lib/client";
 import { createDraft, getDiary } from "../../../../../redux/modules/diaries";
 import { User, userSignIn } from "../../../../../redux/modules/user";
-import { initializeStore } from "../../../../../redux/store";
+import { RootState, initializeStore } from "../../../../../redux/store";
 import {
   ShowDiaryServiceBody,
   ShowDiaryServiceQuery,
@@ -35,6 +35,7 @@ type DiaryEditPageProps = {
   diary: Diary;
 };
 
+// TODO store と サーバから渡される値を二重で取得してるのがダサすぎるので直したい
 const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -46,13 +47,15 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
     }
   };
 
+  const _diary = useSelector((state: RootState) => state.diaries[0]) || diary;
+
   return (
     <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
       {user && (
         <StyledEditForm
-          diary={diary}
-          handleSubmit={(diary) => handleSubmit(diary)}
+          diary={_diary}
+          handleSubmit={(_diary) => handleSubmit(_diary)}
         />
       )}
     </StyledLayout>
@@ -65,7 +68,6 @@ export const getServerSideProps = async ({
   query,
 }: MyNextContext): Promise<GetServerSidePropsResult<DiaryEditPageProps>> => {
   const store = initializeStore();
-
   const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;
 
@@ -81,7 +83,9 @@ export const getServerSideProps = async ({
       })
     );
     // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
-    const { user } = store.getState() as { user: User };
+    const { user } = store.getState() as {
+      user: User;
+    };
 
     const firestore = req.firebaseServer.firestore();
     const params = {
