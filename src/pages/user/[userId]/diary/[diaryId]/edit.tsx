@@ -27,7 +27,6 @@ const StyledEditForm = styled(EditForm)`
 
 type DiaryEditPageProps = {
   user: User;
-  // diary: Diary;
 };
 
 // TODO store に値があればそちらを優先的に取得できるようにしたい

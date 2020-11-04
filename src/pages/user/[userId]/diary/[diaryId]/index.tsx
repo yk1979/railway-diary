@@ -3,7 +3,7 @@ import parseISO from "date-fns/parseISO";
 import { GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import { firestore } from "../../../../../../firebase";
@@ -16,7 +16,11 @@ import PageBottomNotifier, {
 import UserProfile from "../../../../../components/UserProfile";
 import { specterRead } from "../../../../../lib/client";
 import { getUserFromFirestore } from "../../../../../lib/firestore";
-import { deleteDiary, getDiary } from "../../../../../redux/modules/diaries";
+import {
+  deleteDiary,
+  getDiary,
+  setDiary,
+} from "../../../../../redux/modules/diaries";
 import { User, userSignIn } from "../../../../../redux/modules/user";
 import { initializeStore } from "../../../../../redux/store";
 import {
@@ -44,6 +48,11 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  // クライアント側で store に値が入ってないと edit ページに遷移した時にうまくいかないので苦肉の策でこうした
+  // しかしここでわざわざこんなアクションを dispatch するの微妙すぎるのでどうにかしたい
+  // サーバの store をマージしようとした時に初期値で上書きしようとしてるのが敗因
+  dispatch(setDiary(diary));
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
