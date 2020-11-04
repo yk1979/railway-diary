@@ -1,7 +1,11 @@
-import { GetServerSidePropsResult, NextPage } from "next";
-import React from "react";
+import { NextPage } from "next";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { END } from "redux-saga";
 import styled from "styled-components";
 
+import firebase from "../../../../firebase";
+import { firestore } from "../../../../firebase";
 import Button, { buttonTheme } from "../../../components/Button";
 import DiaryCard from "../../../components/DiaryCard";
 import EditButton from "../../../components/EditButton";
@@ -9,17 +13,12 @@ import Heading from "../../../components/Heading";
 import Layout from "../../../components/Layout";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
-import { specterRead } from "../../../lib/client";
 import { getUserFromFirestore } from "../../../lib/firestore";
-import { getDiaries } from "../../../redux/modules/diaries";
-import { User, userSignIn } from "../../../redux/modules/user";
-import { initializeStore } from "../../../redux/store";
-import {
-  IndexDiariesServiceBody,
-  IndexDiariesServiceQuery,
-} from "../../../server/services/diaries/IndexDiariesService";
-import { Diary } from "../../../server/services/diaries/types";
-import { MyNextContext } from "../../../types/next";
+import { wrapper } from "../../../store";
+import { getDiaries, setDiaries } from "../../../store/diaries/actions";
+import { Diary } from "../../../store/diaries/types";
+import { userSignIn } from "../../../store/user/actions";
+import { User } from "../../../store/user/types";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -62,61 +61,101 @@ type UserPageProps = {
   diaries: Diary[];
 };
 
-const UserPage: NextPage<UserPageProps> = ({ author, user, diaries }) => (
-  <StyledLayout userId={user ? user.uid : null}>
-    {user && (
-      <>
-        <Heading.Text1 text="てつどうの記録" />
-        <StyledUserProfile
-          user={{
-            uid: author.uid,
-            name: author.name || "unknown",
+const UserPage: NextPage<UserPageProps> = ({ author, user, diaries }) => {
+  const dispatch = useDispatch();
+
+  const [unsubscribeDb, setUnsubscribeDb] = useState<{
+    [key: string]: (() => void) | undefined;
+  }>({});
+
+  const addDbListener = (id: string) => {
+    const listener = firestore.collection(`users/${id}/diaries`).onSnapshot(
+      (querySnapshot) => {
+        const res: Diary[] = [];
+        querySnapshot.forEach((doc) => {
+          res.push(doc.data() as Diary);
+        });
+        if (res.length > 0) {
+          dispatch(setDiaries(res));
+        }
+      },
+      (err) => {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Error, could not fetch diary data in client side: ",
+          err
+        );
+      }
+    );
+    setUnsubscribeDb({ listener });
+  };
+
+  const removeDbListener = () => {
+    if (unsubscribeDb.listener) {
+      unsubscribeDb.listener();
+    }
+  };
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((currentUser) => {
+      if (currentUser) {
+        addDbListener(author.uid);
+      } else {
+        removeDbListener();
+      }
+    });
+  }, [user?.uid]);
+
+  return (
+    <StyledLayout userId={user ? user.uid : null}>
+      {user && (
+        <>
+          <Heading.Text1 text="てつどうの記録" />
+          <StyledUserProfile
+            user={{
+              uid: author.uid,
+              name: author.name || "unknown",
+            }}
+            thumbnail={author.picture}
+          />
+          {diaries.length > 0 ? (
+            <DiaryList>
+              {diaries.map((d) => (
+                <DiaryCard
+                  key={d.id}
+                  diary={d}
+                  url={`/user/${author.uid}/diary/${d.id}`}
+                />
+              ))}
+            </DiaryList>
+          ) : (
+            <NoDiaryText>まだ日記はありません</NoDiaryText>
+          )}
+          <StyledEditButton />
+        </>
+      )}
+      {user?.uid === author.uid && (
+        <StyledLoginButton
+          text="ログアウトする"
+          onClick={() => {
+            window.location.href = "/login";
           }}
-          thumbnail={author.picture}
+          theme={buttonTheme.back}
         />
-        {diaries.length > 0 ? (
-          <DiaryList>
-            {diaries.map((d) => (
-              <DiaryCard
-                key={d.id}
-                diary={d}
-                url={`/user/${author.uid}/diary/${d.id}`}
-              />
-            ))}
-          </DiaryList>
-        ) : (
-          <NoDiaryText>まだ日記はありません</NoDiaryText>
-        )}
-        <StyledEditButton />
-      </>
-    )}
-    {user?.uid === author.uid && (
-      <StyledLoginButton
-        text="ログアウトする"
-        onClick={() => {
-          window.location.href = "/login";
-        }}
-        theme={buttonTheme.back}
-      />
-    )}
-  </StyledLayout>
-);
+      )}
+    </StyledLayout>
+  );
+};
 
-export const getServerSideProps = async ({
-  req,
-  res,
-  query,
-}: MyNextContext): Promise<GetServerSidePropsResult<UserPageProps>> => {
-  const store = initializeStore();
-
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: UserPageProps;
+}>(async ({ req, query, store }) => {
   const userId = query.userId as string;
   const token = req?.session?.decodedToken;
+  let author!: User;
 
-  if (!token) {
-    res.redirect("/login");
-    // TODO return 型再考
-    return Promise.reject();
-  } else {
+  // TODO 存在しないuserId叩かれた時エラーにしたい
+  if (token) {
     store.dispatch(
       userSignIn({
         uid: token.uid,
@@ -124,36 +163,32 @@ export const getServerSideProps = async ({
         picture: token.picture,
       })
     );
-    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
-    const { user } = store.getState() as { user: User };
-
-    const firestore = req?.firebaseServer.firestore();
-    // TODO author が null だった場合の処理はサービスで吸収する
-    const author = (await getUserFromFirestore({ firestore, userId })) as User;
-
-    const params = {
-      firestore,
-      userId,
-    };
-    store.dispatch(getDiaries.started(params));
-    const diaries = await specterRead<
-      Record<string, unknown>,
-      IndexDiariesServiceQuery,
-      IndexDiariesServiceBody
-    >({
-      serviceName: "index_diaries",
-      query: params,
-    });
-    store.dispatch(getDiaries.done({ params, result: diaries.body }));
-
-    return {
-      props: {
-        author,
-        user,
-        diaries: diaries.body,
-      },
-    };
+    try {
+      const firestore = req?.firebaseServer.firestore();
+      author = await getUserFromFirestore({ firestore, userId });
+      store.dispatch(
+        getDiaries({
+          firestore,
+          userId,
+        })
+      );
+      store.dispatch(END);
+      await store.sagaTask?.toPromise();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error, could not fetch diary data in server side: ", err);
+    }
   }
-};
+
+  const { diaries, user } = store.getState();
+
+  return {
+    props: {
+      author,
+      user,
+      diaries,
+    },
+  };
+});
 
 export default UserPage;

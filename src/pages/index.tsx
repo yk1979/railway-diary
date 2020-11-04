@@ -1,13 +1,13 @@
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
 import React from "react";
 import styled from "styled-components";
 
 import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
-import { User, userSignIn } from "../redux/modules/user";
-import { initializeStore } from "../redux/store";
-import { MyNextContext } from "../types/next";
+import { wrapper } from "../store";
+import { userSignIn } from "../store/user/actions";
+import { User } from "../store/user/types";
 
 const StyledEditButton = styled(EditButton)`
   position: absolute;
@@ -28,18 +28,12 @@ const IndexPage: NextPage<IndexPageProps> = ({ user }) => {
   );
 };
 
-export const getServerSideProps = ({
-  req,
-  res,
-}: // TODO return 型再考
-MyNextContext): GetServerSidePropsResult<IndexPageProps> | undefined => {
-  const store = initializeStore();
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: IndexPageProps;
+}>(({ req, store }) => {
   const token = req?.session?.decodedToken;
 
-  if (!token) {
-    res.redirect("/login");
-    return;
-  } else {
+  if (token) {
     store.dispatch(
       userSignIn({
         uid: token.uid,
@@ -47,15 +41,14 @@ MyNextContext): GetServerSidePropsResult<IndexPageProps> | undefined => {
         picture: token.picture,
       })
     );
-    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
-    const { user } = store.getState() as { user: User };
-
-    return {
-      props: {
-        user,
-      },
-    };
   }
-};
+  const { user } = store.getState();
+
+  return {
+    props: {
+      user,
+    },
+  };
+});
 
 export default IndexPage;
