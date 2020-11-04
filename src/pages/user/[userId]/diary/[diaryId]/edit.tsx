@@ -1,18 +1,22 @@
-import { NextPage } from "next";
+import { GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch } from "react-redux";
-import { END } from "redux-saga";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../../../../../components/EditForm";
 import Heading from "../../../../../components/Heading";
 import Layout from "../../../../../components/Layout";
-import { wrapper } from "../../../../../store";
-import { createDraft, getDiary } from "../../../../../store/diaries/actions";
-import { Diary } from "../../../../../store/diaries/types";
-import { userSignIn } from "../../../../../store/user/actions";
-import { User } from "../../../../../store/user/types";
+import { specterRead } from "../../../../../lib/client";
+import { createDraft, getDiary } from "../../../../../redux/modules/diaries";
+import { User, userSignIn } from "../../../../../redux/modules/user";
+import { RootState, initializeStore } from "../../../../../redux/store";
+import {
+  ShowDiaryServiceBody,
+  ShowDiaryServiceQuery,
+} from "../../../../../server/services/diaries/ShowDiaryService";
+import { Diary } from "../../../../../server/services/diaries/types";
+import { MyNextContext } from "../../../../../types/next";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -31,6 +35,7 @@ type DiaryEditPageProps = {
   diary: Diary;
 };
 
+// TODO store と サーバから渡される値を二重で取得してるのがダサすぎるので直したい
 const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -42,21 +47,34 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
     }
   };
 
+  const _diary = useSelector((state: RootState) => state.diaries[0]) || diary;
+
   return (
     <StyledLayout userId={user ? user.uid : null}>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
-      {user && <StyledEditForm diary={diary} handleSubmit={handleSubmit} />}
+      {user && (
+        <StyledEditForm
+          diary={_diary}
+          handleSubmit={(_diary) => handleSubmit(_diary)}
+        />
+      )}
     </StyledLayout>
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps<{
-  props: DiaryEditPageProps;
-}>(async ({ req, query, store }) => {
+export const getServerSideProps = async ({
+  req,
+  res,
+  query,
+}: MyNextContext): Promise<GetServerSidePropsResult<DiaryEditPageProps>> => {
+  const store = initializeStore();
   const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;
 
-  if (token) {
+  if (!token) {
+    res.redirect("/login");
+    return Promise.reject();
+  } else {
     store.dispatch(
       userSignIn({
         uid: token.uid,
@@ -64,30 +82,35 @@ export const getServerSideProps = wrapper.getServerSideProps<{
         picture: token.picture,
       })
     );
-    try {
-      const firestore = req.firebaseServer.firestore();
-      store.dispatch(
-        getDiary({
-          firestore,
-          userId,
-          diaryId,
-        })
-      );
-      store.dispatch(END);
-      await store.sagaTask?.toPromise();
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-    }
-  }
-  const { user, diaries } = store.getState();
+    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
+    const { user } = store.getState() as {
+      user: User;
+    };
 
-  return {
-    props: {
-      user,
-      diary: diaries[0],
-    },
-  };
-});
+    const firestore = req.firebaseServer.firestore();
+    const params = {
+      firestore,
+      userId,
+      diaryId,
+    };
+    store.dispatch(getDiary.started(params));
+    const diary = await specterRead<
+      Record<string, unknown>,
+      ShowDiaryServiceQuery,
+      ShowDiaryServiceBody
+    >({
+      serviceName: "show_diary",
+      query: params,
+    });
+    store.dispatch(getDiary.done({ params, result: diary.body }));
+
+    return {
+      props: {
+        user,
+        diary: diary.body,
+      },
+    };
+  }
+};
 
 export default DiaryEditPage;

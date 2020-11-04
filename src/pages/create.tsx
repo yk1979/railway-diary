@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import { GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -7,11 +7,12 @@ import styled from "styled-components";
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { wrapper } from "../store";
-import { createDraft } from "../store/diaries/actions";
-import { Diary } from "../store/diaries/types";
-import { userSignIn } from "../store/user/actions";
-import { User } from "../store/user/types";
+import { createDraft } from "../redux/modules/diaries";
+import { userSignIn } from "../redux/modules/user";
+import { User } from "../redux/modules/user";
+import { initializeStore } from "../redux/store";
+import { Diary } from "../server/services/diaries/types";
+import { MyNextContext } from "../types/next";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -48,12 +49,17 @@ const CreatePage: NextPage<CreatePageProps> = ({ user }) => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps<{
-  props: CreatePageProps;
-}>(({ req, store }) => {
+export const getServerSideProps = ({
+  req,
+  res,
+}: MyNextContext): GetServerSidePropsResult<CreatePageProps> | undefined => {
+  const store = initializeStore();
   const token = req?.session?.decodedToken;
 
-  if (token) {
+  if (!token) {
+    res.redirect("/login");
+    return;
+  } else {
     store.dispatch(
       userSignIn({
         uid: token.uid,
@@ -61,14 +67,15 @@ export const getServerSideProps = wrapper.getServerSideProps<{
         picture: token.picture,
       })
     );
-  }
-  const { user } = store.getState();
+    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
+    const { user } = store.getState() as { user: User };
 
-  return {
-    props: {
-      user,
-    },
-  };
-});
+    return {
+      props: {
+        user,
+      },
+    };
+  }
+};
 
 export default CreatePage;

@@ -32,6 +32,7 @@ type ButtonBaseProps = {
   theme?: { [key: string]: string };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onClick?: (arg?: any) => void;
+  type?: "button" | "submit";
 };
 
 type Props = ButtonBaseProps & {
@@ -43,9 +44,10 @@ const Button: React.FC<Props> = ({
   onClick,
   theme = buttonTheme.primary,
   className,
+  type = "button",
 }) => (
   <ThemeProvider theme={theme}>
-    <Base className={className} onClick={onClick} theme={theme}>
+    <Base className={className} onClick={onClick} theme={theme} type={type}>
       {text}
     </Base>
   </ThemeProvider>
