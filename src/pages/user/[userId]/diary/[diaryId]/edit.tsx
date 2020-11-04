@@ -1,20 +1,15 @@
 import { GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import EditForm from "../../../../../components/EditForm";
 import Heading from "../../../../../components/Heading";
 import Layout from "../../../../../components/Layout";
-import { specterRead } from "../../../../../lib/client";
-import { createDraft, getDiary } from "../../../../../redux/modules/diaries";
+import { createDraft } from "../../../../../redux/modules/diaries";
 import { User, userSignIn } from "../../../../../redux/modules/user";
-import { initializeStore } from "../../../../../redux/store";
-import {
-  ShowDiaryServiceBody,
-  ShowDiaryServiceQuery,
-} from "../../../../../server/services/diaries/ShowDiaryService";
+import { RootState, initializeStore } from "../../../../../redux/store";
 import { Diary } from "../../../../../server/services/diaries/types";
 import { MyNextContext } from "../../../../../types/next";
 
@@ -32,10 +27,11 @@ const StyledEditForm = styled(EditForm)`
 
 type DiaryEditPageProps = {
   user: User;
-  diary: Diary;
+  // diary: Diary;
 };
 
-const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
+// TODO store に値があればそちらを優先的に取得できるようにしたい
+const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -45,6 +41,9 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
       router.push("/preview");
     }
   };
+
+  // TODO url 直アクセスの場合でも編集可能にしたい
+  const diary = useSelector((state: RootState) => state.diaries[0]);
 
   return (
     <StyledLayout userId={user ? user.uid : null}>
@@ -62,11 +61,8 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ user, diary }) => {
 export const getServerSideProps = async ({
   req,
   res,
-  query,
 }: MyNextContext): Promise<GetServerSidePropsResult<DiaryEditPageProps>> => {
   const store = initializeStore();
-
-  const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;
 
   if (!token) {
@@ -83,27 +79,9 @@ export const getServerSideProps = async ({
     // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
     const { user } = store.getState() as { user: User };
 
-    const firestore = req.firebaseServer.firestore();
-    const params = {
-      firestore,
-      userId,
-      diaryId,
-    };
-    store.dispatch(getDiary.started(params));
-    const diary = await specterRead<
-      Record<string, unknown>,
-      ShowDiaryServiceQuery,
-      ShowDiaryServiceBody
-    >({
-      serviceName: "show_diary",
-      query: params,
-    });
-    store.dispatch(getDiary.done({ params, result: diary.body }));
-
     return {
       props: {
         user,
-        diary: diary.body,
       },
     };
   }

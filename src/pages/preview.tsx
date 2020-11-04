@@ -48,7 +48,6 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
     const storageRef = storage.ref(`${user.uid}/${diary.id}`);
     // TODO アップロード後、画像を日記データと紐づけて管理したい
     // TODO アップロード済みの画像は再度アップロードしない
-    // TODO 型fix
     diary.imageUrls?.forEach((image) => {
       storageRef.child(uuid()).put(convertBase64ToBlob(image));
     });
@@ -59,7 +58,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
   };
 
   const handleOnBack = () => {
-    router.push("/create");
+    router.back();
   };
 
   return (
@@ -76,13 +75,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
         ) : (
           <>
             <div>編集中の日記はありません</div>
-            <BackButton
-              text="日記を書く"
-              onClick={(e: Event) => {
-                e.preventDefault();
-                window.location.href = "/create";
-              }}
-            />
+            <BackButton text="日記を書く" onClick={handleOnBack} />
           </>
         ))}
     </Layout>
