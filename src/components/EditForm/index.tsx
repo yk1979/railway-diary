@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import BreakPoint from "../../constants/BreakPoint";
 import Color from "../../constants/Color";
-import { Diary } from "../../store/diaries/types";
+import { Diary } from "../../server/services/diaries/types";
 import Button from "../Button";
 
 const StyledForm = styled.form`
@@ -162,9 +162,9 @@ const EditForm: React.FC<Props> = ({ className, diary, handleSubmit }) => {
         e.preventDefault();
         handleSubmit({
           id: diary?.id || "",
-          title: diary?.title || title,
-          body: diary?.body || body,
-          imageUrls: diary?.imageUrls || imageUrls,
+          title: title,
+          body: body,
+          imageUrls: imageUrls,
           lastEdited: diary?.lastEdited || "",
         });
       }}
@@ -199,7 +199,7 @@ const EditForm: React.FC<Props> = ({ className, diary, handleSubmit }) => {
           ))}
         </ImgContainer>
       )}
-      <ToPreviewButton text="かくにんにすすむ" />
+      <ToPreviewButton type="submit" text="かくにんにすすむ" />
     </StyledForm>
   );
 };

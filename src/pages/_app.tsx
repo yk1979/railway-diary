@@ -1,11 +1,12 @@
-import App from "next/app";
+import { AppProps } from "next/app";
 import Head from "next/head";
 import React from "react";
+import { Provider } from "react-redux";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
 import Color from "../constants/Color";
-import { wrapper } from "../store";
+import { initialState, useStore } from "../redux/store";
 
 export const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -82,19 +83,18 @@ export const GlobalStyle = createGlobalStyle`
   }
 `;
 
-class WrappedApp extends App {
-  render() {
-    const { Component, pageProps } = this.props;
-    return (
-      <>
-        <GlobalStyle />
-        <Head>
-          <title>てつどうダイアリー</title>
-        </Head>
-        <Component {...pageProps} />
-      </>
-    );
-  }
-}
+const App = ({ Component, pageProps }: AppProps): JSX.Element => {
+  // TODO 多分 initialState じゃダメだとおもうので fix
+  const store = useStore(initialState);
+  return (
+    <Provider store={store}>
+      <GlobalStyle />
+      <Head>
+        <title>てつどうダイアリー</title>
+      </Head>
+      <Component {...pageProps} />
+    </Provider>
+  );
+};
 
-export default wrapper.withRedux(WrappedApp);
+export default App;

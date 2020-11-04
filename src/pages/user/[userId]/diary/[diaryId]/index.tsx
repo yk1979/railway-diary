@@ -1,10 +1,9 @@
 import { format } from "date-fns-tz";
 import parseISO from "date-fns/parseISO";
-import { NextPage } from "next";
+import { GetServerSidePropsResult, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { END } from "redux-saga";
 import styled from "styled-components";
 
 import { firestore } from "../../../../../../firebase";
@@ -15,12 +14,21 @@ import PageBottomNotifier, {
   NotifierStatus,
 } from "../../../../../components/PageBottomNotifier/PageBottomNotifier";
 import UserProfile from "../../../../../components/UserProfile";
+import { specterRead } from "../../../../../lib/client";
 import { getUserFromFirestore } from "../../../../../lib/firestore";
-import { wrapper } from "../../../../../store";
-import { deleteDiary, getDiary } from "../../../../../store/diaries/actions";
-import { Diary } from "../../../../../store/diaries/types";
-import { userSignIn } from "../../../../../store/user/actions";
-import { User } from "../../../../../store/user/types";
+import {
+  deleteDiary,
+  getDiary,
+  setDiary,
+} from "../../../../../redux/modules/diaries";
+import { User, userSignIn } from "../../../../../redux/modules/user";
+import { initializeStore } from "../../../../../redux/store";
+import {
+  ShowDiaryServiceBody,
+  ShowDiaryServiceQuery,
+} from "../../../../../server/services/diaries/ShowDiaryService";
+import { Diary } from "../../../../../server/services/diaries/types";
+import { MyNextContext } from "../../../../../types/next";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
   margin-top: 24px;
@@ -40,6 +48,11 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  // クライアント側で store に値が入ってないと edit ページに遷移した時にうまくいかないので苦肉の策でこうした
+  // しかしここでわざわざこんなアクションを dispatch するの微妙すぎるのでどうにかしたい
+  // サーバの store をマージしようとした時に初期値で上書きしようとしてるのが敗因
+  dispatch(setDiary(diary));
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
@@ -104,14 +117,21 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps<{
-  props: UserDiaryPageProps;
-}>(async ({ req, query, store }) => {
+export const getServerSideProps = async ({
+  req,
+  res,
+  query,
+}: MyNextContext): Promise<GetServerSidePropsResult<UserDiaryPageProps>> => {
+  const store = initializeStore();
+
   const { userId, diaryId } = query as { userId: string; diaryId: string };
   const token = req?.session?.decodedToken;
-  let author!: User;
 
-  if (token) {
+  if (!token) {
+    res.redirect("/login");
+    // TODO return 型再考
+    return Promise.reject();
+  } else {
     store.dispatch(
       userSignIn({
         uid: token.uid,
@@ -119,33 +139,41 @@ export const getServerSideProps = wrapper.getServerSideProps<{
         picture: token.picture,
       })
     );
-    try {
-      const firestore = req.firebaseServer.firestore();
-      author = await getUserFromFirestore({ firestore, userId });
-      store.dispatch(
-        getDiary({
-          firestore,
-          userId,
-          diaryId,
-        })
-      );
-      store.dispatch(END);
-      await store.sagaTask?.toPromise();
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-    }
+    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
+    const { user } = store.getState() as { user: User };
+
+    const firestore = req.firebaseServer.firestore();
+    // TODO author が null だった場合の処理はサービスで吸収する
+    const author = (await getUserFromFirestore({ firestore, userId })) as User;
+
+    const params = {
+      firestore,
+      userId,
+      diaryId,
+    };
+    store.dispatch(getDiary.started(params));
+    const diary = await specterRead<
+      Record<string, unknown>,
+      ShowDiaryServiceQuery,
+      ShowDiaryServiceBody
+    >({
+      serviceName: "show_diary",
+      query: {
+        firestore,
+        userId,
+        diaryId,
+      },
+    });
+    store.dispatch(getDiary.done({ params, result: diary.body }));
+
+    return {
+      props: {
+        author,
+        diary: diary.body,
+        user,
+      },
+    };
   }
-
-  const { diaries, user } = store.getState();
-
-  return {
-    props: {
-      author,
-      diary: diaries[0],
-      user,
-    },
-  };
-});
+};
 
 export default UserDiaryPage;
