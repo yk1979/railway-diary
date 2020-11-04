@@ -1,4 +1,5 @@
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
+import { MyNextContext } from "next-redux-wrapper";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,11 +11,10 @@ import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
 import { createDiaryToFirestore } from "../lib/firestore";
-import { deleteDraft } from "../redux/modules/diaries";
-import { userSignIn } from "../redux/modules/user";
-import { User } from "../redux/modules/user";
-import { RootState, initializeStore } from "../redux/store";
-import { MyNextContext } from "../types/next";
+import { RootState, wrapper } from "../store";
+import { deleteDraft } from "../store/diaries/actions";
+import { userSignIn } from "../store/user/actions";
+import { User } from "../store/user/types";
 
 const BackButton = styled(Button)`
   margin-top: 16px;
@@ -58,7 +58,7 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
   };
 
   const handleOnBack = () => {
-    router.back();
+    router.push("/create");
   };
 
   return (
@@ -75,7 +75,13 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
         ) : (
           <>
             <div>編集中の日記はありません</div>
-            <BackButton text="日記を書く" onClick={handleOnBack} />
+            <BackButton
+              text="日記を書く"
+              onClick={(e: Event) => {
+                e.preventDefault();
+                window.location.href = "/create";
+              }}
+            />
           </>
         ))}
     </Layout>
@@ -84,16 +90,12 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
 
 export default PreviewPage;
 
-export const getServerSideProps = ({
-  req,
-  res,
-}: MyNextContext): GetServerSidePropsResult<PreviewPageProps> | undefined => {
-  const store = initializeStore();
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: PreviewPageProps;
+}>(({ req, store }) => {
   const token = req?.session?.decodedToken;
 
-  if (!token) {
-    res.redirect("/login");
-  } else {
+  if (token) {
     store.dispatch(
       userSignIn({
         uid: token.uid,
@@ -101,14 +103,13 @@ export const getServerSideProps = ({
         picture: token.picture,
       })
     );
-
-    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
-    const { user } = store.getState() as { user: User };
-
-    return {
-      props: {
-        user,
-      },
-    };
   }
-};
+
+  const { user } = store.getState();
+
+  return {
+    props: {
+      user,
+    },
+  };
+});

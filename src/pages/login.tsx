@@ -1,4 +1,4 @@
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -7,14 +7,9 @@ import firebase from "../../firebase";
 import { handleSignIn, handleSignOut } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
-import {
-  User,
-  UserState,
-  userSignIn,
-  userSignOut,
-} from "../redux/modules/user";
-import { RootState, initializeStore } from "../redux/store";
-import { MyNextContext } from "../types/next";
+import { RootState, wrapper } from "../store";
+import { userSignIn, userSignOut } from "../store/user/actions";
+import { User, UserState } from "../store/user/types";
 
 const ButtonWrapper = styled.div`
   margin-top: 36px;
@@ -27,7 +22,7 @@ const StyledButton = styled(Button)`
 `;
 
 type LoginPageProps = {
-  user?: User;
+  user: User;
 };
 
 const LoginPage: NextPage<LoginPageProps> = () => {
@@ -96,11 +91,9 @@ const LoginPage: NextPage<LoginPageProps> = () => {
   );
 };
 
-export const getServerSideProps = ({
-  req,
-}: // TODO return 型再考
-MyNextContext): GetServerSidePropsResult<LoginPageProps> | void => {
-  const store = initializeStore();
+export const getServerSideProps = wrapper.getServerSideProps<{
+  props: LoginPageProps;
+}>(({ req, store }) => {
   const token = req?.session?.decodedToken;
 
   if (token) {
@@ -112,6 +105,6 @@ MyNextContext): GetServerSidePropsResult<LoginPageProps> | void => {
       })
     );
   }
-};
+});
 
 export default LoginPage;

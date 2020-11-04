@@ -1,12 +1,9 @@
-import Specter from "@specter/specter";
 import express from "express";
 import session from "express-session";
 import * as admin from "firebase-admin";
 import next from "next";
-import getConfig from "next/config";
 
 import firebaseServer from "./middlewares/firebaseServer";
-import * as Services from "./services/";
 
 const port = parseInt(process.env.PORT || "4000", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -28,13 +25,8 @@ const dev = process.env.NODE_ENV !== "production";
   );
 
   await app.prepare();
-  const config = getConfig();
-  Object.values(Services).forEach((Service) => {
-    Specter.registerService(new Service(config));
-  });
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
-  server.use("/xhr", Specter.createMiddleware({}));
 
   // next.jsのヘルスチェック
   server.get("/healthz", (_, res) => {
@@ -91,7 +83,8 @@ const dev = process.env.NODE_ENV !== "production";
     handle(req, res);
   });
 
-  server.listen(port, () => {
+  server.listen(port, (err: Error) => {
+    if (err) throw err;
     console.log(`> Ready on http://localhost:${port}`);
   });
 })();
