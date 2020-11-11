@@ -1,13 +1,12 @@
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
+import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
 import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
-import { User, userSignIn } from "../redux/modules/user";
-import { initializeStore } from "../redux/store";
-import { MyNextContext } from "../types/next";
+import { useUser } from "../context/userContext";
 
 const StyledEditButton = styled(EditButton)`
   position: absolute;
@@ -15,47 +14,24 @@ const StyledEditButton = styled(EditButton)`
   bottom: 20px;
 `;
 
-type IndexPageProps = {
-  user: User;
-};
+const IndexPage: NextPage = () => {
+  const { user } = useUser();
+  if (!user) {
+    return (
+      <Layout userId={null}>
+        <Link href="/login">
+          <a>ログインしてね</a>
+        </Link>
+      </Layout>
+    );
+  }
 
-const IndexPage: NextPage<IndexPageProps> = ({ user }) => {
   return (
     <Layout userId={user ? user.uid : null}>
       <SearchBox />
       <StyledEditButton />
     </Layout>
   );
-};
-
-export const getServerSideProps = ({
-  req,
-  res,
-}: // TODO return 型再考
-MyNextContext): GetServerSidePropsResult<IndexPageProps> | undefined => {
-  const store = initializeStore();
-  const token = req?.session?.decodedToken;
-
-  if (!token) {
-    res.redirect("/login");
-    return;
-  } else {
-    store.dispatch(
-      userSignIn({
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture,
-      })
-    );
-    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
-    const { user } = store.getState() as { user: User };
-
-    return {
-      props: {
-        user,
-      },
-    };
-  }
 };
 
 export default IndexPage;

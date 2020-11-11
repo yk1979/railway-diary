@@ -1,4 +1,5 @@
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,12 +10,10 @@ import { storage } from "../../firebase";
 import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
+import { useUser } from "../context/userContext";
 import { createDiaryToFirestore } from "../lib/firestore";
 import { deleteDraft } from "../redux/modules/diaries";
-import { userSignIn } from "../redux/modules/user";
-import { User } from "../redux/modules/user";
-import { RootState, initializeStore } from "../redux/store";
-import { MyNextContext } from "../types/next";
+import { RootState } from "../redux/store";
 
 const BackButton = styled(Button)`
   margin-top: 16px;
@@ -33,11 +32,18 @@ const convertBase64ToBlob = (base64Text: string): Blob => {
   });
 };
 
-type PreviewPageProps = {
-  user: User;
-};
+const PreviewPage: NextPage = () => {
+  const { user } = useUser();
+  if (!user) {
+    return (
+      <Layout userId={null}>
+        <Link href="/login">
+          <a>ログインしてね</a>
+        </Link>
+      </Layout>
+    );
+  }
 
-const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -83,32 +89,3 @@ const PreviewPage: NextPage<PreviewPageProps> = ({ user }) => {
 };
 
 export default PreviewPage;
-
-export const getServerSideProps = ({
-  req,
-  res,
-}: MyNextContext): GetServerSidePropsResult<PreviewPageProps> | undefined => {
-  const store = initializeStore();
-  const token = req?.session?.decodedToken;
-
-  if (!token) {
-    res.redirect("/login");
-  } else {
-    store.dispatch(
-      userSignIn({
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture,
-      })
-    );
-
-    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
-    const { user } = store.getState() as { user: User };
-
-    return {
-      props: {
-        user,
-      },
-    };
-  }
-};

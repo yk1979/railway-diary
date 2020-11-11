@@ -54,39 +54,6 @@ const dev = process.env.NODE_ENV !== "production";
 
   server.use(firebaseServer(firebase));
 
-  // TODO すべてのページで未ログイン状態ならloginページにリダイレクトさせて、ログイン後は元のリクエストページに戻したい
-  // /\/(?!login)/ でログインページ以外のパスに引っ掛けようとしたけど、パスが"/login"の時も引っかかっちゃってうまくいかず
-  server.get(
-    ["/", "/create", "/preview", "/user/:userId"],
-    (req, res, next) => {
-      if (req?.session?.decodedToken) {
-        next();
-      } else {
-        res.redirect("/login");
-      }
-    }
-  );
-
-  server.post("/api/login", async (req, res) => {
-    if (!req.body) res.sendStatus(400);
-
-    const { token } = req.body;
-    try {
-      const decodedToken = await firebase.auth().verifyIdToken(token);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      req.session!.decodedToken = decodedToken;
-      res.json({ status: true, decodedToken });
-    } catch (error) {
-      res.json({ error });
-    }
-  });
-
-  server.post("/api/logout", (req, res) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    req.session!.decodedToken = null;
-    res.json({ status: true });
-  });
-
   server.all("*", (req, res) => {
     handle(req, res);
   });

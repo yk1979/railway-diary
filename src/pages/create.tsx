@@ -1,4 +1,5 @@
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -7,12 +8,9 @@ import styled from "styled-components";
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
+import { useUser } from "../context/userContext";
 import { createDraft } from "../redux/modules/diaries";
-import { userSignIn } from "../redux/modules/user";
-import { User } from "../redux/modules/user";
-import { initializeStore } from "../redux/store";
 import { Diary } from "../server/services/diaries/types";
-import { MyNextContext } from "../types/next";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -26,11 +24,18 @@ const StyledEditForm = styled(EditForm)`
   margin-top: 24px;
 `;
 
-type CreatePageProps = {
-  user: User;
-};
+const CreatePage: NextPage = () => {
+  const { user } = useUser();
+  if (!user) {
+    return (
+      <Layout userId={null}>
+        <Link href="/login">
+          <a>ログインしてね</a>
+        </Link>
+      </Layout>
+    );
+  }
 
-const CreatePage: NextPage<CreatePageProps> = ({ user }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -47,35 +52,6 @@ const CreatePage: NextPage<CreatePageProps> = ({ user }) => {
       {user && <StyledEditForm handleSubmit={handleSubmit} />}
     </StyledLayout>
   );
-};
-
-export const getServerSideProps = ({
-  req,
-  res,
-}: MyNextContext): GetServerSidePropsResult<CreatePageProps> | undefined => {
-  const store = initializeStore();
-  const token = req?.session?.decodedToken;
-
-  if (!token) {
-    res.redirect("/login");
-    return;
-  } else {
-    store.dispatch(
-      userSignIn({
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture,
-      })
-    );
-    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
-    const { user } = store.getState() as { user: User };
-
-    return {
-      props: {
-        user,
-      },
-    };
-  }
 };
 
 export default CreatePage;

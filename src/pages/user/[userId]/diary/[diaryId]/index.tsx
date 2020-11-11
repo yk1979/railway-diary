@@ -1,6 +1,7 @@
 import { format } from "date-fns-tz";
 import parseISO from "date-fns/parseISO";
 import { GetServerSidePropsResult, NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -14,6 +15,7 @@ import PageBottomNotifier, {
   NotifierStatus,
 } from "../../../../../components/PageBottomNotifier/PageBottomNotifier";
 import UserProfile from "../../../../../components/UserProfile";
+import { useUser } from "../../../../../context/userContext";
 import { specterRead } from "../../../../../lib/client";
 import { getUserFromFirestore } from "../../../../../lib/firestore";
 import {
@@ -21,7 +23,7 @@ import {
   getDiary,
   setDiary,
 } from "../../../../../redux/modules/diaries";
-import { User, userSignIn } from "../../../../../redux/modules/user";
+import { User } from "../../../../../redux/modules/user";
 import { initializeStore } from "../../../../../redux/store";
 import {
   ShowDiaryServiceBody,
@@ -37,15 +39,21 @@ const StyledDiaryViewer = styled(DiaryViewer)`
 type UserDiaryPageProps = {
   author: User;
   diary: Diary;
-  user: User;
 };
 
 // TODO ブラウザバックでauthorのデータがうまく取れない問題を修正
-const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
-  author,
-  diary,
-  user,
-}) => {
+const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ author, diary }) => {
+  const { user } = useUser();
+  if (!user) {
+    return (
+      <Layout userId={null}>
+        <Link href="/login">
+          <a>ログインしてね</a>
+        </Link>
+      </Layout>
+    );
+  }
+
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -119,61 +127,42 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({
 
 export const getServerSideProps = async ({
   req,
-  res,
   query,
 }: MyNextContext): Promise<GetServerSidePropsResult<UserDiaryPageProps>> => {
   const store = initializeStore();
 
   const { userId, diaryId } = query as { userId: string; diaryId: string };
-  const token = req?.session?.decodedToken;
 
-  if (!token) {
-    res.redirect("/login");
-    // TODO return 型再考
-    return Promise.reject();
-  } else {
-    store.dispatch(
-      userSignIn({
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture,
-      })
-    );
-    // TODO 色々微妙だけど応急処置 ログイン処理をappに寄せたい
-    const { user } = store.getState() as { user: User };
+  const firestore = req.firebaseServer.firestore();
+  // TODO author が null だった場合の処理はサービスで吸収する
+  const author = (await getUserFromFirestore({ firestore, userId })) as User;
 
-    const firestore = req.firebaseServer.firestore();
-    // TODO author が null だった場合の処理はサービスで吸収する
-    const author = (await getUserFromFirestore({ firestore, userId })) as User;
-
-    const params = {
+  const params = {
+    firestore,
+    userId,
+    diaryId,
+  };
+  store.dispatch(getDiary.started(params));
+  const diary = await specterRead<
+    Record<string, unknown>,
+    ShowDiaryServiceQuery,
+    ShowDiaryServiceBody
+  >({
+    serviceName: "show_diary",
+    query: {
       firestore,
       userId,
       diaryId,
-    };
-    store.dispatch(getDiary.started(params));
-    const diary = await specterRead<
-      Record<string, unknown>,
-      ShowDiaryServiceQuery,
-      ShowDiaryServiceBody
-    >({
-      serviceName: "show_diary",
-      query: {
-        firestore,
-        userId,
-        diaryId,
-      },
-    });
-    store.dispatch(getDiary.done({ params, result: diary.body }));
+    },
+  });
+  store.dispatch(getDiary.done({ params, result: diary.body }));
 
-    return {
-      props: {
-        author,
-        diary: diary.body,
-        user,
-      },
-    };
-  }
+  return {
+    props: {
+      author,
+      diary: diary.body,
+    },
+  };
 };
 
 export default UserDiaryPage;
