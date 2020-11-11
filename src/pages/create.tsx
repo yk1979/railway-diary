@@ -8,7 +8,7 @@ import styled from "styled-components";
 import EditForm from "../components/EditForm";
 import Heading from "../components/Heading";
 import Layout from "../components/Layout";
-import { useUser } from "../context/userContext";
+import { useAuthUser } from "../context/userContext";
 import { createDraft } from "../redux/modules/diaries";
 import { Diary } from "../server/services/diaries/types";
 
@@ -25,10 +25,10 @@ const StyledEditForm = styled(EditForm)`
 `;
 
 const CreatePage: NextPage = () => {
-  const { user } = useUser();
+  const { authUser: user } = useAuthUser();
   if (!user) {
     return (
-      <Layout userId={null}>
+      <Layout>
         <Link href="/login">
           <a>ログインしてね</a>
         </Link>
@@ -47,7 +47,7 @@ const CreatePage: NextPage = () => {
   };
 
   return (
-    <StyledLayout userId={user ? user.uid : null}>
+    <StyledLayout>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
       {user && <StyledEditForm handleSubmit={handleSubmit} />}
     </StyledLayout>

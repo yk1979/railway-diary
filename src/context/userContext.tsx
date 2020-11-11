@@ -3,8 +3,8 @@ import { createContext, useState } from "react";
 
 import firebase from "../../firebase";
 
-type UserContextType = {
-  user: {
+type AuthUserContextType = {
+  authUser: {
     uid: string;
     name: string | null;
     picture?: string;
@@ -12,8 +12,8 @@ type UserContextType = {
   loadingUser: boolean;
 };
 
-const UserContext = createContext<UserContextType>({
-  user: null,
+const AuthUserContext = createContext<AuthUserContextType>({
+  authUser: null,
   loadingUser: false,
 });
 
@@ -21,41 +21,42 @@ type Props = {
   children: React.ReactNode;
 };
 
-const UserContextComponent: React.FC<Props> = ({ children }) => {
-  const [user, setUser] = useState<UserContextType["user"]>(null);
+const AuthUserContextComponent: React.FC<Props> = ({ children }) => {
+  const [authUser, setAuthUser] = useState<AuthUserContextType["authUser"]>(
+    null
+  );
   const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
-    const unsubscriber = firebase
-      .auth()
-      .onAuthStateChanged(async (currentUser) => {
-        try {
-          if (currentUser) {
-            setUser({
-              uid: currentUser.uid,
-              name: currentUser.displayName,
-              picture: currentUser.photoURL || "",
-            });
-          } else {
-            setUser(null);
-          }
-        } catch (err) {
-          throw new Error(err);
-        } finally {
-          setLoadingUser(false);
+    const unsubscriber = firebase.auth().onAuthStateChanged(async (user) => {
+      try {
+        if (user) {
+          setAuthUser({
+            uid: user.uid,
+            name: user.displayName,
+            picture: user.photoURL || "",
+          });
+        } else {
+          setAuthUser(null);
         }
-      });
+      } catch (err) {
+        throw new Error(err);
+      } finally {
+        setLoadingUser(false);
+      }
+    });
 
     return () => unsubscriber();
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, loadingUser }}>
+    <AuthUserContext.Provider value={{ authUser, loadingUser }}>
       {children}
-    </UserContext.Provider>
+    </AuthUserContext.Provider>
   );
 };
 
-export default UserContextComponent;
+export default AuthUserContextComponent;
 
-export const useUser = (): UserContextType => useContext(UserContext);
+export const useAuthUser = (): AuthUserContextType =>
+  useContext(AuthUserContext);

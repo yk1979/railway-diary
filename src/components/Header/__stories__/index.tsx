@@ -6,8 +6,6 @@ export default {
   title: "Header",
 };
 
-// TODO パターン追加
-export const Default: React.FC = () => <Header userId={null} />;
-export const UserIsSingedIn: React.FC = () => (
-  <Header userId="dr2gvaMnQnXDpOd0m2VqmmxlVrC3" />
-);
+// TODO context によって見た目が変わる場合は storybook どうするんだろう？
+export const Default: React.FC = () => <Header />;
+export const UserIsSingedIn: React.FC = () => <Header />;

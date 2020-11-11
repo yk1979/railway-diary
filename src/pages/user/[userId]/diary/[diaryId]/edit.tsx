@@ -8,7 +8,7 @@ import styled from "styled-components";
 import EditForm from "../../../../../components/EditForm";
 import Heading from "../../../../../components/Heading";
 import Layout from "../../../../../components/Layout";
-import { useUser } from "../../../../../context/userContext";
+import { useAuthUser } from "../../../../../context/userContext";
 import { specterRead } from "../../../../../lib/client";
 import { createDraft, getDiary } from "../../../../../redux/modules/diaries";
 import { RootState, initializeStore } from "../../../../../redux/store";
@@ -37,10 +37,10 @@ type DiaryEditPageProps = {
 
 // TODO store と サーバから渡される値を二重で取得してるのがダサすぎるので直したい
 const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ diary }) => {
-  const { user } = useUser();
+  const { authUser: user } = useAuthUser();
   if (!user) {
     return (
-      <Layout userId={null}>
+      <Layout>
         <Link href="/login">
           <a>ログインしてね</a>
         </Link>
@@ -61,7 +61,7 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ diary }) => {
   const _diary = useSelector((state: RootState) => state.diaries[0]) || diary;
 
   return (
-    <StyledLayout userId={user ? user.uid : null}>
+    <StyledLayout>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
       {user && (
         <StyledEditForm

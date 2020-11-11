@@ -10,7 +10,7 @@ import Heading from "../../../components/Heading";
 import Layout from "../../../components/Layout";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
-import { useUser } from "../../../context/userContext";
+import { useAuthUser } from "../../../context/userContext";
 import { specterRead } from "../../../lib/client";
 import { getUserFromFirestore } from "../../../lib/firestore";
 import { getDiaries } from "../../../redux/modules/diaries";
@@ -67,10 +67,10 @@ type UserPageProps = {
 };
 
 const UserPage: NextPage<UserPageProps> = ({ author, diaries }) => {
-  const { user } = useUser();
+  const { authUser: user } = useAuthUser();
   if (!user) {
     return (
-      <Layout userId={null}>
+      <Layout>
         <Link href="/login">
           <a>ログインしてね</a>
         </Link>
@@ -79,7 +79,7 @@ const UserPage: NextPage<UserPageProps> = ({ author, diaries }) => {
   }
 
   return (
-    <StyledLayout userId={user ? user.uid : null}>
+    <StyledLayout>
       {user && (
         <>
           <Heading.Text1 text="てつどうの記録" />

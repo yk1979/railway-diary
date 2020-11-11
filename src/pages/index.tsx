@@ -6,7 +6,7 @@ import styled from "styled-components";
 import EditButton from "../components/EditButton";
 import Layout from "../components/Layout";
 import SearchBox from "../components/SearchBox";
-import { useUser } from "../context/userContext";
+import { useAuthUser } from "../context/userContext";
 
 const StyledEditButton = styled(EditButton)`
   position: absolute;
@@ -15,10 +15,10 @@ const StyledEditButton = styled(EditButton)`
 `;
 
 const IndexPage: NextPage = () => {
-  const { user } = useUser();
+  const { authUser: user } = useAuthUser();
   if (!user) {
     return (
-      <Layout userId={null}>
+      <Layout>
         <Link href="/login">
           <a>ログインしてね</a>
         </Link>
@@ -27,7 +27,7 @@ const IndexPage: NextPage = () => {
   }
 
   return (
-    <Layout userId={user ? user.uid : null}>
+    <Layout>
       <SearchBox />
       <StyledEditButton />
     </Layout>

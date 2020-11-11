@@ -10,7 +10,7 @@ import { storage } from "../../firebase";
 import Button from "../components/Button";
 import DiaryViewer from "../components/DiaryViewer";
 import Layout from "../components/Layout";
-import { useUser } from "../context/userContext";
+import { useAuthUser } from "../context/userContext";
 import { createDiaryToFirestore } from "../lib/firestore";
 import { deleteDraft } from "../redux/modules/diaries";
 import { RootState } from "../redux/store";
@@ -33,10 +33,10 @@ const convertBase64ToBlob = (base64Text: string): Blob => {
 };
 
 const PreviewPage: NextPage = () => {
-  const { user } = useUser();
+  const { authUser: user } = useAuthUser();
   if (!user) {
     return (
-      <Layout userId={null}>
+      <Layout>
         <Link href="/login">
           <a>ログインしてね</a>
         </Link>
@@ -68,7 +68,7 @@ const PreviewPage: NextPage = () => {
   };
 
   return (
-    <Layout userId={user ? user.uid : null}>
+    <Layout>
       {user &&
         (diary ? (
           <DiaryViewer

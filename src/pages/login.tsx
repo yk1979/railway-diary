@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { handleSignIn, handleSignOut } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
-import { useUser } from "../context/userContext";
+import { useAuthUser } from "../context/userContext";
 
 const ButtonWrapper = styled.div`
   margin-top: 36px;
@@ -18,14 +18,14 @@ const StyledButton = styled(Button)`
 `;
 
 const LoginPage: NextPage = () => {
-  const { user } = useUser();
+  const { authUser: user } = useAuthUser();
 
   const handleAuthStatusChange = () =>
     user ? handleSignOut() : handleSignIn();
 
   return (
     <>
-      <Layout userId={null}>
+      <Layout>
         {user && <p>{`${user.name} さん としてログインしています`}</p>}
         <ButtonWrapper>
           <StyledButton

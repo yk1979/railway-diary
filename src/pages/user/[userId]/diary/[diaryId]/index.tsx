@@ -15,7 +15,7 @@ import PageBottomNotifier, {
   NotifierStatus,
 } from "../../../../../components/PageBottomNotifier/PageBottomNotifier";
 import UserProfile from "../../../../../components/UserProfile";
-import { useUser } from "../../../../../context/userContext";
+import { useAuthUser } from "../../../../../context/userContext";
 import { specterRead } from "../../../../../lib/client";
 import { getUserFromFirestore } from "../../../../../lib/firestore";
 import {
@@ -46,10 +46,10 @@ type UserDiaryPageProps = {
 
 // TODO ブラウザバックでauthorのデータがうまく取れない問題を修正
 const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ author, diary }) => {
-  const { user } = useUser();
+  const { authUser: user } = useAuthUser();
   if (!user) {
     return (
-      <Layout userId={null}>
+      <Layout>
         <Link href="/login">
           <a>ログインしてね</a>
         </Link>
@@ -84,7 +84,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ author, diary }) => {
   };
 
   return (
-    <Layout userId={user ? user.uid : null}>
+    <Layout>
       <UserProfile
         user={{
           uid: author.uid,
