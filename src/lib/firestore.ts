@@ -4,7 +4,6 @@ import {
   GetDiaryPayload,
   deleteDiaryPayload,
 } from "../redux/modules/diaries";
-import { User } from "../redux/modules/user";
 import { Diary } from "../server/services/diaries/types";
 
 // TODO DataConverter使えるか検討
@@ -17,6 +16,13 @@ type FSDiary = {
   body: string;
   imageUrls: string[];
   lastEdited: firebase.default.firestore.Timestamp;
+};
+
+// TODO ここじゃない
+type User = {
+  uid: string;
+  name: string | null;
+  picture?: string;
 };
 
 export async function getUserFromFirestore({

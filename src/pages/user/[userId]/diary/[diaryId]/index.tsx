@@ -23,7 +23,6 @@ import {
   getDiary,
   setDiary,
 } from "../../../../../redux/modules/diaries";
-import { User } from "../../../../../redux/modules/user";
 import { initializeStore } from "../../../../../redux/store";
 import {
   ShowDiaryServiceBody,
@@ -37,7 +36,11 @@ const StyledDiaryViewer = styled(DiaryViewer)`
 `;
 
 type UserDiaryPageProps = {
-  author: User;
+  author: {
+    uid: string;
+    name: string | null;
+    picture?: string;
+  };
   diary: Diary;
 };
 
@@ -135,7 +138,7 @@ export const getServerSideProps = async ({
 
   const firestore = req.firebaseServer.firestore();
   // TODO author が null だった場合の処理はサービスで吸収する
-  const author = (await getUserFromFirestore({ firestore, userId })) as User;
+  const author = await getUserFromFirestore({ firestore, userId });
 
   const params = {
     firestore,

@@ -1,6 +1,5 @@
 import Specter from "@specter/specter";
 import express from "express";
-import session from "express-session";
 import * as admin from "firebase-admin";
 import next from "next";
 import getConfig from "next/config";
@@ -15,9 +14,6 @@ const dev = process.env.NODE_ENV !== "production";
   const server = express();
   const app = next({ dev });
   const handle = app.getRequestHandler();
-
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const FileStore = require("session-file-store")(session);
 
   const firebase = admin.initializeApp(
     {
@@ -40,17 +36,6 @@ const dev = process.env.NODE_ENV !== "production";
   server.get("/healthz", (_, res) => {
     res.send("OK");
   });
-
-  server.use(
-    session({
-      secret: "keyboard cat",
-      resave: false,
-      saveUninitialized: false,
-      rolling: true,
-      store: new FileStore({ secret: "keyboard cat" }),
-      cookie: { maxAge: 604800000, httpOnly: true },
-    })
-  );
 
   server.use(firebaseServer(firebase));
 

@@ -2,9 +2,15 @@ import React, { useContext, useEffect } from "react";
 import { createContext, useState } from "react";
 
 import firebase from "../../firebase";
-import { UserState } from "../redux/modules/user";
 
-type UserContextType = { user: UserState; loadingUser: boolean };
+type UserContextType = {
+  user: {
+    uid: string;
+    name: string | null;
+    picture?: string;
+  } | null;
+  loadingUser: boolean;
+};
 
 const UserContext = createContext<UserContextType>({
   user: null,
@@ -16,7 +22,7 @@ type Props = {
 };
 
 const UserContextComponent: React.FC<Props> = ({ children }) => {
-  const [user, setUser] = useState<UserState>(null);
+  const [user, setUser] = useState<UserContextType["user"]>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {

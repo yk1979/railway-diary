@@ -14,7 +14,6 @@ import { useUser } from "../../../context/userContext";
 import { specterRead } from "../../../lib/client";
 import { getUserFromFirestore } from "../../../lib/firestore";
 import { getDiaries } from "../../../redux/modules/diaries";
-import { User } from "../../../redux/modules/user";
 import { initializeStore } from "../../../redux/store";
 import {
   IndexDiariesServiceBody,
@@ -59,8 +58,11 @@ const StyledLoginButton = styled(Button)`
 `;
 
 type UserPageProps = {
-  author: User;
-  // user: User;
+  author: {
+    uid: string;
+    name: string | null;
+    picture?: string;
+  };
   diaries: Diary[];
 };
 
@@ -127,7 +129,7 @@ export const getServerSideProps = async ({
 
   const firestore = req?.firebaseServer.firestore();
   // TODO author が null だった場合の処理はサービスで吸収する
-  const author = (await getUserFromFirestore({ firestore, userId })) as User;
+  const author = await getUserFromFirestore({ firestore, userId });
 
   const params = {
     firestore,
