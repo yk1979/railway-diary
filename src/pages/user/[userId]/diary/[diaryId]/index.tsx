@@ -36,7 +36,7 @@ const StyledDiaryViewer = styled(DiaryViewer)`
 `;
 
 type UserDiaryPageProps = {
-  author: {
+  user: {
     uid: string;
     name: string | null;
     picture?: string;
@@ -45,9 +45,9 @@ type UserDiaryPageProps = {
 };
 
 // TODO ブラウザバックでauthorのデータがうまく取れない問題を修正
-const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ author, diary }) => {
-  const { authUser: user } = useAuthUser();
-  if (!user) {
+const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
+  const { authUser } = useAuthUser();
+  if (!authUser) {
     return (
       <Layout>
         <Link href="/login">
@@ -80,17 +80,17 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ author, diary }) => {
         resolve();
       }, 1000);
     });
-    router.push(`/user/${user.uid}`);
+    router.push(`/user/${user.uid}/`);
   };
 
   return (
     <Layout>
       <UserProfile
         user={{
-          uid: author.uid,
-          name: author.name || "unknown",
+          uid: user.uid,
+          name: user.name || "unknown",
         }}
-        thumbnail={author.picture}
+        thumbnail={user.picture}
         info={{
           text: format(parseISO(diary.lastEdited), "yyyy-MM-dd HH:mm", {
             timeZone: "Asia/Tokyo",
@@ -101,7 +101,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ author, diary }) => {
       <StyledDiaryViewer
         diary={diary}
         controller={
-          user?.uid === author.uid
+          authUser?.uid === user.uid
             ? {
                 onEdit: handleEditDiary,
                 onDelete: () => setIsModalOpen(true),
@@ -116,7 +116,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ author, diary }) => {
         onAfterClose={handleAfterModalClose}
         onDelete={() => {
           dispatch(
-            deleteDiary({ firestore, userId: author.uid, diaryId: diary.id })
+            deleteDiary({ firestore, userId: user.uid, diaryId: diary.id })
           );
         }}
       />
@@ -132,20 +132,20 @@ export const getServerSideProps = async ({
   req,
   query,
 }: MyNextContext): Promise<GetServerSidePropsResult<UserDiaryPageProps>> => {
-  const store = initializeStore();
-
   const { userId, diaryId } = query as { userId: string; diaryId: string };
 
   const firestore = req.firebaseServer.firestore();
-  // TODO author が null だった場合の処理はサービスで吸収する
-  const author = await getUserFromFirestore({ firestore, userId });
+  // TODO user が null だった場合の処理はサービスで吸収する
+  const user = await getUserFromFirestore({ firestore, userId });
 
+  const store = initializeStore();
   const params = {
     firestore,
     userId,
     diaryId,
   };
   store.dispatch(getDiary.started(params));
+
   const diary = await specterRead<
     Record<string, unknown>,
     ShowDiaryServiceQuery,
@@ -162,7 +162,7 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      author,
+      user,
       diary: diary.body,
     },
   };

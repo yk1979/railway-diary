@@ -18,22 +18,22 @@ const StyledButton = styled(Button)`
 `;
 
 const LoginPage: NextPage = () => {
-  const { authUser: user } = useAuthUser();
+  const { authUser } = useAuthUser();
 
   const handleAuthStatusChange = () =>
-    user ? handleSignOut() : handleSignIn();
+    authUser ? handleSignOut() : handleSignIn();
 
   return (
     <>
       <Layout>
-        {user && <p>{`${user.name} さん としてログインしています`}</p>}
+        {authUser && <p>{`${authUser.name} さん としてログインしています`}</p>}
         <ButtonWrapper>
           <StyledButton
-            text={user ? "ログアウトする" : "ログインする"}
+            text={authUser ? "ログアウトする" : "ログインする"}
             onClick={handleAuthStatusChange}
-            theme={user ? buttonTheme.back : buttonTheme.primary}
+            theme={authUser ? buttonTheme.back : buttonTheme.primary}
           />
-          {user && (
+          {authUser && (
             <>
               <StyledButton
                 text="トップへ"
@@ -44,7 +44,7 @@ const LoginPage: NextPage = () => {
               <StyledButton
                 text="あなたの てつどうのきろく をみる"
                 onClick={() => {
-                  window.location.href = `/user/${user.uid}`;
+                  window.location.href = `/user/${authUser.uid}`;
                 }}
               />
             </>

@@ -33,8 +33,8 @@ const convertBase64ToBlob = (base64Text: string): Blob => {
 };
 
 const PreviewPage: NextPage = () => {
-  const { authUser: user } = useAuthUser();
-  if (!user) {
+  const { authUser } = useAuthUser();
+  if (!authUser) {
     return (
       <Layout>
         <Link href="/login">
@@ -51,16 +51,16 @@ const PreviewPage: NextPage = () => {
   const diary = useSelector((state: RootState) => state.diaries[0]);
 
   const handleOnSave = async () => {
-    const storageRef = storage.ref(`${user.uid}/${diary.id}`);
+    const storageRef = storage.ref(`${authUser.uid}/${diary.id}`);
     // TODO アップロード後、画像を日記データと紐づけて管理したい
     // TODO アップロード済みの画像は再度アップロードしない
     diary.imageUrls?.forEach((image) => {
       storageRef.child(uuid()).put(convertBase64ToBlob(image));
     });
-    createDiaryToFirestore({ user, diary });
+    createDiaryToFirestore({ user: authUser, diary });
     dispatch(deleteDraft());
     // TODO ローディング処理
-    router.push(`/user/${user.uid}`);
+    router.push(`/user/${authUser.uid}`);
   };
 
   const handleOnBack = () => {
@@ -69,7 +69,7 @@ const PreviewPage: NextPage = () => {
 
   return (
     <Layout>
-      {user &&
+      {authUser &&
         (diary ? (
           <DiaryViewer
             diary={diary}

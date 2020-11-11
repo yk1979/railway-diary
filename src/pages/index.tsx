@@ -15,8 +15,8 @@ const StyledEditButton = styled(EditButton)`
 `;
 
 const IndexPage: NextPage = () => {
-  const { authUser: user } = useAuthUser();
-  if (!user) {
+  const { authUser } = useAuthUser();
+  if (!authUser) {
     return (
       <Layout>
         <Link href="/login">

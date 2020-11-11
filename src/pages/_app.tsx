@@ -6,7 +6,7 @@ import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
 import Color from "../constants/Color";
-import UserProvider from "../context/userContext";
+import AuthUserProvider from "../context/userContext";
 import { initialState, useStore } from "../redux/store";
 
 export const GlobalStyle = createGlobalStyle`
@@ -93,9 +93,9 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
       <Head>
         <title>てつどうダイアリー</title>
       </Head>
-      <UserProvider>
+      <AuthUserProvider>
         <Component {...pageProps} />
-      </UserProvider>
+      </AuthUserProvider>
     </Provider>
   );
 };

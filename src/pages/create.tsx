@@ -25,8 +25,8 @@ const StyledEditForm = styled(EditForm)`
 `;
 
 const CreatePage: NextPage = () => {
-  const { authUser: user } = useAuthUser();
-  if (!user) {
+  const { authUser } = useAuthUser();
+  if (!authUser) {
     return (
       <Layout>
         <Link href="/login">
@@ -49,7 +49,7 @@ const CreatePage: NextPage = () => {
   return (
     <StyledLayout>
       <Heading.Text1 text="てつどうを記録する" as="h2" />
-      {user && <StyledEditForm handleSubmit={handleSubmit} />}
+      {authUser && <StyledEditForm handleSubmit={handleSubmit} />}
     </StyledLayout>
   );
 };

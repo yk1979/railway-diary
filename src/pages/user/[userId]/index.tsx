@@ -58,7 +58,7 @@ const StyledLoginButton = styled(Button)`
 `;
 
 type UserPageProps = {
-  author: {
+  user: {
     uid: string;
     name: string | null;
     picture?: string;
@@ -66,9 +66,9 @@ type UserPageProps = {
   diaries: Diary[];
 };
 
-const UserPage: NextPage<UserPageProps> = ({ author, diaries }) => {
-  const { authUser: user } = useAuthUser();
-  if (!user) {
+const UserPage: NextPage<UserPageProps> = ({ user, diaries }) => {
+  const { authUser } = useAuthUser();
+  if (!authUser) {
     return (
       <Layout>
         <Link href="/login">
@@ -80,15 +80,15 @@ const UserPage: NextPage<UserPageProps> = ({ author, diaries }) => {
 
   return (
     <StyledLayout>
-      {user && (
+      {authUser && (
         <>
           <Heading.Text1 text="てつどうの記録" />
           <StyledUserProfile
             user={{
-              uid: author.uid,
-              name: author.name || "unknown",
+              uid: user.uid,
+              name: user.name || "unknown",
             }}
-            thumbnail={author.picture}
+            thumbnail={user.picture}
           />
           {diaries.length > 0 ? (
             <DiaryList>
@@ -96,7 +96,7 @@ const UserPage: NextPage<UserPageProps> = ({ author, diaries }) => {
                 <DiaryCard
                   key={d.id}
                   diary={d}
-                  url={`/user/${author.uid}/diary/${d.id}`}
+                  url={`/user/${user.uid}/diary/${d.id}`}
                 />
               ))}
             </DiaryList>
@@ -106,7 +106,7 @@ const UserPage: NextPage<UserPageProps> = ({ author, diaries }) => {
           <StyledEditButton />
         </>
       )}
-      {user?.uid === author.uid && (
+      {authUser?.uid === user.uid && (
         <StyledLoginButton
           text="ログアウトする"
           onClick={() => {
@@ -123,19 +123,19 @@ export const getServerSideProps = async ({
   req,
   query,
 }: MyNextContext): Promise<GetServerSidePropsResult<UserPageProps>> => {
-  const store = initializeStore();
-
   const userId = query.userId as string;
 
   const firestore = req?.firebaseServer.firestore();
-  // TODO author が null だった場合の処理はサービスで吸収する
-  const author = await getUserFromFirestore({ firestore, userId });
+  // TODO user が null だった場合の処理はサービスで吸収する
+  const user = await getUserFromFirestore({ firestore, userId });
 
+  const store = initializeStore();
   const params = {
     firestore,
     userId,
   };
   store.dispatch(getDiaries.started(params));
+
   const diaries = await specterRead<
     Record<string, unknown>,
     IndexDiariesServiceQuery,
@@ -148,8 +148,7 @@ export const getServerSideProps = async ({
 
   return {
     props: {
-      author,
-      // user,
+      user,
       diaries: diaries.body,
     },
   };
