@@ -17,7 +17,10 @@ import PageBottomNotifier, {
 import UserProfile from "../../../../../components/UserProfile";
 import { useAuthUser } from "../../../../../context/userContext";
 import { specterRead } from "../../../../../lib/client";
-import { getUserFromFirestore } from "../../../../../lib/firestore";
+import {
+  deleteDiaryFromFirestore,
+  getUserFromFirestore,
+} from "../../../../../lib/firestore";
 import {
   deleteDiary,
   getDiary,
@@ -44,9 +47,13 @@ type UserDiaryPageProps = {
   diary: Diary;
 };
 
-// TODO ブラウザバックでauthorのデータがうまく取れない問題を修正
 const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const { authUser } = useAuthUser();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notifierStatus, setNotifierStatus] = useState("hidden");
+
   if (!authUser) {
     return (
       <Layout>
@@ -57,16 +64,10 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
     );
   }
 
-  const router = useRouter();
-  const dispatch = useDispatch();
-
   // クライアント側で store に値が入ってないと edit ページに遷移した時にうまくいかないので苦肉の策でこうした
   // しかしここでわざわざこんなアクションを dispatch するの微妙すぎるのでどうにかしたい
   // サーバの store をマージしようとした時に初期値で上書きしようとしてるのが敗因
   dispatch(setDiary(diary));
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notifierStatus, setNotifierStatus] = useState("hidden");
 
   const handleEditDiary = () => {
     router.push(`/user/${user.uid}/diary/${diary.id}/edit`);
@@ -115,9 +116,9 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
         onRequestClose={() => setIsModalOpen(false)}
         onAfterClose={handleAfterModalClose}
         onDelete={() => {
-          dispatch(
-            deleteDiary({ firestore, userId: user.uid, diaryId: diary.id })
-          );
+          const params = { firestore, userId: user.uid, diaryId: diary.id };
+          deleteDiaryFromFirestore(params);
+          dispatch(deleteDiary(params));
         }}
       />
       <PageBottomNotifier

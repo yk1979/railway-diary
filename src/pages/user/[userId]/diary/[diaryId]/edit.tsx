@@ -37,7 +37,10 @@ type DiaryEditPageProps = {
 
 // TODO store と サーバから渡される値を二重で取得してるのがダサすぎるので直したい
 const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ diary }) => {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const { authUser } = useAuthUser();
+
   if (!authUser) {
     return (
       <Layout>
@@ -47,9 +50,6 @@ const DiaryEditPage: NextPage<DiaryEditPageProps> = ({ diary }) => {
       </Layout>
     );
   }
-
-  const router = useRouter();
-  const dispatch = useDispatch();
 
   const handleSubmit = (diary: Diary) => {
     dispatch(createDraft(diary));
