@@ -56,14 +56,9 @@ export const reducer = reducerWithInitialState(INITIAL_STATE)
   ])
   .case(deleteDraft, () => [])
   .case(getDiaries.started, (state) => state)
-  .case(getDiaries.done, (_, { result }) => {
-    // setDiaries(payload.result);
-    return result;
-  })
+  .case(getDiaries.done, (_, { result }) => result)
   .case(getDiary.started, (state) => state)
-  .case(getDiary.done, (_, { result }) => {
-    // setDiary(payload.result);
-    return [result];
-  })
+  .case(getDiary.done, (_, { result }) => [result])
   .case(setDiary, (_, payload) => [payload])
-  .case(setDiaries, (_, payload) => payload);
+  .case(setDiaries, (_, payload) => payload)
+  .case(deleteDiary, () => []);
