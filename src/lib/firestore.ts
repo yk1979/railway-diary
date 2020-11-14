@@ -147,7 +147,7 @@ export async function deleteDiaryFromFirestore({
   try {
     await firestore
       .collection(`users/${userId}/diaries/`)
-      .doc(diaryId)
+      .doc(`${diaryId}`)
       .delete();
   } catch (err) {
     throw new Error(err);

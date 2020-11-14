@@ -4,6 +4,7 @@ import { GetServerSidePropsResult, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
@@ -54,6 +55,13 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifierStatus, setNotifierStatus] = useState("hidden");
 
+  useEffect(() => {
+    // クライアント側で store に値が入ってないと edit ページに遷移した時にうまくいかないので苦肉の策でこうした
+    // しかしここでわざわざこんなアクションを dispatch するの微妙すぎるのでどうにかしたい
+    // サーバの store をマージしようとした時に初期値で上書きしようとしてるのが敗因
+    dispatch(setDiary(diary));
+  }, [diary?.id]);
+
   if (!authUser) {
     return (
       <Layout>
@@ -63,11 +71,6 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
       </Layout>
     );
   }
-
-  // クライアント側で store に値が入ってないと edit ページに遷移した時にうまくいかないので苦肉の策でこうした
-  // しかしここでわざわざこんなアクションを dispatch するの微妙すぎるのでどうにかしたい
-  // サーバの store をマージしようとした時に初期値で上書きしようとしてるのが敗因
-  dispatch(setDiary(diary));
 
   const handleEditDiary = () => {
     router.push(`/user/${user.uid}/diary/${diary.id}/edit`);
@@ -102,7 +105,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
       <StyledDiaryViewer
         diary={diary}
         controller={
-          authUser?.uid === user.uid
+          user.uid === authUser?.uid
             ? {
                 onEdit: handleEditDiary,
                 onDelete: () => setIsModalOpen(true),
@@ -115,9 +118,9 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         onAfterClose={handleAfterModalClose}
-        onDelete={() => {
+        onDelete={async () => {
           const params = { firestore, userId: user.uid, diaryId: diary.id };
-          deleteDiaryFromFirestore(params);
+          await deleteDiaryFromFirestore(params);
           dispatch(deleteDiary(params));
         }}
       />
