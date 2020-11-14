@@ -2,13 +2,10 @@ import React, { useContext, useEffect } from "react";
 import { createContext, useState } from "react";
 
 import firebase from "../../firebase";
+import { User } from "../types";
 
 type AuthUserContextType = {
-  authUser: {
-    uid: string;
-    name: string | null;
-    picture?: string;
-  } | null;
+  authUser: User | null;
   loadingUser: boolean;
 };
 
@@ -32,9 +29,9 @@ const AuthUserContextComponent: React.FC<Props> = ({ children }) => {
       try {
         if (user) {
           setAuthUser({
-            uid: user.uid,
-            name: user.displayName,
-            picture: user.photoURL || "",
+            id: user.uid,
+            name: user.displayName || "unknown",
+            photoUrl: user.photoURL || "",
           });
         } else {
           setAuthUser(null);

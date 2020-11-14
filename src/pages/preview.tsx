@@ -51,7 +51,7 @@ const PreviewPage: NextPage = () => {
   const diary = useSelector((state: RootState) => state.diaries[0]);
 
   const handleOnSave = async () => {
-    const storageRef = storage.ref(`${authUser.uid}/${diary.id}`);
+    const storageRef = storage.ref(`${authUser.id}/${diary.id}`);
     // TODO アップロード後、画像を日記データと紐づけて管理したい
     // TODO アップロード済みの画像は再度アップロードしない
     diary.imageUrls?.forEach((image) => {
@@ -60,7 +60,7 @@ const PreviewPage: NextPage = () => {
     createDiaryToFirestore({ user: authUser, diary });
     dispatch(deleteDraft());
     // TODO ローディング処理
-    router.push(`/user/${authUser.uid}`);
+    router.push(`/user/${authUser.id}`);
   };
 
   const handleOnBack = () => {

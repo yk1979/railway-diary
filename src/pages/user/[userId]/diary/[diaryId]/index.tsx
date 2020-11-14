@@ -33,6 +33,7 @@ import {
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { Diary } from "../../../../../server/services/diaries/types";
+import { User } from "../../../../../types";
 import { MyNextContext } from "../../../../../types/next";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
@@ -40,11 +41,7 @@ const StyledDiaryViewer = styled(DiaryViewer)`
 `;
 
 type UserDiaryPageProps = {
-  user: {
-    uid: string;
-    name: string | null;
-    picture?: string;
-  };
+  user: User;
   diary: Diary;
 };
 
@@ -73,7 +70,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
   }
 
   const handleEditDiary = () => {
-    router.push(`/user/${user.uid}/diary/${diary.id}/edit`);
+    router.push(`/user/${user.id}/diary/${diary.id}/edit`);
   };
 
   const handleAfterModalClose = async () => {
@@ -84,17 +81,17 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
         resolve();
       }, 1000);
     });
-    router.push(`/user/${user.uid}/`);
+    router.push(`/user/${user.id}/`);
   };
 
   return (
     <Layout>
       <UserProfile
         user={{
-          uid: user.uid,
-          name: user.name || "unknown",
+          uid: user.id,
+          name: user.name,
         }}
-        thumbnail={user.picture}
+        thumbnail={user.photoUrl}
         info={{
           text: format(parseISO(diary.lastEdited), "yyyy-MM-dd HH:mm", {
             timeZone: "Asia/Tokyo",
@@ -105,7 +102,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
       <StyledDiaryViewer
         diary={diary}
         controller={
-          user.uid === authUser?.uid
+          user.id === authUser.id
             ? {
                 onEdit: handleEditDiary,
                 onDelete: () => setIsModalOpen(true),
@@ -119,7 +116,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
         onRequestClose={() => setIsModalOpen(false)}
         onAfterClose={handleAfterModalClose}
         onDelete={async () => {
-          const params = { firestore, userId: user.uid, diaryId: diary.id };
+          const params = { firestore, userId: user.id, diaryId: diary.id };
           await deleteDiaryFromFirestore(params);
           dispatch(deleteDiary(params));
         }}
@@ -139,7 +136,8 @@ export const getServerSideProps = async ({
   const { userId, diaryId } = query as { userId: string; diaryId: string };
 
   const firestore = req.firebaseServer.firestore();
-  // TODO user が null だった場合の処理はサービスで吸収する
+  // TODO: promise.all で取得
+  // TODO: エラー処理
   const user = await getUserFromFirestore({ firestore, userId });
 
   const store = initializeStore();

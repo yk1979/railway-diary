@@ -5,6 +5,7 @@ import {
   deleteDiaryPayload,
 } from "../redux/modules/diaries";
 import { Diary } from "../server/services/diaries/types";
+import { User } from "../types";
 
 // TODO DataConverter使えるか検討
 // https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter?hl=en
@@ -16,13 +17,6 @@ type FSDiary = {
   body: string;
   imageUrls: string[];
   lastEdited: firebase.default.firestore.Timestamp;
-};
-
-// TODO ここじゃない
-type User = {
-  uid: string;
-  name: string | null;
-  picture?: string;
 };
 
 export async function getUserFromFirestore({
@@ -39,9 +33,9 @@ export async function getUserFromFirestore({
       .get()
       .then((doc) => doc.data() as User);
     return {
-      uid: userId,
+      id: userId,
       name: user.name || "No Name",
-      picture: user.picture,
+      photoUrl: user.photoUrl,
     };
   } catch (err) {
     throw new Error(err);
@@ -60,8 +54,8 @@ async function setDiaryUserToFireStore({
   try {
     await firestore
       .collection(`/users/`)
-      .doc(user.uid)
-      .set({ name: user.name, picture: user.picture });
+      .doc(user.id)
+      .set({ name: user.name, picture: user.photoUrl });
   } catch (err) {
     throw new Error(err);
   }
@@ -80,7 +74,7 @@ export async function createDiaryToFirestore({
 }): Promise<void> {
   try {
     await setDiaryUserToFireStore({ firestore, user });
-    firestore.collection(`/users/${user.uid}/diaries`).doc(`${diary.id}`).set({
+    firestore.collection(`/users/${user.id}/diaries`).doc(`${diary.id}`).set({
       id: diary.id,
       title: diary.title,
       body: diary.body,

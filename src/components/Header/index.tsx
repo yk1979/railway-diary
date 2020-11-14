@@ -44,13 +44,13 @@ const MyPageLink = styled.a`
 
 const Header: React.FC = () => {
   const { authUser } = useAuthUser();
-  const userId = authUser?.uid;
+  const authUserId = authUser?.id;
   return (
     <Root>
       <Inner>
         <TopLink href="/">てつどうダイアリー</TopLink>
-        {userId && (
-          <Link href={`/user/${userId}`}>
+        {authUserId && (
+          <Link href={`/user/${authUserId}`}>
             <MyPageLink>
               <MdAccountCircle />
             </MyPageLink>

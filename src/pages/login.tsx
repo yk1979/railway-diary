@@ -44,7 +44,7 @@ const LoginPage: NextPage = () => {
               <StyledButton
                 text="あなたの てつどうのきろく をみる"
                 onClick={() => {
-                  window.location.href = `/user/${authUser.uid}`;
+                  window.location.href = `/user/${authUser.id}`;
                 }}
               />
             </>

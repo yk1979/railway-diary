@@ -20,6 +20,7 @@ import {
   IndexDiariesServiceQuery,
 } from "../../../server/services/diaries/IndexDiariesService";
 import { Diary } from "../../../server/services/diaries/types";
+import { User } from "../../../types";
 import { MyNextContext } from "../../../types/next";
 
 const StyledLayout = styled(Layout)`
@@ -58,11 +59,7 @@ const StyledLoginButton = styled(Button)`
 `;
 
 type UserPageProps = {
-  user: {
-    uid: string;
-    name: string | null;
-    picture?: string;
-  };
+  user: User;
   diaries: Diary[];
 };
 
@@ -80,33 +77,31 @@ const UserPage: NextPage<UserPageProps> = ({ user, diaries }) => {
 
   return (
     <StyledLayout>
-      {authUser && (
-        <>
-          <Heading.Text1 text="てつどうの記録" />
-          <StyledUserProfile
-            user={{
-              uid: user.uid,
-              name: user.name || "unknown",
-            }}
-            thumbnail={user.picture}
-          />
-          {diaries.length > 0 ? (
-            <DiaryList>
-              {diaries.map((d) => (
-                <DiaryCard
-                  key={d.id}
-                  diary={d}
-                  url={`/user/${user.uid}/diary/${d.id}`}
-                />
-              ))}
-            </DiaryList>
-          ) : (
-            <NoDiaryText>まだ日記はありません</NoDiaryText>
-          )}
-          <StyledEditButton />
-        </>
-      )}
-      {authUser?.uid === user.uid && (
+      <>
+        <Heading.Text1 text="てつどうの記録" />
+        <StyledUserProfile
+          user={{
+            uid: user.id,
+            name: user.name,
+          }}
+          thumbnail={user.photoUrl}
+        />
+        {diaries.length > 0 ? (
+          <DiaryList>
+            {diaries.map((d) => (
+              <DiaryCard
+                key={d.id}
+                diary={d}
+                url={`/user/${user.id}/diary/${d.id}`}
+              />
+            ))}
+          </DiaryList>
+        ) : (
+          <NoDiaryText>まだ日記はありません</NoDiaryText>
+        )}
+        <StyledEditButton />
+      </>
+      {user.id === authUser.id && (
         <StyledLoginButton
           text="ログアウトする"
           onClick={() => {
@@ -126,7 +121,9 @@ export const getServerSideProps = async ({
   const userId = query.userId as string;
 
   const firestore = req?.firebaseServer.firestore();
-  // TODO user が null だった場合の処理はサービスで吸収する
+
+  // TODO: promise.all で取得
+  // TODO: エラー処理
   const user = await getUserFromFirestore({ firestore, userId });
 
   const store = initializeStore();
