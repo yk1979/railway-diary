@@ -12,7 +12,6 @@ import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
 import { useAuthUser } from "../../../context/userContext";
 import { specterRead } from "../../../lib/client";
-import { getUserFromFirestore } from "../../../lib/firestore";
 import { getDiaries } from "../../../redux/modules/diaries";
 import { initializeStore } from "../../../redux/store";
 import {
@@ -20,6 +19,10 @@ import {
   IndexDiariesServiceQuery,
 } from "../../../server/services/diaries/IndexDiariesService";
 import { Diary } from "../../../server/services/diaries/types";
+import {
+  ShowUserServiceBody,
+  ShowUserServiceQuery,
+} from "../../../server/services/user/ShowUserService";
 import { User } from "../../../types";
 import { MyNextContext } from "../../../types/next";
 
@@ -116,36 +119,48 @@ const UserPage: NextPage<UserPageProps> = ({ user, diaries }) => {
 
 export const getServerSideProps = async ({
   req,
+  res,
   query,
 }: MyNextContext): Promise<GetServerSidePropsResult<UserPageProps>> => {
-  const userId = query.userId as string;
-
-  const firestore = req?.firebaseServer.firestore();
-
-  // TODO: promise.all で取得
-  // TODO: エラー処理
-  const user = await getUserFromFirestore({ firestore, userId });
-
   const store = initializeStore();
+
+  const userId = query.userId as string;
+  const firestore = req?.firebaseServer.firestore();
   const params = {
     firestore,
     userId,
   };
   store.dispatch(getDiaries.started(params));
 
-  const diaries = await specterRead<
-    Record<string, unknown>,
-    IndexDiariesServiceQuery,
-    IndexDiariesServiceBody
-  >({
-    serviceName: "index_diaries",
-    query: params,
-  });
+  const [user, diaries] = await Promise.all([
+    specterRead<
+      Record<string, unknown>,
+      ShowUserServiceQuery,
+      ShowUserServiceBody
+    >({
+      serviceName: "show_user",
+      query: { ...params },
+    }),
+    specterRead<
+      Record<string, unknown>,
+      IndexDiariesServiceQuery,
+      IndexDiariesServiceBody
+    >({
+      serviceName: "index_diaries",
+      query: params,
+    }),
+  ]);
+  for (const response of [user, diaries]) {
+    if (!response.body) {
+      res.status(404).send("fix later");
+    }
+  }
   store.dispatch(getDiaries.done({ params, result: diaries.body }));
 
   return {
     props: {
-      user,
+      // TODO fix
+      user: user.body!,
       diaries: diaries.body,
     },
   };

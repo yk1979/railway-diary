@@ -18,10 +18,7 @@ import PageBottomNotifier, {
 import UserProfile from "../../../../../components/UserProfile";
 import { useAuthUser } from "../../../../../context/userContext";
 import { specterRead } from "../../../../../lib/client";
-import {
-  deleteDiaryFromFirestore,
-  getUserFromFirestore,
-} from "../../../../../lib/firestore";
+import { deleteDiaryFromFirestore } from "../../../../../lib/firestore";
 import {
   deleteDiary,
   getDiary,
@@ -33,6 +30,10 @@ import {
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { Diary } from "../../../../../server/services/diaries/types";
+import {
+  ShowUserServiceBody,
+  ShowUserServiceQuery,
+} from "../../../../../server/services/user/ShowUserService";
 import { User } from "../../../../../types";
 import { MyNextContext } from "../../../../../types/next";
 
@@ -131,16 +132,13 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
 
 export const getServerSideProps = async ({
   req,
+  res,
   query,
 }: MyNextContext): Promise<GetServerSidePropsResult<UserDiaryPageProps>> => {
-  const { userId, diaryId } = query as { userId: string; diaryId: string };
-
-  const firestore = req.firebaseServer.firestore();
-  // TODO: promise.all で取得
-  // TODO: エラー処理
-  const user = await getUserFromFirestore({ firestore, userId });
-
   const store = initializeStore();
+
+  const { userId, diaryId } = query as { userId: string; diaryId: string };
+  const firestore = req.firebaseServer.firestore();
   const params = {
     firestore,
     userId,
@@ -148,23 +146,42 @@ export const getServerSideProps = async ({
   };
   store.dispatch(getDiary.started(params));
 
-  const diary = await specterRead<
-    Record<string, unknown>,
-    ShowDiaryServiceQuery,
-    ShowDiaryServiceBody
-  >({
-    serviceName: "show_diary",
-    query: {
-      firestore,
-      userId,
-      diaryId,
-    },
-  });
+  const [user, diary] = await Promise.all([
+    specterRead<
+      Record<string, unknown>,
+      ShowUserServiceQuery,
+      ShowUserServiceBody
+    >({
+      serviceName: "show_user",
+      query: {
+        firestore,
+        userId,
+      },
+    }),
+    specterRead<
+      Record<string, unknown>,
+      ShowDiaryServiceQuery,
+      ShowDiaryServiceBody
+    >({
+      serviceName: "show_diary",
+      query: {
+        firestore,
+        userId,
+        diaryId,
+      },
+    }),
+  ]);
+  for (const response of [user, diary]) {
+    if (!response.body) {
+      res.status(404).send("fix later");
+    }
+  }
   store.dispatch(getDiary.done({ params, result: diary.body }));
 
   return {
     props: {
-      user,
+      // TODO fix
+      user: user.body!,
       diary: diary.body,
     },
   };

@@ -25,21 +25,14 @@ export async function getUserFromFirestore({
 }: {
   firestore: FirebaseFirestore.Firestore;
   userId: string;
-}): Promise<User> {
-  try {
-    const user = await firestore
-      .collection(`users`)
-      .doc(userId)
-      .get()
-      .then((doc) => doc.data() as User);
-    return {
-      id: userId,
-      name: user.name || "No Name",
-      photoUrl: user.photoUrl,
-    };
-  } catch (err) {
-    throw new Error(err);
-  }
+}): Promise<User | null> {
+  const user = await firestore
+    .collection(`users`)
+    .doc(userId)
+    .get()
+    .then((doc) => doc.data());
+  if (!user) return null;
+  return user as User;
 }
 
 async function setDiaryUserToFireStore({
@@ -52,10 +45,8 @@ async function setDiaryUserToFireStore({
   user: User;
 }) {
   try {
-    await firestore
-      .collection(`/users/`)
-      .doc(user.id)
-      .set({ name: user.name, picture: user.photoUrl });
+    const { name, photoUrl } = user;
+    await firestore.collection(`/users/`).doc(user.id).set({ name, photoUrl });
   } catch (err) {
     throw new Error(err);
   }
