@@ -1,6 +1,6 @@
 import { format } from "date-fns-tz";
 import parseISO from "date-fns/parseISO";
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -35,7 +35,7 @@ import {
   ShowUserServiceQuery,
 } from "../../../../../server/services/user/ShowUserService";
 import { User } from "../../../../../types";
-import { MyNextContext } from "../../../../../types/next";
+import { MyGetServerSideProps } from "../../../../../types/next";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
   margin-top: 24px;
@@ -130,11 +130,10 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
   );
 };
 
-export const getServerSideProps = async ({
+export const getServerSideProps: MyGetServerSideProps<UserDiaryPageProps> = async ({
   req,
-  res,
   query,
-}: MyNextContext): Promise<GetServerSidePropsResult<UserDiaryPageProps>> => {
+}) => {
   const store = initializeStore();
 
   const { userId, diaryId } = query as { userId: string; diaryId: string };
@@ -172,16 +171,16 @@ export const getServerSideProps = async ({
     }),
   ]);
   for (const response of [user, diary]) {
+    // TODO notFound は404特化なので、500エラーの場合も処理できるようにする
     if (!response.body) {
-      res.status(404).send("fix later");
+      return { props: {}, notFound: true };
     }
   }
   store.dispatch(getDiary.done({ params, result: diary.body }));
 
   return {
     props: {
-      // TODO fix
-      user: user.body!,
+      user: user.body,
       diary: diary.body,
     },
   };

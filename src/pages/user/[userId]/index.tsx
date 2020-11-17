@@ -24,7 +24,7 @@ import {
   ShowUserServiceQuery,
 } from "../../../server/services/user/ShowUserService";
 import { User } from "../../../types";
-import { MyNextContext } from "../../../types/next";
+import { MyGetServerSideProps } from "../../../types/next";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -117,11 +117,10 @@ const UserPage: NextPage<UserPageProps> = ({ user, diaries }) => {
   );
 };
 
-export const getServerSideProps = async ({
+export const getServerSideProps: MyGetServerSideProps<UserPageProps> = async ({
   req,
-  res,
   query,
-}: MyNextContext): Promise<GetServerSidePropsResult<UserPageProps>> => {
+}) => {
   const store = initializeStore();
 
   const userId = query.userId as string;
@@ -151,16 +150,16 @@ export const getServerSideProps = async ({
     }),
   ]);
   for (const response of [user, diaries]) {
+    // TODO notFound は404特化なので、500エラーの場合も処理できるようにする
     if (!response.body) {
-      res.status(404).send("fix later");
+      return { props: {}, notFound: true };
     }
   }
   store.dispatch(getDiaries.done({ params, result: diaries.body }));
 
   return {
     props: {
-      // TODO fix
-      user: user.body!,
+      user: user.body,
       diaries: diaries.body,
     },
   };
