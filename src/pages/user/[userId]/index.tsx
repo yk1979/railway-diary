@@ -1,4 +1,4 @@
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
 import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
@@ -12,7 +12,6 @@ import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
 import { useAuthUser } from "../../../context/userContext";
 import { specterRead } from "../../../lib/client";
-import { getUserFromFirestore } from "../../../lib/firestore";
 import { getDiaries } from "../../../redux/modules/diaries";
 import { initializeStore } from "../../../redux/store";
 import {
@@ -20,7 +19,12 @@ import {
   IndexDiariesServiceQuery,
 } from "../../../server/services/diaries/IndexDiariesService";
 import { Diary } from "../../../server/services/diaries/types";
-import { MyNextContext } from "../../../types/next";
+import {
+  ShowUserServiceBody,
+  ShowUserServiceQuery,
+} from "../../../server/services/user/ShowUserService";
+import { User } from "../../../types";
+import { MyGetServerSideProps } from "../../../types/next";
 
 const StyledLayout = styled(Layout)`
   > div {
@@ -58,11 +62,7 @@ const StyledLoginButton = styled(Button)`
 `;
 
 type UserPageProps = {
-  user: {
-    uid: string;
-    name: string | null;
-    picture?: string;
-  };
+  user: User;
   diaries: Diary[];
 };
 
@@ -80,33 +80,31 @@ const UserPage: NextPage<UserPageProps> = ({ user, diaries }) => {
 
   return (
     <StyledLayout>
-      {authUser && (
-        <>
-          <Heading.Text1 text="てつどうの記録" />
-          <StyledUserProfile
-            user={{
-              uid: user.uid,
-              name: user.name || "unknown",
-            }}
-            thumbnail={user.picture}
-          />
-          {diaries.length > 0 ? (
-            <DiaryList>
-              {diaries.map((d) => (
-                <DiaryCard
-                  key={d.id}
-                  diary={d}
-                  url={`/user/${user.uid}/diary/${d.id}`}
-                />
-              ))}
-            </DiaryList>
-          ) : (
-            <NoDiaryText>まだ日記はありません</NoDiaryText>
-          )}
-          <StyledEditButton />
-        </>
-      )}
-      {authUser?.uid === user.uid && (
+      <>
+        <Heading.Text1 text="てつどうの記録" />
+        <StyledUserProfile
+          user={{
+            uid: user.id,
+            name: user.name,
+          }}
+          thumbnail={user.photoUrl}
+        />
+        {diaries.length > 0 ? (
+          <DiaryList>
+            {diaries.map((d) => (
+              <DiaryCard
+                key={d.id}
+                diary={d}
+                url={`/user/${user.id}/diary/${d.id}`}
+              />
+            ))}
+          </DiaryList>
+        ) : (
+          <NoDiaryText>まだ日記はありません</NoDiaryText>
+        )}
+        <StyledEditButton />
+      </>
+      {user.id === authUser.id && (
         <StyledLoginButton
           text="ログアウトする"
           onClick={() => {
@@ -119,36 +117,48 @@ const UserPage: NextPage<UserPageProps> = ({ user, diaries }) => {
   );
 };
 
-export const getServerSideProps = async ({
+export const getServerSideProps: MyGetServerSideProps<UserPageProps> = async ({
   req,
   query,
-}: MyNextContext): Promise<GetServerSidePropsResult<UserPageProps>> => {
-  const userId = query.userId as string;
-
-  const firestore = req?.firebaseServer.firestore();
-  // TODO user が null だった場合の処理はサービスで吸収する
-  const user = await getUserFromFirestore({ firestore, userId });
-
+}) => {
   const store = initializeStore();
+
+  const userId = query.userId as string;
+  const firestore = req?.firebaseServer.firestore();
   const params = {
     firestore,
     userId,
   };
   store.dispatch(getDiaries.started(params));
 
-  const diaries = await specterRead<
-    Record<string, unknown>,
-    IndexDiariesServiceQuery,
-    IndexDiariesServiceBody
-  >({
-    serviceName: "index_diaries",
-    query: params,
-  });
+  const [user, diaries] = await Promise.all([
+    specterRead<
+      Record<string, unknown>,
+      ShowUserServiceQuery,
+      ShowUserServiceBody
+    >({
+      serviceName: "show_user",
+      query: { ...params },
+    }),
+    specterRead<
+      Record<string, unknown>,
+      IndexDiariesServiceQuery,
+      IndexDiariesServiceBody
+    >({
+      serviceName: "index_diaries",
+      query: params,
+    }),
+  ]);
+  for (const response of [user, diaries]) {
+    if (response.status !== 200) {
+      return { props: {}, notFound: true };
+    }
+  }
   store.dispatch(getDiaries.done({ params, result: diaries.body }));
 
   return {
     props: {
-      user,
+      user: user.body,
       diaries: diaries.body,
     },
   };

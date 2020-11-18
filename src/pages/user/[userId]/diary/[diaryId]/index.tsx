@@ -1,6 +1,6 @@
 import { format } from "date-fns-tz";
 import parseISO from "date-fns/parseISO";
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -18,10 +18,7 @@ import PageBottomNotifier, {
 import UserProfile from "../../../../../components/UserProfile";
 import { useAuthUser } from "../../../../../context/userContext";
 import { specterRead } from "../../../../../lib/client";
-import {
-  deleteDiaryFromFirestore,
-  getUserFromFirestore,
-} from "../../../../../lib/firestore";
+import { deleteDiaryFromFirestore } from "../../../../../lib/firestore";
 import {
   deleteDiary,
   getDiary,
@@ -33,18 +30,19 @@ import {
   ShowDiaryServiceQuery,
 } from "../../../../../server/services/diaries/ShowDiaryService";
 import { Diary } from "../../../../../server/services/diaries/types";
-import { MyNextContext } from "../../../../../types/next";
+import {
+  ShowUserServiceBody,
+  ShowUserServiceQuery,
+} from "../../../../../server/services/user/ShowUserService";
+import { User } from "../../../../../types";
+import { MyGetServerSideProps } from "../../../../../types/next";
 
 const StyledDiaryViewer = styled(DiaryViewer)`
   margin-top: 24px;
 `;
 
 type UserDiaryPageProps = {
-  user: {
-    uid: string;
-    name: string | null;
-    picture?: string;
-  };
+  user: User;
   diary: Diary;
 };
 
@@ -73,7 +71,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
   }
 
   const handleEditDiary = () => {
-    router.push(`/user/${user.uid}/diary/${diary.id}/edit`);
+    router.push(`/user/${user.id}/diary/${diary.id}/edit`);
   };
 
   const handleAfterModalClose = async () => {
@@ -84,17 +82,17 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
         resolve();
       }, 1000);
     });
-    router.push(`/user/${user.uid}/`);
+    router.push(`/user/${user.id}/`);
   };
 
   return (
     <Layout>
       <UserProfile
         user={{
-          uid: user.uid,
-          name: user.name || "unknown",
+          uid: user.id,
+          name: user.name,
         }}
-        thumbnail={user.picture}
+        thumbnail={user.photoUrl}
         info={{
           text: format(parseISO(diary.lastEdited), "yyyy-MM-dd HH:mm", {
             timeZone: "Asia/Tokyo",
@@ -105,7 +103,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
       <StyledDiaryViewer
         diary={diary}
         controller={
-          user.uid === authUser?.uid
+          user.id === authUser.id
             ? {
                 onEdit: handleEditDiary,
                 onDelete: () => setIsModalOpen(true),
@@ -119,7 +117,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
         onRequestClose={() => setIsModalOpen(false)}
         onAfterClose={handleAfterModalClose}
         onDelete={async () => {
-          const params = { firestore, userId: user.uid, diaryId: diary.id };
+          const params = { firestore, userId: user.id, diaryId: diary.id };
           await deleteDiaryFromFirestore(params);
           dispatch(deleteDiary(params));
         }}
@@ -132,17 +130,14 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
   );
 };
 
-export const getServerSideProps = async ({
+export const getServerSideProps: MyGetServerSideProps<UserDiaryPageProps> = async ({
   req,
   query,
-}: MyNextContext): Promise<GetServerSidePropsResult<UserDiaryPageProps>> => {
-  const { userId, diaryId } = query as { userId: string; diaryId: string };
-
-  const firestore = req.firebaseServer.firestore();
-  // TODO user が null だった場合の処理はサービスで吸収する
-  const user = await getUserFromFirestore({ firestore, userId });
-
+}) => {
   const store = initializeStore();
+
+  const { userId, diaryId } = query as { userId: string; diaryId: string };
+  const firestore = req.firebaseServer.firestore();
   const params = {
     firestore,
     userId,
@@ -150,23 +145,41 @@ export const getServerSideProps = async ({
   };
   store.dispatch(getDiary.started(params));
 
-  const diary = await specterRead<
-    Record<string, unknown>,
-    ShowDiaryServiceQuery,
-    ShowDiaryServiceBody
-  >({
-    serviceName: "show_diary",
-    query: {
-      firestore,
-      userId,
-      diaryId,
-    },
-  });
+  const [user, diary] = await Promise.all([
+    specterRead<
+      Record<string, unknown>,
+      ShowUserServiceQuery,
+      ShowUserServiceBody
+    >({
+      serviceName: "show_user",
+      query: {
+        firestore,
+        userId,
+      },
+    }),
+    specterRead<
+      Record<string, unknown>,
+      ShowDiaryServiceQuery,
+      ShowDiaryServiceBody
+    >({
+      serviceName: "show_diary",
+      query: {
+        firestore,
+        userId,
+        diaryId,
+      },
+    }),
+  ]);
+  for (const response of [user, diary]) {
+    if (response.status !== 200) {
+      return { props: {}, notFound: true };
+    }
+  }
   store.dispatch(getDiary.done({ params, result: diary.body }));
 
   return {
     props: {
-      user,
+      user: user.body,
       diary: diary.body,
     },
   };
