@@ -22,13 +22,14 @@ export default class ShowUserService extends Service {
     request: Request<RequestHeader, ShowUserServiceQuery, RequestBody>
   ): Promise<Response<ResponseHeader, ShowUserServiceBody>> {
     try {
+      const { query } = request;
       // TODO loggerを入れる
-      const user = await getUserFromFirestore(request.query);
+      const user = await getUserFromFirestore(query);
       const response = new Response<ResponseHeader, ShowUserServiceBody>(
         {},
         user
       );
-      response.setStatus(200);
+      response.setStatus(user ? 200 : 404);
       return response;
     } catch (err) {
       // TODO エラーレスポンス生成関数を作る

@@ -1,4 +1,4 @@
-import { GetServerSidePropsResult, NextPage } from "next";
+import { NextPage } from "next";
 import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
@@ -150,8 +150,7 @@ export const getServerSideProps: MyGetServerSideProps<UserPageProps> = async ({
     }),
   ]);
   for (const response of [user, diaries]) {
-    // TODO notFound は404特化なので、500エラーの場合も処理できるようにする
-    if (!response.body) {
+    if (response.status !== 200) {
       return { props: {}, notFound: true };
     }
   }
