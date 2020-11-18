@@ -1,5 +1,5 @@
 import Express from "express";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSidePropsContext } from "next";
 
 type StatusCode = 404 | 500;
 
@@ -12,11 +12,9 @@ type ErrorProps = {
   statusCode: StatusCode;
 };
 
-interface MyGetServerSideProps<
+type MyGetServerSideProps<
   P extends { [key: string]: any } = { [key: string]: any },
   Q extends ParsedUrlQuery = ParsedUrlQuery
-> extends GetServerSideProps {
-  (context: MyNextContext<Q>): Promise<
-    GetServerSidePropsResult<P | ErrorProps>
-  >;
-}
+> = (
+  context: MyNextContext<Q>
+) => Promise<GetServerSidePropsResult<P | ErrorProps>>;
