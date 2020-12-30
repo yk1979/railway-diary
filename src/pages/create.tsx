@@ -26,16 +26,6 @@ const StyledEditForm = styled(EditForm)`
 
 const CreatePage: NextPage = () => {
   const { authUser } = useAuthUser();
-  if (!authUser) {
-    return (
-      <Layout>
-        <Link href="/login">
-          <a>ログインしてね</a>
-        </Link>
-      </Layout>
-    );
-  }
-
   const router = useRouter();
   const dispatch = useDispatch();
 

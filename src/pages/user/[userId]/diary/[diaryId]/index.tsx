@@ -60,16 +60,6 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
     dispatch(setDiary(diary));
   }, [diary?.id]);
 
-  if (!authUser) {
-    return (
-      <Layout>
-        <Link href="/login">
-          <a>ログインしてね</a>
-        </Link>
-      </Layout>
-    );
-  }
-
   const handleEditDiary = () => {
     router.push(`/user/${user.id}/diary/${diary.id}/edit`);
   };
@@ -103,7 +93,7 @@ const UserDiaryPage: NextPage<UserDiaryPageProps> = ({ user, diary }) => {
       <StyledDiaryViewer
         diary={diary}
         controller={
-          user.id === authUser.id
+          user.id === authUser?.id
             ? {
                 onEdit: handleEditDiary,
                 onDelete: () => setIsModalOpen(true),
