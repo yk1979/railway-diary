@@ -89,10 +89,16 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   const store = useStore(initialState);
   return (
     <Provider store={store}>
-      <GlobalStyle />
       <Head>
+        <link
+          rel="preload"
+          href="/font/corp_round_v1.ttf"
+          as="font"
+          type="font/ttf"
+        />
         <title>てつどうダイアリー</title>
       </Head>
+      <GlobalStyle />
       <AuthUserProvider>
         <Component {...pageProps} />
       </AuthUserProvider>

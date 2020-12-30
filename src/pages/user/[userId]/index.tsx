@@ -1,13 +1,14 @@
 import { NextPage } from "next";
-import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
+import { handleSignOut } from "../../../auth";
 import Button, { buttonTheme } from "../../../components/Button";
 import DiaryCard from "../../../components/DiaryCard";
 import EditButton from "../../../components/EditButton";
 import Heading from "../../../components/Heading";
 import Layout from "../../../components/Layout";
+import LoadingIcon from "../../../components/Loading";
 import UserProfile from "../../../components/UserProfile";
 import BreakPoint from "../../../constants/BreakPoint";
 import { useAuthUser } from "../../../context/userContext";
@@ -68,16 +69,6 @@ type UserPageProps = {
 
 const UserPage: NextPage<UserPageProps> = ({ user, diaries }) => {
   const { authUser } = useAuthUser();
-  if (!authUser) {
-    return (
-      <Layout>
-        <Link href="/login">
-          <a>ログインしてね</a>
-        </Link>
-      </Layout>
-    );
-  }
-
   return (
     <StyledLayout>
       <>
@@ -103,16 +94,14 @@ const UserPage: NextPage<UserPageProps> = ({ user, diaries }) => {
           <NoDiaryText>まだ日記はありません</NoDiaryText>
         )}
         <StyledEditButton />
+        {user.id === authUser?.id && (
+          <StyledLoginButton
+            text="ログアウトする"
+            onClick={handleSignOut}
+            theme={buttonTheme.back}
+          />
+        )}
       </>
-      {user.id === authUser.id && (
-        <StyledLoginButton
-          text="ログアウトする"
-          onClick={() => {
-            window.location.href = "/login";
-          }}
-          theme={buttonTheme.back}
-        />
-      )}
     </StyledLayout>
   );
 };
