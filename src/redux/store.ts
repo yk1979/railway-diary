@@ -11,23 +11,19 @@ import logger from "redux-logger";
 
 import { Diary } from "../server/services/diaries/types";
 import { reducer as diaries } from "./modules/diaries";
-import user from "./modules/user";
-import { UserState } from "./modules/user";
 
 export interface RootState {
   diaries: Diary[];
-  user: UserState;
 }
 
 type MyStore = Store<RootState>;
 
 let store: MyStore | undefined;
 
-export const initialState: RootState = { diaries: [], user: null };
+export const initialState: RootState = { diaries: [] };
 
 const combinedReducer = combineReducers({
   diaries,
-  user,
 });
 
 export const rootReducer: typeof combinedReducer = (

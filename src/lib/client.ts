@@ -10,7 +10,7 @@ export const getClient = (): Client => {
   return client;
 };
 
-type ServiceName = "index_diaries" | "show_diary";
+type ServiceName = "index_diaries" | "show_diary" | "show_user";
 
 export const specterRead = <H, Q, B>({
   serviceName,
