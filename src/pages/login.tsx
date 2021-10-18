@@ -1,20 +1,11 @@
-import { GetServerSidePropsResult, NextPage } from "next";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { NextPage } from "next";
+import React from "react";
 import styled from "styled-components";
 
-import firebase from "../../firebase";
 import { handleSignIn, handleSignOut } from "../auth";
 import Button, { buttonTheme } from "../components/Button";
 import Layout from "../components/Layout";
-import {
-  User,
-  UserState,
-  userSignIn,
-  userSignOut,
-} from "../redux/modules/user";
-import { RootState, initializeStore } from "../redux/store";
-import { MyNextContext } from "../types/next";
+import { useAuthUser } from "../context/userContext";
 
 const ButtonWrapper = styled.div`
   margin-top: 36px;
@@ -26,55 +17,23 @@ const StyledButton = styled(Button)`
   }
 `;
 
-type LoginPageProps = {
-  user?: User;
-};
+const LoginPage: NextPage = () => {
+  const { authUser } = useAuthUser();
 
-const LoginPage: NextPage<LoginPageProps> = () => {
-  const dispatch = useDispatch();
-  const user = useSelector<RootState, UserState>((state) => state.user);
-
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged(async (currentUser) => {
-      if (currentUser) {
-        const token = await currentUser.getIdToken();
-        await fetch("/api/login", {
-          method: "POST",
-          headers: new Headers({ "Content-Type": "application/json" }),
-          credentials: "same-origin",
-          body: JSON.stringify({ token }),
-        });
-        dispatch(
-          userSignIn({
-            uid: currentUser.uid,
-            name: currentUser.displayName,
-            picture: currentUser.photoURL || "",
-          })
-        );
-        // TODO ログイン後は元いたページに戻したい
-      } else {
-        await fetch("/api/logout", {
-          method: "POST",
-          credentials: "same-origin",
-        });
-        dispatch(userSignOut());
-      }
-    });
-  }, []);
+  const handleAuthStatusChange = () =>
+    authUser ? handleSignOut() : handleSignIn();
 
   return (
     <>
-      <Layout userId={null}>
-        {user && <p>{`${user.name} さん としてログインしています`}</p>}
-        {/* TODO ログアウト後レンダーが走らない問題に対処 */}
-        {/* 他のページから遷移してきた場合に再レンダリングが無効になる */}
+      <Layout>
+        {authUser && <p>{`${authUser.name} さん としてログインしています`}</p>}
         <ButtonWrapper>
           <StyledButton
-            text={!user ? "ログインする" : "ログアウトする"}
-            onClick={!user ? handleSignIn : handleSignOut}
-            theme={!user ? buttonTheme.primary : buttonTheme.back}
+            text={authUser ? "ログアウトする" : "ログインする"}
+            onClick={handleAuthStatusChange}
+            theme={authUser ? buttonTheme.back : buttonTheme.primary}
           />
-          {user && (
+          {authUser && (
             <>
               <StyledButton
                 text="トップへ"
@@ -85,7 +44,7 @@ const LoginPage: NextPage<LoginPageProps> = () => {
               <StyledButton
                 text="あなたの てつどうのきろく をみる"
                 onClick={() => {
-                  window.location.href = `/user/${user.uid}`;
+                  window.location.href = `/user/${authUser.id}`;
                 }}
               />
             </>
@@ -94,24 +53,6 @@ const LoginPage: NextPage<LoginPageProps> = () => {
       </Layout>
     </>
   );
-};
-
-export const getServerSideProps = ({
-  req,
-}: // TODO return 型再考
-MyNextContext): GetServerSidePropsResult<LoginPageProps> | void => {
-  const store = initializeStore();
-  const token = req?.session?.decodedToken;
-
-  if (token) {
-    store.dispatch(
-      userSignIn({
-        uid: token.uid,
-        name: token.name,
-        picture: token.picture,
-      })
-    );
-  }
 };
 
 export default LoginPage;

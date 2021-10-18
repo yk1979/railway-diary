@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 import BreakPoint from "../../constants/BreakPoint";
 import Color from "../../constants/Color";
+import { useAuthUser } from "../../context/userContext";
 
 const Root = styled.header`
   padding: 8px;
@@ -41,23 +42,23 @@ const MyPageLink = styled.a`
   }
 `;
 
-type HeaderProps = {
-  userId: string | null;
+const Header: React.FC = () => {
+  const { authUser } = useAuthUser();
+  const authUserId = authUser?.id;
+  return (
+    <Root>
+      <Inner>
+        <TopLink href="/">てつどうダイアリー</TopLink>
+        {authUserId && (
+          <Link href={`/user/${authUserId}`}>
+            <MyPageLink>
+              <MdAccountCircle />
+            </MyPageLink>
+          </Link>
+        )}
+      </Inner>
+    </Root>
+  );
 };
-
-const Header: React.FC<HeaderProps> = ({ userId }) => (
-  <Root>
-    <Inner>
-      <TopLink href="/">てつどうダイアリー</TopLink>
-      {userId && (
-        <Link href={`/user/${userId}`}>
-          <MyPageLink>
-            <MdAccountCircle />
-          </MyPageLink>
-        </Link>
-      )}
-    </Inner>
-  </Root>
-);
 
 export default Header;

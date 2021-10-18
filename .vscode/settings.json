@@ -17,6 +17,7 @@
     "readonly",
     "resave",
     "stylelint",
+    "unsubscriber",
     "viewports"
   ],
   "prettier.requireConfig": true,
